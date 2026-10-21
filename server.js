@@ -14,10 +14,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 1. ตั้งค่าฐานข้อมูล MySQL
 // ==========================================
 const dbConfig = {
-    host: 'localhost',
-    user: 'root',
-    password: '123456', 
-    database: 'rmutk_freshy_2026'
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '123456', 
+    database: process.env.DB_NAME || 'rmutk_freshy_2026',
+    port: process.env.DB_PORT || 3306
 };
 
 // ==========================================
