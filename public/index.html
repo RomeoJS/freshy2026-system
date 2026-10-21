@@ -7,50 +7,52 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="./images/logo.png">
     <style>
         body {
             font-family: 'Prompt', sans-serif;
-            background-color: #091054;
+            background-color: #050a30;
             background-image: 
-                radial-gradient(circle at 50% 0%, rgba(84, 120, 255, 0.3) 0%, transparent 60%),
-                radial-gradient(circle at 50% 100%, rgba(255, 222, 66, 0.15) 0%, transparent 50%);
+                radial-gradient(circle at 50% 15%, rgba(84, 120, 255, 0.25) 0%, transparent 55%),
+                radial-gradient(circle at 50% 85%, rgba(255, 222, 66, 0.12) 0%, transparent 50%);
             background-attachment: fixed;
             color: #ffffff;
             min-height: 100vh;
         }
         .glass-panel {
-            background: rgba(17, 31, 162, 0.35);
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(84, 120, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            background: rgba(17, 31, 162, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(84, 120, 255, 0.35);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         }
         .gold-glow { 
-            text-shadow: 0 0 12px rgba(255, 222, 66, 0.7), 0 0 24px rgba(84, 120, 255, 0.4); 
+            text-shadow: 0 0 15px rgba(255, 222, 66, 0.8), 0 0 30px rgba(84, 120, 255, 0.5); 
         }
         .hidden { display: none !important; }
         .input-dark { 
-            background: rgba(9, 16, 84, 0.7); 
+            background: rgba(9, 16, 84, 0.75); 
             border: 1px solid rgba(84, 120, 255, 0.4); 
             color: white; 
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .input-dark:focus { 
             outline: none; 
             border-color: #FFDE42; 
-            box-shadow: 0 0 12px rgba(255, 222, 66, 0.5); 
-            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(255, 222, 66, 0.4); 
         }
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(9,16,84,0.6); }
+        ::-webkit-scrollbar-track { background: rgba(9,16,84,0.8); }
         ::-webkit-scrollbar-thumb { background: #5478FF; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #FFDE42; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-4 md:p-8 flex flex-col justify-between min-h-screen">
 
-    <header class="text-center mb-8 mt-2">
-        <img src="images/logo.png" alt="RMUTK FRESHY 2026" class="mx-auto h-28 md:h-36 object-contain drop-shadow-[0_0_25px_rgba(255,222,66,0.4)] hover:scale-105 transition-transform duration-300">
+    <header class="text-center mb-6 mt-2 relative z-10">
+        <div class="relative inline-block">
+            <div class="absolute -inset-4 rounded-full bg-gradient-to-r from-[#5478FF]/30 to-[#FFDE42]/20 blur-xl"></div>
+            <img src="images/logo.png" alt="RMUTK FRESHY 2026" class="relative mx-auto h-28 md:h-36 object-contain drop-shadow-[0_0_25px_rgba(255,222,66,0.4)] hover:scale-105 transition-transform duration-300">
+        </div>
         
         <div id="user-info" class="mt-4 text-sm text-gray-300 hidden">
             กำลังใช้งาน: <span id="current-role-display" class="font-bold text-[#FFDE42]"></span>
@@ -58,40 +60,81 @@
         </div>
     </header>
 
-    <!-- Login Form -->
-    <div id="login-section" class="max-w-md mx-auto glass-panel rounded-2xl p-8 border border-[#5478FF]/40">
-        <h3 class="text-2xl font-semibold mb-6 text-center text-[#FFDE42] gold-glow">เข้าสู่ระบบ</h3>
-        <div class="space-y-5">
+    <!-- 🌟 Login Form (การ์ดเข้าสู่ระบบใหม่ หรูหรา ไร้ Dropdown ดั้งเดิม) -->
+    <div id="login-section" class="max-w-md w-full mx-auto glass-panel rounded-3xl p-8 md:p-10 border border-[#5478FF]/40 relative z-20 transition-all duration-300">
+        <div class="text-center mb-8">
+            <h3 class="text-2xl md:text-3xl font-bold text-[#FFDE42] gold-glow tracking-wide">เข้าสู่ระบบ</h3>
+            <p class="text-xs text-gray-300 mt-1 font-light tracking-wider">ระบบลงคะแนนการประกวด FRESHY 2026</p>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Custom Dropdown Selector -->
             <div>
-                <label class="block text-sm text-gray-300 mb-2 font-medium">เลือกผู้ใช้งาน</label>
-                <!-- 🌟 สไตล์ Dropdown แบบใหม่หรูหรา -->
+                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-2">เลือกผู้ใช้งาน</label>
                 <div class="relative">
-                    <select id="login-role" class="w-full p-3.5 pr-10 rounded-xl input-dark text-white font-medium focus:ring-2 focus:ring-[#FFDE42] cursor-pointer shadow-lg appearance-none transition-all">
-                        <option value="admin" class="bg-[#091054] text-white py-2">ผู้ดูแลระบบ (Admin)</option>
-                        <option value="judge1" class="bg-[#091054] text-white py-2">กรรมการท่านที่ 1</option>
-                        <option value="judge2" class="bg-[#091054] text-white py-2">กรรมการท่านที่ 2</option>
-                        <option value="judge3" class="bg-[#091054] text-white py-2">กรรมการท่านที่ 3</option>
-                        <option value="judge4" class="bg-[#091054] text-white py-2">กรรมการท่านที่ 4</option>
-                        <option value="judge5" class="bg-[#091054] text-white py-2">กรรมการท่านที่ 5</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-[#FFDE42]">
-                        <i class="fas fa-chevron-down text-sm"></i>
+                    <button type="button" id="dropdown-btn" onclick="toggleRoleDropdown()" 
+                        class="w-full p-4 px-5 rounded-2xl input-dark flex justify-between items-center text-left text-white font-medium focus:ring-2 focus:ring-[#FFDE42] shadow-lg transition-all border border-[#5478FF]/40 hover:border-[#FFDE42]">
+                        <span id="selected-role-label" class="flex items-center gap-2">
+                            <i class="fas fa-user-shield text-[#FFDE42]"></i> ผู้ดูแลระบบ (Admin)
+                        </span>
+                        <i class="fas fa-chevron-down text-[#FFDE42] text-xs transition-transform duration-300" id="dropdown-arrow"></i>
+                    </button>
+
+                    <input type="hidden" id="login-role" value="admin">
+
+                    <!-- Custom Floating Menu -->
+                    <div id="role-dropdown-menu" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#091054]/95 backdrop-blur-2xl border border-[#5478FF]/60 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden z-50 divide-y divide-[#5478FF]/15 transition-all">
+                        <div onclick="selectRole('admin', 'ผู้ดูแลระบบ (Admin)', 'fa-user-shield')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-white">
+                            <span class="flex items-center gap-2.5"><i class="fas fa-user-shield text-[#FFDE42]"></i> ผู้ดูแลระบบ (Admin)</span>
+                            <i class="fas fa-check text-[#FFDE42] check-icon" id="check-admin"></i>
+                        </div>
+                        <div onclick="selectRole('judge1', 'กรรมการท่านที่ 1', 'fa-gavel')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
+                            <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 1</span>
+                            <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge1"></i>
+                        </div>
+                        <div onclick="selectRole('judge2', 'กรรมการท่านที่ 2', 'fa-gavel')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
+                            <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 2</span>
+                            <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge2"></i>
+                        </div>
+                        <div onclick="selectRole('judge3', 'กรรมการท่านที่ 3', 'fa-gavel')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
+                            <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 3</span>
+                            <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge3"></i>
+                        </div>
+                        <div onclick="selectRole('judge4', 'กรรมการท่านที่ 4', 'fa-gavel')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
+                            <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 4</span>
+                            <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge4"></i>
+                        </div>
+                        <div onclick="selectRole('judge5', 'กรรมการท่านที่ 5', 'fa-gavel')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
+                            <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 5</span>
+                            <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge5"></i>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Password Input Field -->
             <div>
-                <label class="block text-sm text-gray-300 mb-2 font-medium">รหัสผ่าน (PIN)</label>
-                <input type="password" id="login-password" class="w-full p-3.5 rounded-xl input-dark focus:ring-2 focus:ring-[#FFDE42]" placeholder="กรอกรหัสผ่าน...">
+                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-2">รหัสผ่าน (PIN)</label>
+                <div class="relative">
+                    <input type="password" id="login-password" class="w-full p-4 px-5 pr-12 rounded-2xl input-dark text-white font-medium focus:ring-2 focus:ring-[#FFDE42]" placeholder="กรอกรหัสผ่าน 6 หลัก...">
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                        <i class="fas fa-key"></i>
+                    </div>
+                </div>
             </div>
-            <button onclick="attemptLogin()" class="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold text-lg hover:shadow-[0_0_25px_rgba(255,222,66,0.7)] transition-all transform hover:scale-[1.01] active:scale-95">
-                เข้าสู่ระบบ <i class="fas fa-arrow-right ml-2"></i>
+
+            <!-- Login Button -->
+            <button onclick="attemptLogin()" class="w-full py-4 mt-2 rounded-2xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold text-lg hover:shadow-[0_0_30px_rgba(255,222,66,0.6)] transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2">
+                <span>เข้าสู่ระบบ</span>
+                <i class="fas fa-arrow-right text-base"></i>
             </button>
-            <p id="login-error" class="text-red-400 text-sm text-center hidden"></p>
+            
+            <p id="login-error" class="text-red-400 text-sm text-center font-medium hidden bg-red-500/10 p-3 rounded-xl border border-red-500/20"></p>
         </div>
     </div>
 
     <!-- Judge Dashboard -->
-    <div id="judge-section" class="max-w-7xl mx-auto hidden">
+    <div id="judge-section" class="max-w-7xl mx-auto w-full hidden my-auto">
         <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-10">
             <button onclick="switchCategory('mister')" id="tab-mister" class="px-6 py-2 rounded-full glass-panel border-2 border-transparent text-gray-300 font-semibold transition-all">Mister</button>
             <button onclick="switchCategory('miss')" id="tab-miss" class="px-6 py-2 rounded-full glass-panel border-2 border-transparent text-gray-300 font-semibold transition-all">Miss</button>
@@ -104,23 +147,23 @@
     </div>
 
     <!-- Admin Dashboard -->
-    <div id="admin-section" class="max-w-7xl mx-auto hidden">
-        <div class="glass-panel rounded-2xl p-6 mb-8 overflow-x-auto border border-[#5478FF]/30">
+    <div id="admin-section" class="max-w-7xl mx-auto w-full hidden my-auto">
+        <div class="glass-panel rounded-3xl p-6 md:p-8 mb-8 overflow-x-auto border border-[#5478FF]/30">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow"><i class="fas fa-chart-bar mr-2"></i> สรุปคะแนนรวม</h3>
-                <button onclick="fetchScores()" class="px-4 py-2 bg-[#5478FF] hover:bg-blue-400 text-white font-bold transition-all rounded-lg shadow-md"><i class="fas fa-sync-alt"></i> อัปเดตล่าสุด</button>
+                <button onclick="fetchScores()" class="px-4 py-2 bg-[#5478FF] hover:bg-blue-400 text-white font-bold transition-all rounded-xl shadow-md"><i class="fas fa-sync-alt"></i> อัปเดตล่าสุด</button>
             </div>
             <table class="w-full text-sm text-left text-gray-200">
                 <thead class="text-xs text-[#111FA2] uppercase bg-[#FFDE42] font-bold">
                     <tr>
-                        <th class="px-4 py-3 rounded-tl-lg">รหัส</th>
-                        <th class="px-4 py-3">ชื่อ-นามสกุล</th>
-                        <th class="px-4 py-3 text-center">ก.1</th>
-                        <th class="px-4 py-3 text-center">ก.2</th>
-                        <th class="px-4 py-3 text-center">ก.3</th>
-                        <th class="px-4 py-3 text-center">ก.4</th>
-                        <th class="px-4 py-3 text-center">ก.5</th>
-                        <th class="px-4 py-3 text-center font-bold text-base rounded-tr-lg">รวม</th>
+                        <th class="px-4 py-3.5 rounded-tl-xl">รหัส</th>
+                        <th class="px-4 py-3.5">ชื่อ-นามสกุล</th>
+                        <th class="px-4 py-3.5 text-center">ก.1</th>
+                        <th class="px-4 py-3.5 text-center">ก.2</th>
+                        <th class="px-4 py-3.5 text-center">ก.3</th>
+                        <th class="px-4 py-3.5 text-center">ก.4</th>
+                        <th class="px-4 py-3.5 text-center">ก.5</th>
+                        <th class="px-4 py-3.5 text-center font-bold text-base rounded-tr-xl">รวม</th>
                     </tr>
                 </thead>
                 <tbody id="admin-table-body"></tbody>
@@ -128,9 +171,9 @@
         </div>
     </div>
 
-    <!-- 🌟 Custom Warning & Confirmation Modal (ป๊อปอัปยืนยันหรูหรา) -->
+    <!-- Custom Warning & Confirmation Modal -->
     <div id="custom-confirm-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
-        <div class="glass-panel max-w-md w-full rounded-2xl p-6 border-2 border-[#FFDE42] shadow-[0_0_40px_rgba(255,222,66,0.35)] transform transition-all text-center relative">
+        <div class="glass-panel max-w-md w-full rounded-3xl p-6 md:p-8 border-2 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.35)] transform transition-all text-center relative">
             <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#111FA2] border-2 border-[#FFDE42] flex items-center justify-center shadow-[0_0_20px_rgba(255,222,66,0.5)]">
                 <i class="fas fa-exclamation-triangle text-2xl text-[#FFDE42] gold-glow"></i>
             </div>
@@ -138,7 +181,7 @@
             <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow mb-2">ยืนยันการบันทึกคะแนน</h3>
             <p class="text-gray-300 text-sm mb-4">โปรดตรวจสอบความถูกต้องก่อนยืนยัน</p>
 
-            <div class="bg-[#091054]/80 p-4 rounded-xl border border-[#5478FF]/30 text-left mb-5 space-y-2 text-sm">
+            <div class="bg-[#091054]/80 p-4 rounded-2xl border border-[#5478FF]/30 text-left mb-5 space-y-2 text-sm">
                 <div class="flex justify-between">
                     <span class="text-gray-400">ผู้แข่งขัน:</span>
                     <span id="modal-cname" class="font-bold text-white"></span>
@@ -153,15 +196,15 @@
                 </div>
             </div>
 
-            <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300 text-xs text-center mb-6">
+            <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300 text-xs text-center mb-6">
                 <i class="fas fa-lock mr-1"></i> เมื่อกดบันทึกแล้ว จะไม่สามารถแก้ไขคะแนนได้อีก
             </div>
 
             <div class="flex gap-3">
-                <button onclick="closeModal()" class="w-1/2 py-2.5 rounded-xl border border-gray-500 text-gray-300 hover:bg-gray-800 transition-all font-semibold">
+                <button onclick="closeModal()" class="w-1/2 py-3 rounded-xl border border-gray-500 text-gray-300 hover:bg-gray-800 transition-all font-semibold">
                     ยกเลิก
                 </button>
-                <button onclick="confirmSubmitScore()" class="w-1/2 py-2.5 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-105 transition-all">
+                <button onclick="confirmSubmitScore()" class="w-1/2 py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-105 transition-all">
                     บันทึกคะแนน
                 </button>
             </div>
@@ -169,9 +212,13 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-500 bg-[#FFDE42] border-l-4 border-[#111FA2] text-[#111FA2] font-bold px-6 py-4 rounded shadow-[0_0_20px_rgba(255,222,66,0.6)] z-50 flex items-center">
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-500 bg-[#FFDE42] border-l-4 border-[#111FA2] text-[#111FA2] font-bold px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(255,222,66,0.6)] z-50 flex items-center">
         <i class="fas fa-check-circle mr-3 text-xl"></i> <span id="toast-msg"></span>
     </div>
+
+    <footer class="text-center text-xs text-gray-400 my-4 z-10">
+        © 2026 RMUTK FRESHY PAGEANT SYSTEM. ALL RIGHTS RESERVED.
+    </footer>
 
     <script>
         let currentUser = null;
@@ -219,6 +266,34 @@
         ];
 
         const allCategories = ['mister', 'miss', 'queen', 'congeniality', 'jumbo'];
+
+        // 🌟 Custom Dropdown JS Control
+        function toggleRoleDropdown() {
+            const menu = document.getElementById('role-dropdown-menu');
+            const arrow = document.getElementById('dropdown-arrow');
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        function selectRole(val, label, icon) {
+            document.getElementById('login-role').value = val;
+            document.getElementById('selected-role-label').innerHTML = `<i class="fas ${icon} text-[#FFDE42]"></i> ${label}`;
+            
+            document.querySelectorAll('.check-icon').forEach(el => el.classList.add('hidden'));
+            const activeCheck = document.getElementById(`check-${val}`);
+            if(activeCheck) activeCheck.classList.remove('hidden');
+
+            toggleRoleDropdown();
+        }
+
+        document.addEventListener('click', function(e) {
+            const dropdownBtn = document.getElementById('dropdown-btn');
+            const menu = document.getElementById('role-dropdown-menu');
+            if (dropdownBtn && menu && !dropdownBtn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+                document.getElementById('dropdown-arrow').classList.remove('rotate-180');
+            }
+        });
 
         async function attemptLogin() {
             const role = document.getElementById('login-role').value;
@@ -348,12 +423,12 @@
                 const btnText = hasVoted ? 'บันทึกเรียบร้อยแล้ว' : 'บันทึกคะแนน';
 
                 let html = `
-                    <div class="glass-panel p-6 rounded-2xl border-t-2 ${hasVoted ? 'border-gray-500' : 'border-[#FFDE42]'} relative transition-all duration-300 hover:shadow-[0_15px_40px_rgba(84,120,255,0.3)] hover:-translate-y-1 flex flex-col md:flex-row gap-6 items-center md:items-stretch">
+                    <div class="glass-panel p-6 rounded-3xl border-t-2 ${hasVoted ? 'border-gray-500' : 'border-[#FFDE42]'} relative transition-all duration-300 hover:shadow-[0_15px_40px_rgba(84,120,255,0.3)] hover:-translate-y-1 flex flex-col md:flex-row gap-6 items-center md:items-stretch">
                         
                         <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-6 md:pb-0 md:pr-6">
                             <div class="w-full flex flex-col items-center">
                                 
-                                <div class="relative w-full h-64 md:h-72 rounded-xl overflow-hidden border-2 ${hasVoted ? 'border-green-400/80' : 'border-[#FFDE42]'} bg-[#111FA2] shadow-[0_0_20px_rgba(255,222,66,0.25)] group mb-3">
+                                <div class="relative w-full h-64 md:h-72 rounded-2xl overflow-hidden border-2 ${hasVoted ? 'border-green-400/80' : 'border-[#FFDE42]'} bg-[#111FA2] shadow-[0_0_20px_rgba(255,222,66,0.25)] group mb-3">
                                     <img src="images/contestants/${cId}.jpg" 
                                          onerror="this.onerror=null; this.src='https://placehold.co/400x500/111FA2/FFDE42?text=${cId}';" 
                                          alt="${cName}" 
@@ -372,12 +447,12 @@
                                 </div>
                             </div>
 
-                            <button onclick="submitScore('${cId}')" ${disabledAttr} class="w-full mt-4 py-2.5 rounded-xl font-bold transition-all duration-300 transform ${btnStyle}">
+                            <button onclick="submitScore('${cId}')" ${disabledAttr} class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform ${btnStyle}">
                                 <i class="fas ${btnIcon} mr-2"></i> ${btnText}
                             </button>
                         </div>
                         
-                        <div class="w-full md:w-7/12 space-y-3 bg-[#091054]/60 p-4 rounded-xl border border-[#5478FF]/20 flex flex-col justify-center">
+                        <div class="w-full md:w-7/12 space-y-3 bg-[#091054]/60 p-4 rounded-2xl border border-[#5478FF]/20 flex flex-col justify-center">
                 `;
 
                 criteria.forEach(crit => {
@@ -389,7 +464,7 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <input type="number" min="0" max="${crit.max}" value="${val}" id="${crit.id}-${cId}" ${disabledAttr} 
-                                        class="w-16 h-9 ${disabledInputClass} rounded-lg text-center font-bold text-[#FFDE42]" 
+                                        class="w-16 h-9 ${disabledInputClass} rounded-xl text-center font-bold text-[#FFDE42]" 
                                         onchange="updateTotal('${cId}', this, ${crit.max})">
                                     <span class="text-xs text-gray-400 w-8">/${crit.max}</span>
                                 </div>
@@ -420,7 +495,6 @@
             setTimeout(() => totalEl.parentElement.classList.remove('scale-110', 'bg-[#5478FF]/40'), 200);
         }
 
-        // 🌟 เรียกเปิด Custom Modal แทนการใช้ confirm แบบเก่า
         function submitScore(cId) {
             let sum = 0;
             criteria.forEach(crit => {
