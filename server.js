@@ -86,7 +86,7 @@ app.post('/api/logout', (req, res) => {
 });
 
 // ==========================================
-// 3. ระบบจัดการคะแนน
+// 3. ระบบจัดการคะแนน (เกณฑ์ใหม่ 5 หัวข้อ)
 // ==========================================
 app.get('/api/scores', async (req, res) => {
     try {
@@ -105,16 +105,18 @@ app.post('/api/scores', async (req, res) => {
     try {
         const connection = await mysql.createConnection(dbConfig);
         const query = `
-            INSERT INTO scores (judge_id, contestant_id, score_personality, score_wit, score_costume, score_charm) 
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO scores (judge_id, contestant_id, score_intro, score_theme, score_speech, score_formal, score_qa) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
-                score_personality = VALUES(score_personality),
-                score_wit = VALUES(score_wit),
-                score_costume = VALUES(score_costume),
-                score_charm = VALUES(score_charm)
+                score_intro = VALUES(score_intro),
+                score_theme = VALUES(score_theme),
+                score_speech = VALUES(score_speech),
+                score_formal = VALUES(score_formal),
+                score_qa = VALUES(score_qa)
         `;
         await connection.execute(query, [
-            judge_id, contestant_id, scores.personality, scores.wit, scores.costume, scores.charm
+            judge_id, contestant_id, 
+            scores.intro, scores.theme, scores.speech, scores.formal, scores.qa
         ]);
         await connection.end();
         res.json({ success: true, message: 'บันทึกคะแนนสำเร็จ' });
