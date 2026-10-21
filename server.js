@@ -17,8 +17,10 @@ const dbConfig = {
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '123456', 
-    database: process.env.DB_NAME || 'rmutk_freshy_2026',
-    port: process.env.DB_PORT || 3306
+    database: process.env.DB_NAME || 'test',
+    port: process.env.DB_PORT || 4000,
+    // 🌟 เปิดใช้งาน SSL เฉพาะเมื่อต่อกับ Cloud (บน Render)
+    ssl: process.env.DB_HOST ? { rejectUnauthorized: false } : false
 };
 
 // ==========================================
