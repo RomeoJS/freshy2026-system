@@ -46,34 +46,35 @@
         ::-webkit-scrollbar-thumb:hover { background: #FFDE42; }
     </style>
 </head>
-<body class="p-4 md:p-8 flex flex-col justify-between min-h-screen">
+<body class="p-4 md:p-8 flex flex-col justify-start items-center min-h-screen">
 
-    <header class="text-center mb-6 mt-2 relative z-10">
+    <!-- Header (ปรับขนาดโลโก้และระยะห่างด้านล่างให้กระชับขึ้น) -->
+    <header class="text-center mb-3 mt-1 relative z-10">
         <div class="relative inline-block">
             <div class="absolute -inset-4 rounded-full bg-gradient-to-r from-[#5478FF]/30 to-[#FFDE42]/20 blur-xl"></div>
-            <img src="images/logo.png" alt="RMUTK FRESHY 2026" class="relative mx-auto h-28 md:h-36 object-contain drop-shadow-[0_0_25px_rgba(255,222,66,0.4)] hover:scale-105 transition-transform duration-300">
+            <img src="images/logo.png" alt="RMUTK FRESHY 2026" class="relative mx-auto h-22 md:h-28 object-contain drop-shadow-[0_0_20px_rgba(255,222,66,0.4)] hover:scale-105 transition-transform duration-300">
         </div>
         
-        <div id="user-info" class="mt-4 text-sm text-gray-300 hidden">
+        <div id="user-info" class="mt-2 text-sm text-gray-300 hidden">
             กำลังใช้งาน: <span id="current-role-display" class="font-bold text-[#FFDE42]"></span>
             <button onclick="logout()" class="ml-4 text-gray-300 hover:text-[#FFDE42] underline transition"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</button>
         </div>
     </header>
 
-    <!-- 🌟 Login Form (การ์ดเข้าสู่ระบบใหม่ หรูหรา ไร้ Dropdown ดั้งเดิม) -->
-    <div id="login-section" class="max-w-md w-full mx-auto glass-panel rounded-3xl p-8 md:p-10 border border-[#5478FF]/40 relative z-20 transition-all duration-300">
-        <div class="text-center mb-8">
-            <h3 class="text-2xl md:text-3xl font-bold text-[#FFDE42] gold-glow tracking-wide">เข้าสู่ระบบ</h3>
+    <!-- Login Form (ขยับขึ้นสูงขึ้น ดึง padding กระชับขึ้น) -->
+    <div id="login-section" class="max-w-md w-full mx-auto glass-panel rounded-3xl p-6 md:p-8 border border-[#5478FF]/40 relative z-20 my-2 transition-all duration-300 shadow-2xl">
+        <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow tracking-wide">เข้าสู่ระบบ</h3>
             <p class="text-xs text-gray-300 mt-1 font-light tracking-wider">ระบบลงคะแนนการประกวด FRESHY 2026</p>
         </div>
 
-        <div class="space-y-6">
+        <div class="space-y-5">
             <!-- Custom Dropdown Selector -->
             <div>
-                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-2">เลือกผู้ใช้งาน</label>
+                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-1.5">เลือกผู้ใช้งาน</label>
                 <div class="relative">
                     <button type="button" id="dropdown-btn" onclick="toggleRoleDropdown()" 
-                        class="w-full p-4 px-5 rounded-2xl input-dark flex justify-between items-center text-left text-white font-medium focus:ring-2 focus:ring-[#FFDE42] shadow-lg transition-all border border-[#5478FF]/40 hover:border-[#FFDE42]">
+                        class="w-full p-3.5 px-4 rounded-2xl input-dark flex justify-between items-center text-left text-white font-medium focus:ring-2 focus:ring-[#FFDE42] shadow-lg transition-all border border-[#5478FF]/40 hover:border-[#FFDE42]">
                         <span id="selected-role-label" class="flex items-center gap-2">
                             <i class="fas fa-user-shield text-[#FFDE42]"></i> ผู้ดูแลระบบ (Admin)
                         </span>
@@ -84,27 +85,27 @@
 
                     <!-- Custom Floating Menu -->
                     <div id="role-dropdown-menu" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#091054]/95 backdrop-blur-2xl border border-[#5478FF]/60 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden z-50 divide-y divide-[#5478FF]/15 transition-all">
-                        <div onclick="selectRole('admin', 'ผู้ดูแลระบบ (Admin)', 'fa-user-shield')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-white">
+                        <div onclick="selectRole('admin', 'ผู้ดูแลระบบ (Admin)', 'fa-user-shield')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-white">
                             <span class="flex items-center gap-2.5"><i class="fas fa-user-shield text-[#FFDE42]"></i> ผู้ดูแลระบบ (Admin)</span>
                             <i class="fas fa-check text-[#FFDE42] check-icon" id="check-admin"></i>
                         </div>
-                        <div onclick="selectRole('judge1', 'กรรมการท่านที่ 1', 'fa-gavel')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
+                        <div onclick="selectRole('judge1', 'กรรมการท่านที่ 1', 'fa-gavel')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
                             <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 1</span>
                             <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge1"></i>
                         </div>
-                        <div onclick="selectRole('judge2', 'กรรมการท่านที่ 2', 'fa-gavel')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
+                        <div onclick="selectRole('judge2', 'กรรมการท่านที่ 2', 'fa-gavel')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
                             <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 2</span>
                             <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge2"></i>
                         </div>
-                        <div onclick="selectRole('judge3', 'กรรมการท่านที่ 3', 'fa-gavel')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
+                        <div onclick="selectRole('judge3', 'กรรมการท่านที่ 3', 'fa-gavel')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
                             <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 3</span>
                             <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge3"></i>
                         </div>
-                        <div onclick="selectRole('judge4', 'กรรมการท่านที่ 4', 'fa-gavel')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
+                        <div onclick="selectRole('judge4', 'กรรมการท่านที่ 4', 'fa-gavel')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
                             <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 4</span>
                             <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge4"></i>
                         </div>
-                        <div onclick="selectRole('judge5', 'กรรมการท่านที่ 5', 'fa-gavel')" class="role-option p-3.5 px-5 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
+                        <div onclick="selectRole('judge5', 'กรรมการท่านที่ 5', 'fa-gavel')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200">
                             <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 5</span>
                             <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge5"></i>
                         </div>
@@ -114,9 +115,9 @@
 
             <!-- Password Input Field -->
             <div>
-                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-2">รหัสผ่าน (PIN)</label>
+                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-1.5">รหัสผ่าน (PIN)</label>
                 <div class="relative">
-                    <input type="password" id="login-password" class="w-full p-4 px-5 pr-12 rounded-2xl input-dark text-white font-medium focus:ring-2 focus:ring-[#FFDE42]" placeholder="กรอกรหัสผ่าน 6 หลัก...">
+                    <input type="password" id="login-password" class="w-full p-3.5 px-4 pr-12 rounded-2xl input-dark text-white font-medium focus:ring-2 focus:ring-[#FFDE42]" placeholder="กรอกรหัสผ่าน...">
                     <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
                         <i class="fas fa-key"></i>
                     </div>
@@ -124,7 +125,7 @@
             </div>
 
             <!-- Login Button -->
-            <button onclick="attemptLogin()" class="w-full py-4 mt-2 rounded-2xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold text-lg hover:shadow-[0_0_30px_rgba(255,222,66,0.6)] transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2">
+            <button onclick="attemptLogin()" class="w-full py-3.5 mt-2 rounded-2xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold text-lg hover:shadow-[0_0_30px_rgba(255,222,66,0.6)] transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2">
                 <span>เข้าสู่ระบบ</span>
                 <i class="fas fa-arrow-right text-base"></i>
             </button>
@@ -134,7 +135,7 @@
     </div>
 
     <!-- Judge Dashboard -->
-    <div id="judge-section" class="max-w-7xl mx-auto w-full hidden my-auto">
+    <div id="judge-section" class="max-w-7xl mx-auto w-full hidden my-4">
         <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-10">
             <button onclick="switchCategory('mister')" id="tab-mister" class="px-6 py-2 rounded-full glass-panel border-2 border-transparent text-gray-300 font-semibold transition-all">Mister</button>
             <button onclick="switchCategory('miss')" id="tab-miss" class="px-6 py-2 rounded-full glass-panel border-2 border-transparent text-gray-300 font-semibold transition-all">Miss</button>
@@ -147,7 +148,7 @@
     </div>
 
     <!-- Admin Dashboard -->
-    <div id="admin-section" class="max-w-7xl mx-auto w-full hidden my-auto">
+    <div id="admin-section" class="max-w-7xl mx-auto w-full hidden my-4">
         <div class="glass-panel rounded-3xl p-6 md:p-8 mb-8 overflow-x-auto border border-[#5478FF]/30">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow"><i class="fas fa-chart-bar mr-2"></i> สรุปคะแนนรวม</h3>
@@ -216,7 +217,7 @@
         <i class="fas fa-check-circle mr-3 text-xl"></i> <span id="toast-msg"></span>
     </div>
 
-    <footer class="text-center text-xs text-gray-400 my-4 z-10">
+    <footer class="text-center text-xs text-gray-400 mt-auto py-4 z-10">
         © 2026 RMUTK FRESHY PAGEANT SYSTEM. ALL RIGHTS RESERVED.
     </footer>
 
@@ -267,7 +268,6 @@
 
         const allCategories = ['mister', 'miss', 'queen', 'congeniality', 'jumbo'];
 
-        // 🌟 Custom Dropdown JS Control
         function toggleRoleDropdown() {
             const menu = document.getElementById('role-dropdown-menu');
             const arrow = document.getElementById('dropdown-arrow');
