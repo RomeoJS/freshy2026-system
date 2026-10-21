@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMUTK FRESHY 2026 : BLACK & GOLD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #050505;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+        .glass-panel {
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+        .gold-text-glow { 
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6), 0 0 20px rgba(212, 175, 55, 0.3); 
+        }
+        
+        .hidden { display: none !important; }
+        .input-dark { 
+            background: rgba(0,0,0,0.6); 
+            border: 1px solid rgba(212, 175, 55, 0.3); 
+            color: white; 
+            transition: all 0.3s;
+        }
+        .input-dark:focus { 
+            outline: none; 
+            border-color: #D4AF37; 
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); 
+            transform: scale(1.02);
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up {
+            opacity: 0;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.7); }
+            100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+        }
+        .animate-pulse-gold {
+            animation: pulseGlow 2.5s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.5); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212, 175, 55, 0.8); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <header class="text-center mb-10 mt-4 animate-fade-up">
+        <div class="text-yellow-500 text-4xl mb-3 animate-float"><i class="fas fa-crown"></i></div>
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-wider">
+            RMUTK <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-500 to-yellow-600 gold-text-glow">FRESHY 2026</span>
+        </h1>
+        <h2 class="text-xl md:text-2xl text-yellow-500 tracking-[0.2em] uppercase font-light">BANGKOK CITY LIGHTS</h2>
+        <div id="user-info" class="mt-4 text-sm text-gray-400 hidden animate-fade-up" style="animation-delay: 0.2s;">
+            กำลังใช้งาน: <span id="current-role-display" class="font-bold text-yellow-400"></span>
+            <button onclick="logout()" class="ml-4 text-gray-400 hover:text-yellow-500 underline transition"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</button>
+        </div>
+    </header>
+
+    <!-- Login Form -->
+    <div id="login-section" class="max-w-md mx-auto glass-panel rounded-2xl p-8 border border-yellow-500/30 animate-fade-up" style="animation-delay: 0.1s;">
+        <h3 class="text-2xl font-semibold mb-6 text-center text-yellow-500 gold-text-glow">เข้าสู่ระบบ</h3>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm text-gray-400 mb-1">เลือกผู้ใช้งาน</label>
+                <select id="login-role" class="w-full p-3 rounded-lg input-dark focus:ring-1 focus:ring-yellow-500 cursor-pointer">
+                    <option value="admin">ผู้ดูแลระบบ (Admin)</option>
+                    <option value="judge1">กรรมการท่านที่ 1</option>
+                    <option value="judge2">กรรมการท่านที่ 2</option>
+                    <option value="judge3">กรรมการท่านที่ 3</option>
+                    <option value="judge4">กรรมการท่านที่ 4</option>
+                    <option value="judge5">กรรมการท่านที่ 5</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm text-gray-400 mb-1">รหัสผ่าน (PIN)</label>
+                <input type="password" id="login-password" class="w-full p-3 rounded-lg input-dark focus:ring-1 focus:ring-yellow-500" placeholder="กรอกรหัสผ่าน...">
+            </div>
+            <button onclick="attemptLogin()" class="w-full py-3 mt-4 rounded-lg bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 text-black font-bold text-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.6)] transition-all transform hover:-translate-y-1 active:translate-y-0">
+                เข้าสู่ระบบ <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+            <p id="login-error" class="text-red-500 text-sm text-center hidden animate-fade-up"></p>
+        </div>
+    </div>
+
+    <!-- Judge Dashboard -->
+    <div id="judge-section" class="max-w-6xl mx-auto hidden">
+        <!-- Category Tabs -->
+        <div class="flex justify-center space-x-3 md:space-x-6 mb-10 animate-fade-up" style="animation-delay: 0.2s;">
+            <button onclick="switchCategory('mister')" id="tab-mister" class="px-8 py-2 rounded-full glass-panel border-2 border-transparent text-gray-400 font-semibold transition-all hover:border-yellow-500/50 hover:text-yellow-200">Mister</button>
+            <button onclick="switchCategory('miss')" id="tab-miss" class="px-8 py-2 rounded-full glass-panel border-2 border-transparent text-gray-400 font-semibold transition-all hover:border-yellow-500/50 hover:text-yellow-200">Miss</button>
+            <button onclick="switchCategory('queen')" id="tab-queen" class="px-8 py-2 rounded-full glass-panel border-2 border-transparent text-gray-400 font-semibold transition-all hover:border-yellow-500/50 hover:text-yellow-200">Miss Queen</button>
+        </div>
+
+        <div id="contestants-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Cards will be rendered here -->
+        </div>
+    </div>
+
+    <!-- Admin Dashboard (Removed animations here) -->
+    <div id="admin-section" class="max-w-7xl mx-auto hidden">
+        <div class="glass-panel rounded-2xl p-6 mb-8 overflow-x-auto border border-yellow-500/20">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-yellow-500 gold-text-glow"><i class="fas fa-chart-bar mr-2"></i> สรุปคะแนนรวม</h3>
+                <button onclick="fetchScores()" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-black font-bold transition-all rounded-lg hover:shadow-[0_0_15px_rgba(212,175,55,0.5)] transform hover:scale-105 active:scale-95">
+                    <i class="fas fa-sync-alt"></i> อัปเดตล่าสุด
+                </button>
+            </div>
+            <table class="w-full text-sm text-left text-gray-300">
+                <thead class="text-xs text-black uppercase bg-gradient-to-r from-yellow-600 to-yellow-500">
+                    <tr>
+                        <th class="px-4 py-3 rounded-tl-lg">รหัส</th>
+                        <th class="px-4 py-3">ชื่อ-นามสกุล</th>
+                        <th class="px-4 py-3 text-center">ก.1</th>
+                        <th class="px-4 py-3 text-center">ก.2</th>
+                        <th class="px-4 py-3 text-center">ก.3</th>
+                        <th class="px-4 py-3 text-center">ก.4</th>
+                        <th class="px-4 py-3 text-center">ก.5</th>
+                        <th class="px-4 py-3 text-center font-bold text-base rounded-tr-lg">รวม</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-500 bg-gradient-to-r from-yellow-500 to-yellow-400 border-l-4 border-white text-black font-bold px-6 py-4 rounded shadow-[0_0_20px_rgba(212,175,55,0.6)] z-50 flex items-center">
+        <i class="fas fa-check-circle mr-3 text-xl"></i> <span id="toast-msg"></span>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let sessionToken = null;
+        let heartbeatInterval = null;
+        let pollingInterval = null;
+        let currentCategory = 'mister';
+        let allScores = [];
+
+        const contestants = {
+            mister: [
+                { id: 'M1', name: 'นายกฤษกร นภาสิริ' },
+                { id: 'M2', name: 'นายธนพล สุวรรณเวช' },
+                { id: 'M3', name: 'นายพงศกร วงศ์ชัย' }
+            ],
+            miss: [
+                { id: 'W1', name: 'นางสาวณัฐชา อรุณสวัสดิ์' },
+                { id: 'W2', name: 'นางสาวพิมพ์ลภัส ใจดี' },
+                { id: 'W3', name: 'นางสาววิลาวัณย์ ทองคำ' }
+            ],
+            queen: [
+                { id: 'Q1', name: 'พชรมนต์ จันทราทิพย์' },
+                { id: 'Q2', name: 'ณัชชารีย์ สิริพงศ์' },
+                { id: 'Q3', name: 'ธัญญลักษณ์ วิเศษศรี' }
+            ]
+        };
+
+        const criteria = [
+            { id: 'personality', name: 'บุคลิกภาพและการเดิน', max: 30 },
+            { id: 'wit', name: 'ไหวพริบการตอบคำถาม', max: 30 },
+            { id: 'costume', name: 'เครื่องแต่งกาย', max: 20 },
+            { id: 'charm', name: 'เสน่ห์และความมั่นใจ', max: 20 }
+        ];
+
+        async function attemptLogin() {
+            const role = document.getElementById('login-role').value;
+            const password = document.getElementById('login-password').value;
+            const errLabel = document.getElementById('login-error');
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentUser = data.role;
+                    sessionToken = data.token;
+                    errLabel.classList.add('hidden');
+                    
+                    document.getElementById('login-section').classList.add('hidden');
+                    document.getElementById('user-info').classList.remove('hidden');
+                    document.getElementById('current-role-display').innerText = role.toUpperCase();
+
+                    startHeartbeat();
+
+                    if (role === 'admin') {
+                        document.getElementById('admin-section').classList.remove('hidden');
+                        fetchScores();
+                        pollingInterval = setInterval(fetchScores, 3000);
+                    } else {
+                        document.getElementById('judge-section').classList.remove('hidden');
+                        switchCategory('mister');
+                    }
+                } else {
+                    errLabel.innerText = data.message;
+                    errLabel.classList.remove('hidden');
+                    errLabel.classList.remove('animate-fade-up');
+                    void errLabel.offsetWidth; // trigger reflow
+                    errLabel.classList.add('animate-fade-up');
+                }
+            } catch (e) {
+                alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+            }
+        }
+
+        function startHeartbeat() {
+            heartbeatInterval = setInterval(async () => {
+                try {
+                    const res = await fetch('/api/ping', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ role: currentUser, token: sessionToken })
+                    });
+                    const data = await res.json();
+                    if (!data.success) {
+                        alert('เซสชันถูกตัดการเชื่อมต่อ');
+                        forceLogout();
+                    }
+                } catch (e) { console.log('Heartbeat failed'); }
+            }, 5000);
+        }
+
+        async function logout() {
+            await fetch('/api/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role: currentUser, token: sessionToken })
+            });
+            forceLogout();
+        }
+
+        function forceLogout() {
+            clearInterval(heartbeatInterval);
+            clearInterval(pollingInterval);
+            currentUser = null;
+            sessionToken = null;
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('judge-section').classList.add('hidden');
+            document.getElementById('admin-section').classList.add('hidden');
+            document.getElementById('user-info').classList.add('hidden');
+        }
+
+        async function fetchScores() {
+            try {
+                const res = await fetch('/api/scores');
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                    allScores = data;
+                } else {
+                    allScores = [];
+                }
+                if(currentUser === 'admin') renderAdminTable();
+            } catch (error) {
+                allScores = [];
+            }
+        }
+
+        function switchCategory(cat) {
+            currentCategory = cat;
+            
+            const baseClass = "px-8 py-2 rounded-full glass-panel border-2 border-transparent text-gray-400 font-semibold transition-all duration-300 hover:border-yellow-500/50 hover:text-yellow-200";
+            document.getElementById('tab-mister').className = baseClass;
+            document.getElementById('tab-miss').className = baseClass;
+            document.getElementById('tab-queen').className = baseClass;
+
+            const activeClass = "px-8 py-2 rounded-full glass-panel border-2 border-yellow-500 text-yellow-400 font-bold bg-yellow-900/20 transition-all duration-300 scale-110 animate-pulse-gold";
+            document.getElementById(`tab-${cat}`).className = activeClass;
+            
+            fetchScores().then(() => renderContestants());
+        }
+
+        function renderContestants() {
+            const container = document.getElementById('contestants-container');
+            container.innerHTML = '';
+            
+            contestants[currentCategory].forEach((contestant, index) => {
+                const cId = contestant.id;
+                const cName = contestant.name;
+                const record = allScores.find(s => s.judge_id === currentUser && s.contestant_id === cId);
+                const hasVoted = !!record;
+                const score = record || { score_personality: 0, score_wit: 0, score_costume: 0, score_charm: 0 };
+                let total = score.score_personality + score.score_wit + score.score_costume + score.score_charm;
+
+                const animDelay = index * 0.15;
+
+                let html = `
+                    <div class="glass-panel p-6 rounded-2xl border-t-2 border-yellow-500 relative transition-all duration-300 hover:shadow-[0_15px_50px_rgba(212,175,55,0.2)] hover:-translate-y-2 animate-fade-up" style="animation-delay: ${animDelay}s;">
+                        ${hasVoted ? '<div class="absolute top-4 right-4 bg-green-500/20 border border-green-500 text-green-400 text-xs px-3 py-1 rounded-full animate-fade-up"><i class="fas fa-check-circle"></i> ส่งแล้ว</div>' : ''}
+                        
+                        <div class="text-center mb-6">
+                            <div class="relative inline-block transition-transform duration-500 hover:scale-110 hover:rotate-3">
+                                <div class="w-28 h-28 mx-auto rounded-full border-4 border-yellow-500 mb-3 flex items-center justify-center bg-black shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                                    <span class="text-3xl font-bold text-yellow-500">${cId}</span>
+                                </div>
+                            </div>
+                            <h4 class="text-xl font-bold text-white tracking-wide">${cName}</h4>
+                            <div class="mt-3 inline-block px-5 py-1 bg-black/50 rounded-full text-yellow-500 font-bold text-sm border border-yellow-500/30 transition-all">
+                                รวม <span id="total-${cId}" class="text-lg">${total}</span> / 100
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3 bg-black/40 p-4 rounded-xl border border-yellow-500/10">
+                `;
+
+                criteria.forEach(crit => {
+                    let val = score[`score_${crit.id}`] || 0;
+                    html += `
+                            <div class="flex justify-between items-center group">
+                                <div class="flex flex-col transition-transform duration-300 group-hover:translate-x-1">
+                                    <span class="text-sm text-gray-300 group-hover:text-yellow-400 transition-colors">${crit.name}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" min="0" max="${crit.max}" value="${val}" id="${crit.id}-${cId}" 
+                                        class="w-16 h-10 input-dark rounded-lg text-center font-bold text-yellow-400" 
+                                        onchange="updateTotal('${cId}', this, ${crit.max})">
+                                    <span class="text-xs text-gray-500 w-8">/${crit.max}</span>
+                                </div>
+                            </div>
+                    `;
+                });
+
+                const btnStyle = hasVoted 
+                    ? 'bg-transparent border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500/10 hover:shadow-[0_0_15px_rgba(212,175,55,0.3)]' 
+                    : 'bg-gradient-to-r from-yellow-600 to-yellow-400 text-black hover:shadow-[0_0_20px_rgba(212,175,55,0.6)]';
+                const btnIcon = hasVoted ? 'fa-edit' : 'fa-crown';
+                const btnText = hasVoted ? 'แก้ไขคะแนน' : 'บันทึกคะแนน';
+
+                html += `
+                        </div>
+                        <button onclick="submitScore('${cId}')" class="w-full mt-5 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-[1.02] active:scale-95 ${btnStyle}">
+                            <i class="fas ${btnIcon} mr-2 ${!hasVoted ? 'animate-float' : ''}"></i> ${btnText}
+                        </button>
+                    </div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function updateTotal(cId, input, max) {
+            let val = parseInt(input.value) || 0;
+            if (val > max) input.value = max;
+            if (val < 0) input.value = 0;
+            let sum = 0;
+            criteria.forEach(crit => {
+                sum += parseInt(document.getElementById(`${crit.id}-${cId}`).value) || 0;
+            });
+            
+            const totalEl = document.getElementById(`total-${cId}`);
+            totalEl.innerText = sum;
+            
+            totalEl.parentElement.classList.add('scale-110', 'bg-yellow-900/50');
+            setTimeout(() => totalEl.parentElement.classList.remove('scale-110', 'bg-yellow-900/50'), 200);
+        }
+
+        async function submitScore(cId) {
+            const scores = {
+                personality: parseInt(document.getElementById(`personality-${cId}`).value) || 0,
+                wit: parseInt(document.getElementById(`wit-${cId}`).value) || 0,
+                costume: parseInt(document.getElementById(`costume-${cId}`).value) || 0,
+                charm: parseInt(document.getElementById(`charm-${cId}`).value) || 0
+            };
+            await fetch('/api/scores', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ judge_id: currentUser, contestant_id: cId, scores })
+            });
+            
+            document.getElementById('toast-msg').innerText = `บันทึกคะแนนรหัส ${cId} สำเร็จ`;
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+            
+            await fetchScores();
+            renderContestants();
+        }
+
+        // นำแอนิเมชันในตารางออกแล้ว
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+            
+            const allContestants = [...contestants.mister, ...contestants.miss, ...contestants.queen];
+            
+            allContestants.forEach(c => {
+                let rowHtml = `
+                    <tr class="border-b border-yellow-500/20 hover:bg-yellow-500/10 transition-colors duration-300">
+                        <td class="px-4 py-3 font-bold text-yellow-500">${c.id}</td>
+                        <td class="px-4 py-3 text-white min-w-[150px]">${c.name}</td>
+                `;
+                let total = 0;
+                for(let i=1; i<=5; i++) {
+                    const record = allScores.find(s => s.judge_id === `judge${i}` && s.contestant_id === c.id);
+                    if(record) {
+                        let sum = record.score_personality + record.score_wit + record.score_costume + record.score_charm;
+                        total += sum;
+                        rowHtml += `<td class="px-4 py-3 text-center text-gray-300">${sum}</td>`;
+                    } else {
+                        rowHtml += `<td class="px-4 py-3 text-center text-gray-600">-</td>`;
+                    }
+                }
+                rowHtml += `<td class="px-4 py-3 text-center font-bold text-yellow-400 text-lg bg-black/30">${total}</td></tr>`;
+                tbody.innerHTML += rowHtml;
+            });
+        }
+    </script>
+</body>
+</html>
