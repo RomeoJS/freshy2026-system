@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="./images/logo.png">
     <style>
         body {
             font-family: 'Prompt', sans-serif;
@@ -60,23 +61,29 @@
     <!-- Login Form -->
     <div id="login-section" class="max-w-md mx-auto glass-panel rounded-2xl p-8 border border-[#5478FF]/40">
         <h3 class="text-2xl font-semibold mb-6 text-center text-[#FFDE42] gold-glow">เข้าสู่ระบบ</h3>
-        <div class="space-y-4">
+        <div class="space-y-5">
             <div>
-                <label class="block text-sm text-gray-300 mb-1">เลือกผู้ใช้งาน</label>
-                <select id="login-role" class="w-full p-3 rounded-lg input-dark focus:ring-1 focus:ring-[#FFDE42]">
-                    <option value="admin">ผู้ดูแลระบบ (Admin)</option>
-                    <option value="judge1">กรรมการท่านที่ 1</option>
-                    <option value="judge2">กรรมการท่านที่ 2</option>
-                    <option value="judge3">กรรมการท่านที่ 3</option>
-                    <option value="judge4">กรรมการท่านที่ 4</option>
-                    <option value="judge5">กรรมการท่านที่ 5</option>
-                </select>
+                <label class="block text-sm text-gray-300 mb-2 font-medium">เลือกผู้ใช้งาน</label>
+                <!-- 🌟 สไตล์ Dropdown แบบใหม่หรูหรา -->
+                <div class="relative">
+                    <select id="login-role" class="w-full p-3.5 pr-10 rounded-xl input-dark text-white font-medium focus:ring-2 focus:ring-[#FFDE42] cursor-pointer shadow-lg appearance-none transition-all">
+                        <option value="admin" class="bg-[#091054] text-white py-2">ผู้ดูแลระบบ (Admin)</option>
+                        <option value="judge1" class="bg-[#091054] text-white py-2">กรรมการท่านที่ 1</option>
+                        <option value="judge2" class="bg-[#091054] text-white py-2">กรรมการท่านที่ 2</option>
+                        <option value="judge3" class="bg-[#091054] text-white py-2">กรรมการท่านที่ 3</option>
+                        <option value="judge4" class="bg-[#091054] text-white py-2">กรรมการท่านที่ 4</option>
+                        <option value="judge5" class="bg-[#091054] text-white py-2">กรรมการท่านที่ 5</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-[#FFDE42]">
+                        <i class="fas fa-chevron-down text-sm"></i>
+                    </div>
+                </div>
             </div>
             <div>
-                <label class="block text-sm text-gray-300 mb-1">รหัสผ่าน (PIN)</label>
-                <input type="password" id="login-password" class="w-full p-3 rounded-lg input-dark focus:ring-1 focus:ring-[#FFDE42]" placeholder="กรอกรหัสผ่าน...">
+                <label class="block text-sm text-gray-300 mb-2 font-medium">รหัสผ่าน (PIN)</label>
+                <input type="password" id="login-password" class="w-full p-3.5 rounded-xl input-dark focus:ring-2 focus:ring-[#FFDE42]" placeholder="กรอกรหัสผ่าน...">
             </div>
-            <button onclick="attemptLogin()" class="w-full py-3 mt-4 rounded-lg bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold text-lg hover:shadow-[0_0_20px_rgba(255,222,66,0.6)] transition-all">
+            <button onclick="attemptLogin()" class="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold text-lg hover:shadow-[0_0_25px_rgba(255,222,66,0.7)] transition-all transform hover:scale-[1.01] active:scale-95">
                 เข้าสู่ระบบ <i class="fas fa-arrow-right ml-2"></i>
             </button>
             <p id="login-error" class="text-red-400 text-sm text-center hidden"></p>
@@ -121,6 +128,46 @@
         </div>
     </div>
 
+    <!-- 🌟 Custom Warning & Confirmation Modal (ป๊อปอัปยืนยันหรูหรา) -->
+    <div id="custom-confirm-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
+        <div class="glass-panel max-w-md w-full rounded-2xl p-6 border-2 border-[#FFDE42] shadow-[0_0_40px_rgba(255,222,66,0.35)] transform transition-all text-center relative">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#111FA2] border-2 border-[#FFDE42] flex items-center justify-center shadow-[0_0_20px_rgba(255,222,66,0.5)]">
+                <i class="fas fa-exclamation-triangle text-2xl text-[#FFDE42] gold-glow"></i>
+            </div>
+            
+            <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow mb-2">ยืนยันการบันทึกคะแนน</h3>
+            <p class="text-gray-300 text-sm mb-4">โปรดตรวจสอบความถูกต้องก่อนยืนยัน</p>
+
+            <div class="bg-[#091054]/80 p-4 rounded-xl border border-[#5478FF]/30 text-left mb-5 space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-400">ผู้แข่งขัน:</span>
+                    <span id="modal-cname" class="font-bold text-white"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-400">รหัสประจำตัว:</span>
+                    <span id="modal-cid" class="font-bold text-[#FFDE42]"></span>
+                </div>
+                <div class="flex justify-between border-t border-[#5478FF]/20 pt-2">
+                    <span class="text-gray-300 font-medium">คะแนนรวมสุทธิ:</span>
+                    <span class="font-bold text-[#FFDE42] text-lg"><span id="modal-score">0</span> / 100</span>
+                </div>
+            </div>
+
+            <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300 text-xs text-center mb-6">
+                <i class="fas fa-lock mr-1"></i> เมื่อกดบันทึกแล้ว จะไม่สามารถแก้ไขคะแนนได้อีก
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="w-1/2 py-2.5 rounded-xl border border-gray-500 text-gray-300 hover:bg-gray-800 transition-all font-semibold">
+                    ยกเลิก
+                </button>
+                <button onclick="confirmSubmitScore()" class="w-1/2 py-2.5 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-105 transition-all">
+                    บันทึกคะแนน
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-500 bg-[#FFDE42] border-l-4 border-[#111FA2] text-[#111FA2] font-bold px-6 py-4 rounded shadow-[0_0_20px_rgba(255,222,66,0.6)] z-50 flex items-center">
         <i class="fas fa-check-circle mr-3 text-xl"></i> <span id="toast-msg"></span>
@@ -133,6 +180,7 @@
         let pollingInterval = null;
         let currentCategory = 'mister';
         let allScores = [];
+        let pendingSubmitContestantId = null;
 
         const contestants = {
             mister: [
@@ -290,7 +338,6 @@
                 const score = record || { score_intro: 0, score_theme: 0, score_speech: 0, score_formal: 0, score_qa: 0 };
                 let total = (score.score_intro || 0) + (score.score_theme || 0) + (score.score_speech || 0) + (score.score_formal || 0) + (score.score_qa || 0);
 
-                // 🔒 เมื่อส่งคะแนนแล้ว ให้ปิดปุ่มและช่องกรอก
                 const disabledAttr = hasVoted ? 'disabled' : '';
                 const disabledInputClass = hasVoted ? 'opacity-60 cursor-not-allowed bg-gray-900/80 border-gray-600 text-gray-300' : 'input-dark';
 
@@ -303,7 +350,6 @@
                 let html = `
                     <div class="glass-panel p-6 rounded-2xl border-t-2 ${hasVoted ? 'border-gray-500' : 'border-[#FFDE42]'} relative transition-all duration-300 hover:shadow-[0_15px_40px_rgba(84,120,255,0.3)] hover:-translate-y-1 flex flex-col md:flex-row gap-6 items-center md:items-stretch">
                         
-                        <!-- ฝั่งซ้าย: รูปภาพผู้เข้าประกวด, ชื่อ, คะแนนรวม, ปุ่มกด -->
                         <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-6 md:pb-0 md:pr-6">
                             <div class="w-full flex flex-col items-center">
                                 
@@ -331,7 +377,6 @@
                             </button>
                         </div>
                         
-                        <!-- ฝั่งขวา: รายการเกณฑ์คะแนน -->
                         <div class="w-full md:w-7/12 space-y-3 bg-[#091054]/60 p-4 rounded-xl border border-[#5478FF]/20 flex flex-col justify-center">
                 `;
 
@@ -375,20 +420,33 @@
             setTimeout(() => totalEl.parentElement.classList.remove('scale-110', 'bg-[#5478FF]/40'), 200);
         }
 
-        async function submitScore(cId) {
+        // 🌟 เรียกเปิด Custom Modal แทนการใช้ confirm แบบเก่า
+        function submitScore(cId) {
             let sum = 0;
             criteria.forEach(crit => {
                 sum += parseInt(document.getElementById(`${crit.id}-${cId}`).value) || 0;
             });
 
-            // ⚠️ ป๊อปอัปเตือนกรรมการก่อนบันทึก
-            const confirmSubmit = confirm(
-                `⚠️ ยืนยันการบันทึกคะแนนสำหรับรหัส [ ${cId} ] ?\n\n` +
-                `คะแนนรวมสุทธิ: ${sum} / 100 คะแนน\n\n` +
-                `*หมายเหตุ: เมื่อกดตกลงแล้ว คะแนนจะถูกบันทึกและไม่สามารถแก้ไขได้อีก!*`
-            );
+            const contestant = contestants[currentCategory].find(c => c.id === cId);
+            const cName = contestant ? contestant.name : '';
 
-            if (!confirmSubmit) return;
+            document.getElementById('modal-cid').innerText = cId;
+            document.getElementById('modal-cname').innerText = cName;
+            document.getElementById('modal-score').innerText = sum;
+
+            pendingSubmitContestantId = cId;
+            document.getElementById('custom-confirm-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-confirm-modal').classList.add('hidden');
+            pendingSubmitContestantId = null;
+        }
+
+        async function confirmSubmitScore() {
+            if (!pendingSubmitContestantId) return;
+            const cId = pendingSubmitContestantId;
+            closeModal();
 
             const scores = {
                 intro: parseInt(document.getElementById(`intro-${cId}`).value) || 0,
