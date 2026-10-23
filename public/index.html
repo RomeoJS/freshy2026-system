@@ -400,6 +400,7 @@
             >
               <tr>
                 <th class="px-4 py-3.5 rounded-tl-xl">รหัส</th>
+                <th class="px-4 py-3.5 text-center">รูปภาพ</th>
                 <th class="px-4 py-3.5">ชื่อ-นามสกุล</th>
                 <th class="px-4 py-3.5 text-center">ก.1</th>
                 <th class="px-4 py-3.5 text-center">ก.2</th>
@@ -954,22 +955,40 @@
 
       function renderAdminTable() {
         const tbody = document.getElementById("admin-table-body");
+        if (!tbody) return;
         tbody.innerHTML = "";
+
         const allContestants = [
-          ...contestants.mister,
-          ...contestants.miss,
-          ...contestants.queen,
-          ...contestants.congeniality,
-          ...contestants.jumbo,
+          ...(contestants.mister || []),
+          ...(contestants.miss || []),
+          ...(contestants.queen || []),
+          ...(contestants.congeniality || []),
+          ...(contestants.jumbo || []),
         ];
 
+        if (allContestants.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="9" class="text-center py-6 text-gray-400">ยังไม่มีข้อมูลผู้เข้าประกวด</td></tr>';
+          return;
+        }
+
         allContestants.forEach((c) => {
+          // ใช้ c.image ดึงชื่อไฟล์จากฐานข้อมูล
+          const imagePath =
+            c.image && c.image !== "default.jpg"
+              ? `/images/contestants/${c.image}`
+              : `https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}`;
+
           let rowHtml = `<tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors duration-300">
-                        <td class="px-4 py-3 font-bold text-[#FFDE42]">${c.id}</td>
-                        <td class="px-4 py-3 text-white min-w-[150px]">${c.name}</td>`;
+            <td class="px-4 py-3 font-bold text-[#FFDE42]">${c.id}</td>
+            <td class="px-4 py-3 text-center">
+                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-10 h-10 rounded-full object-cover border border-[#FFDE42] mx-auto shadow-sm">
+            </td>
+            <td class="px-4 py-3 text-white min-w-[150px]">${c.name}</td>`;
+
           let total = 0;
           for (let i = 1; i <= 5; i++) {
-            const record = allScores.find(
+            const record = (allScores || []).find(
               (s) => s.judge_id === `judge${i}` && s.contestant_id === c.id,
             );
             if (record) {
