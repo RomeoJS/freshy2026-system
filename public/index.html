@@ -573,60 +573,6 @@
         }
       }
 
-      // แก้ไขฟังก์ชัน attemptLogin() ส่วนเมื่อล็อกอินสำเร็จ ให้โหลดข้อมูลผู้ประกวดก่อน
-      async function attemptLogin() {
-        const role = document.getElementById("login-role").value;
-        const password = document.getElementById("login-password").value;
-        const errLabel = document.getElementById("login-error");
-
-        try {
-          const res = await fetch("/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ role, password }),
-          });
-          const data = await res.json();
-
-          if (data.success) {
-            currentUser = data.role;
-            sessionToken = data.token;
-            errLabel.classList.add("hidden");
-
-            document.getElementById("login-section").classList.add("hidden");
-            document.getElementById("user-info").classList.remove("hidden");
-            document.getElementById("current-role-display").innerText =
-              role.toUpperCase();
-
-            await loadContestants(); // โหลดข้อมูลจาก DB
-            startHeartbeat();
-
-            if (role === "admin") {
-              document
-                .getElementById("admin-section")
-                .classList.remove("hidden");
-
-              // เพิ่มบรรทัดนี้เพื่อสั่งให้ระบบวาดรายชื่อลงในฟอร์ม/ตารางแอดมิน
-              if (typeof renderAdminTable === "function") {
-                renderAdminTable();
-              }
-
-              fetchScores();
-              pollingInterval = setInterval(fetchScores, 5000);
-            } else {
-              document
-                .getElementById("judge-section")
-                .classList.remove("hidden");
-              switchCategory("mister");
-            }
-          } else {
-            errLabel.innerText = data.message;
-            errLabel.classList.remove("hidden");
-          }
-        } catch (e) {
-          alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
-        }
-      }
-
       const criteria = [
         { id: "intro", name: "แนะนำตัว", max: 10 },
         { id: "theme", name: "ชุดธีม", max: 20 },
@@ -686,12 +632,18 @@
             document.getElementById("current-role-display").innerText =
               role.toUpperCase();
 
+            // ดึงข้อมูลผู้เข้าประกวดจากฐานข้อมูล
+            await loadContestants();
             startHeartbeat();
 
             if (role === "admin") {
               document
                 .getElementById("admin-section")
                 .classList.remove("hidden");
+              // สั่งวาดตารางแอดมิน
+              if (typeof renderAdminTable === "function") {
+                renderAdminTable();
+              }
               fetchScores();
               pollingInterval = setInterval(fetchScores, 5000);
             } else {
