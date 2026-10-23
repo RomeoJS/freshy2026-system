@@ -1008,6 +1008,23 @@
           tbody.innerHTML += rowHtml;
         });
       }
+      async function refreshAdminData() {
+        // 1. ดึงข้อมูลผู้เข้าประกวดใหม่จากฐานข้อมูล
+        await loadContestants();
+
+        // 2. ดึงคะแนนล่าสุด (ฟังก์ชันนี้มีคำสั่ง renderAdminTable() อยู่แล้ว)
+        await fetchScores();
+
+        // 3. แสดงแจ้งเตือนว่าอัปเดตแล้ว
+        document.getElementById("toast-msg").innerText =
+          "อัปเดตข้อมูลรายชื่อและคะแนนล่าสุดเรียบร้อย";
+        const toast = document.getElementById("toast");
+        toast.classList.remove("translate-y-20", "opacity-0");
+        setTimeout(
+          () => toast.classList.add("translate-y-20", "opacity-0"),
+          3000,
+        );
+      }
     </script>
   </body>
 </html>
