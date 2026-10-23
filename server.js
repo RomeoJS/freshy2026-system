@@ -3,6 +3,8 @@ const mysql = require('mysql2/promise');
 const cors = require('cors');
 const path = require('path');
 const excelJS = require('exceljs');
+const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 const port = 3000;
@@ -11,8 +13,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ตั้งค่า Multer สำหรับอัปโหลดรูปภาพ
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = path.join(__dirname, 'public/images/contestants');
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, req.body.id + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
+
 // ==========================================
-// 1. ตั้งค่าฐานข้อมูล MySQL
+// 1. ตั้งค่าฐานข้อมูล MySQL (ตามเดิม ไม่แก้ไข)
 // ==========================================
 const dbConfig = {
     host: process.env.DB_HOST || 'localhost',
@@ -26,14 +41,16 @@ const dbConfig = {
 async function initDB() {
     try {
         const connection = await mysql.createConnection(dbConfig);
+        // ตาราง 1: ผู้เข้าประกวด
         await connection.execute(`
             CREATE TABLE IF NOT EXISTS contestants (
                 id VARCHAR(20) PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
                 category VARCHAR(50) NOT NULL,
-                is_top5 BOOLEAN DEFAULT FALSE
+                image VARCHAR(255)
             )
         `);
+        // ตาราง 2: คะแนน
         await connection.execute(`
             CREATE TABLE IF NOT EXISTS scores (
                 judge_id VARCHAR(20),
@@ -46,8 +63,16 @@ async function initDB() {
                 PRIMARY KEY (judge_id, contestant_id)
             )
         `);
+        // ตาราง 3: Top 5
+        await connection.execute(`
+            CREATE TABLE IF NOT EXISTS top5_finalists (
+                category VARCHAR(50) PRIMARY KEY,
+                contestant_id VARCHAR(20),
+                total_score INT DEFAULT 0
+            )
+        `);
         await connection.end();
-        console.log('✅ Database tables initialized.');
+        console.log('✅ Database tables initialized (3 Tables).');
     } catch (error) {
         console.error('❌ DB Init Error:', error.message);
     }
@@ -55,17 +80,9 @@ async function initDB() {
 initDB();
 
 // ==========================================
-// 2. ระบบรหัสผ่าน และ Session
+// 2. ระบบรหัสผ่าน และ Session (เหมือนเดิม)
 // ==========================================
-const USERS = {
-    'admin': 'admin2026',
-    'judge1': '1111',
-    'judge2': '2222',
-    'judge3': '3333',
-    'judge4': '4444',
-    'judge5': '5555'
-};
-
+const USERS = { 'admin': 'admin2026', 'judge1': '1111', 'judge2': '2222', 'judge3': '3333', 'judge4': '4444', 'judge5': '5555' };
 const activeSessions = {}; 
 
 setInterval(() => {
@@ -101,7 +118,7 @@ app.post('/api/logout', (req, res) => {
 });
 
 // ==========================================
-// 3. API Contestants & Scores
+// 3. API Contestants (เพิ่มรูปภาพ)
 // ==========================================
 app.get('/api/contestants', async (req, res) => {
     try {
@@ -114,15 +131,20 @@ app.get('/api/contestants', async (req, res) => {
     }
 });
 
-app.post('/api/contestants', async (req, res) => {
+// Admin เพิ่มข้อมูลและอัปโหลดรูป
+app.post('/api/contestants', upload.single('image'), async (req, res) => {
     const { id, name, category } = req.body;
+    const image = req.file ? req.file.filename : 'default.jpg';
     try {
         const connection = await mysql.createConnection(dbConfig);
-        await connection.execute('INSERT INTO contestants (id, name, category, is_top5) VALUES (?, ?, ?, false)', [id, name, category]);
+        await connection.execute(
+            'INSERT INTO contestants (id, name, category, image) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=?, category=?, image=IF(?!="default.jpg", ?, image)', 
+            [id, name, category, image, name, category, image, image]
+        );
         await connection.end();
         res.json({ success: true });
     } catch (error) {
-        res.status(400).json({ success: false });
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -138,29 +160,27 @@ app.get('/api/scores', async (req, res) => {
 });
 
 // ==========================================
-// 🌟 ฟังก์ชันสร้างไฟล์ Excel อัตโนมัติ
+// 🌟 ฟังก์ชันสร้างไฟล์ Excel และอัปเดตตาราง Top 5
 // ==========================================
 async function generateAndSaveExcel() {
     try {
         const connection = await mysql.createConnection(dbConfig);
         const [contestants] = await connection.execute('SELECT * FROM contestants');
         const [scores] = await connection.execute('SELECT * FROM scores');
-        await connection.end();
 
         const workbook = new excelJS.Workbook();
         const categories = { mister: 'Mister', miss: 'Miss', queen: 'Miss Queen', congeniality: 'Congeniality', jumbo: 'Jumbo' };
         
+        await connection.execute('TRUNCATE TABLE top5_finalists'); // รีเซ็ต Top 5
+
         for (const [catKey, catName] of Object.entries(categories)) {
             const worksheet = workbook.addWorksheet(catName);
             worksheet.columns = [
                 { header: 'รหัส', key: 'id', width: 10 },
                 { header: 'ชื่อ-นามสกุล', key: 'name', width: 30 },
-                { header: 'ก.1', key: 'j1', width: 10 },
-                { header: 'ก.2', key: 'j2', width: 10 },
-                { header: 'ก.3', key: 'j3', width: 10 },
-                { header: 'ก.4', key: 'j4', width: 10 },
-                { header: 'ก.5', key: 'j5', width: 10 },
-                { header: 'คะแนนรวม', key: 'total', width: 15 }
+                { header: 'ก.1', key: 'j1', width: 10 }, { header: 'ก.2', key: 'j2', width: 10 },
+                { header: 'ก.3', key: 'j3', width: 10 }, { header: 'ก.4', key: 'j4', width: 10 },
+                { header: 'ก.5', key: 'j5', width: 10 }, { header: 'คะแนนรวม', key: 'total', width: 15 }
             ];
 
             let catContestants = contestants.filter(c => c.category === catKey);
@@ -180,18 +200,21 @@ async function generateAndSaveExcel() {
 
             rowsData.sort((a, b) => b.total - a.total);
             worksheet.addRows(rowsData);
+
+            // บันทึกอันดับ 1 ของหมวดลงตาราง Top 5
+            if (rowsData.length > 0 && rowsData[0].total > 0) {
+                await connection.execute('INSERT INTO top5_finalists (category, contestant_id, total_score) VALUES (?, ?, ?)', [catKey, rowsData[0].id, rowsData[0].total]);
+            }
         }
 
-        // เขียนไฟล์เก็บไว้ที่ /public/freshy2026_scores.xlsx อัตโนมัติ
+        await connection.end();
         const filePath = path.join(__dirname, 'public', 'freshy2026_scores.xlsx');
         await workbook.xlsx.writeFile(filePath);
-        console.log('✅ Auto-saved scores to Excel.');
     } catch (error) {
         console.error('❌ Auto Excel Save Error:', error);
     }
 }
 
-// เมื่อกรรมการบันทึกคะแนน -> อัปเดต DB -> อัปเดตไฟล์ Excel ทันที
 app.post('/api/scores', async (req, res) => {
     const { judge_id, contestant_id, scores } = req.body;
     try {
@@ -204,29 +227,19 @@ app.post('/api/scores', async (req, res) => {
                 score_speech = VALUES(score_speech), score_formal = VALUES(score_formal),
                 score_qa = VALUES(score_qa)
         `;
-        await connection.execute(query, [
-            judge_id, contestant_id, 
-            scores.intro, scores.theme, scores.speech, scores.formal, scores.qa
-        ]);
+        await connection.execute(query, [judge_id, contestant_id, scores.intro, scores.theme, scores.speech, scores.formal, scores.qa]);
         await connection.end();
         
-        // เรียกใช้ฟังก์ชันอัปเดตไฟล์ Excel อัตโนมัติ
         await generateAndSaveExcel();
-        
         res.json({ success: true, message: 'บันทึกคะแนนสำเร็จ' });
     } catch (error) {
         res.status(500).json({ success: false, error: 'Failed to save score' });
     }
 });
 
-// ให้ดาวน์โหลดไฟล์ Excel ล่าสุด
 app.get('/api/export', (req, res) => {
     const filePath = path.join(__dirname, 'public', 'freshy2026_scores.xlsx');
     res.download(filePath, 'RMUTK_Freshy2026_Scores.xlsx');
 });
 
-app.listen(port, () => {
-    console.log(`=================================`);
-    console.log(`🚀 Server RMUTK FRESHY 2026 is running!`);
-    console.log(`=================================`);
-});
+app.listen(port, () => console.log(`🚀 Server RMUTK FRESHY 2026 is running!`));
