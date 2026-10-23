@@ -538,18 +538,39 @@
           "category",
           document.getElementById("add-category").value,
         );
-        if (document.getElementById("add-image").files[0]) {
-          formData.append(
-            "image",
-            document.getElementById("add-image").files[0],
-          );
+
+        const imageFile = document.getElementById("add-image").files[0];
+        if (imageFile) {
+          formData.append("image", imageFile);
         }
 
-        await fetch("/api/contestants", { method: "POST", body: formData });
-        alert("บันทึกข้อมูลเรียบร้อย");
-        document.getElementById("add-contestant-form").reset();
-        await loadContestants();
-        renderAdminTable();
+        try {
+          const res = await fetch("/api/contestants", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            alert("✅ บันทึกข้อมูลเรียบร้อย");
+            document.getElementById("add-contestant-form").reset();
+
+            // โหลดข้อมูลใหม่และรีเฟรชตารางของแอดมิน
+            await loadContestants();
+            if (typeof fetchScores === "function") {
+              fetchScores();
+            }
+          } else {
+            alert(
+              "❌ เกิดข้อผิดพลาดจากฝั่งเซิร์ฟเวอร์: " +
+                (data.error || data.message || "ไม่ทราบสาเหตุ"),
+            );
+            console.error("Server Error:", data);
+          }
+        } catch (error) {
+          alert("❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้");
+          console.error("Network Error:", error);
+        }
       }
 
       // แก้ไขฟังก์ชัน attemptLogin() ส่วนเมื่อล็อกอินสำเร็จ ให้โหลดข้อมูลผู้ประกวดก่อน
@@ -583,6 +604,12 @@
               document
                 .getElementById("admin-section")
                 .classList.remove("hidden");
+
+              // เพิ่มบรรทัดนี้เพื่อสั่งให้ระบบวาดรายชื่อลงในฟอร์ม/ตารางแอดมิน
+              if (typeof renderAdminTable === "function") {
+                renderAdminTable();
+              }
+
               fetchScores();
               pollingInterval = setInterval(fetchScores, 5000);
             } else {
@@ -860,7 +887,7 @@
                         <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-6 md:pb-0 md:pr-6">
                             <div class="w-full flex flex-col items-center">
                                 <div class="relative w-full h-64 md:h-72 rounded-2xl overflow-hidden border-2 ${hasVoted ? "border-green-400/80" : "border-[#FFDE42]"} bg-[#111FA2] shadow-[0_0_20px_rgba(255,222,66,0.25)] group mb-3">
-                                    img src="images/contestants/${contestant.image || 'default.jpg'}" onerror="this.onerror=null; this.src='[https://placehold.co/400x500/111FA2/FFDE42?text=$](https://placehold.co/400x500/111FA2/FFDE42?text=$){cId}';" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    img src="images/contestants/${contestant.image || "default.jpg"}" onerror="this.onerror=null; this.src='[https://placehold.co/400x500/111FA2/FFDE42?text=$](https://placehold.co/400x500/111FA2/FFDE42?text=$){cId}';" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     
                                     ${
                                       currentCategory === "top5"
