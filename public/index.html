@@ -381,6 +381,12 @@
               <i class="fas fa-chart-bar mr-2"></i> สรุปคะแนนรวม
             </h3>
             <div class="flex gap-2">
+              <button
+                onclick="printScoreSheet()"
+                class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition-all rounded-xl shadow-md border border-purple-400/50"
+              >
+                <i class="fas fa-print mr-1"></i> พิมพ์ใบคะแนน
+              </button>
               <a
                 href="/api/export"
                 class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all rounded-xl shadow-md border border-emerald-400/50"
@@ -1024,6 +1030,155 @@
           () => toast.classList.add("translate-y-20", "opacity-0"),
           3000,
         );
+      }
+      function printScoreSheet() {
+        const allContestants = [
+          ...(contestants.mister || []),
+          ...(contestants.miss || []),
+          ...(contestants.queen || []),
+          ...(contestants.congeniality || []),
+          ...(contestants.jumbo || []),
+        ];
+
+        if (allContestants.length === 0) {
+          alert("ยังไม่มีข้อมูลผู้เข้าประกวดสำหรับพิมพ์");
+          return;
+        }
+
+        const printWindow = window.open("", "_blank", "width=1100,height=700");
+
+        let html = /* html */ `
+        <!DOCTYPE html>
+        <html lang="th">
+        <head>
+          <meta charset="UTF-8">
+          <title>รายละเอียดคะแนน RMUTK FRESHY 2026</title>
+          <style>
+            @page { size: A4 landscape; margin: 1cm; }
+            body { font-family: 'Sarabun', 'Prompt', sans-serif; padding: 10px; color: #000; font-size: 12px; }
+            h2 { text-align: center; margin-bottom: 2px; font-size: 18px; }
+            p.date { text-align: center; font-size: 12px; color: #444; margin-top: 0; margin-bottom: 15px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+            th, td { border: 1px solid #000; padding: 5px 3px; text-align: center; font-size: 11px; }
+            th { background-color: #f0f0f0; font-weight: bold; }
+            .text-left { text-align: left; padding-left: 5px; }
+            .bg-total { background-color: #f9f9f9; font-weight: bold; }
+            .sub-header { font-size: 10px; font-weight: normal; }
+          </style>
+        </head>
+        <body>
+          <h2>รายละเอียดคะแนนรายเกณฑ์ RMUTK FRESHY 2026</h2>
+          <p class="date">ข้อมูล ณ วันที่: ${new Date().toLocaleString("th-TH")}</p>
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2" width="5%">รหัส</th>
+                <th rowspan="2" width="15%" class="text-left">ชื่อ-นามสกุล</th>
+                <th rowspan="2" width="8%">หมวดหมู่</th>
+                <th colspan="5">ก.1</th>
+                <th colspan="5">ก.2</th>
+                <th colspan="5">ก.3</th>
+                <th colspan="5">ก.4</th>
+                <th colspan="5">ก.5</th>
+                <th rowspan="2" width="6%" class="bg-total">คะแนน<br>รวมสุทธิ</th>
+              </tr>
+              <tr>
+                <th class="sub-header">แนะนำ</th><th class="sub-header">ธีม</th><th class="sub-header">Speech</th><th class="sub-header">ชุด</th><th class="sub-header">Q&A</th>
+                <th class="sub-header">แนะนำ</th><th class="sub-header">ธีม</th><th class="sub-header">Speech</th><th class="sub-header">ชุด</th><th class="sub-header">Q&A</th>
+                <th class="sub-header">แนะนำ</th><th class="sub-header">ธีม</th><th class="sub-header">Speech</th><th class="sub-header">ชุด</th><th class="sub-header">Q&A</th>
+                <th class="sub-header">แนะนำ</th><th class="sub-header">ธีม</th><th class="sub-header">Speech</th><th class="sub-header">ชุด</th><th class="sub-header">Q&A</th>
+                <th class="sub-header">แนะนำ</th><th class="sub-header">ธีม</th><th class="sub-header">Speech</th><th class="sub-header">ชุด</th><th class="sub-header">Q&A</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        allContestants.forEach((c) => {
+          let grandTotal = 0;
+          let judgesData = {};
+
+          for (let i = 1; i <= 5; i++) {
+            const judgeKey = `judge${i}`;
+            const record = (allScores || []).find(
+              (s) => s.judge_id === judgeKey && s.contestant_id === c.id
+            );
+            
+            if (record) {
+              judgesData[judgeKey] = {
+                intro: record.score_intro || 0,
+                theme: record.score_theme || 0,
+                speech: record.score_speech || 0,
+                formal: record.score_formal || 0,
+                qa: record.score_qa || 0,
+              };
+              grandTotal +=
+                (record.score_intro || 0) +
+                (record.score_theme || 0) +
+                (record.score_speech || 0) +
+                (record.score_formal || 0) +
+                (record.score_qa || 0);
+            } else {
+              judgesData[judgeKey] = null;
+            }
+          }
+
+          html += /* html */ `
+              <tr>
+                <td><strong>${c.id}</strong></td>
+                <td class="text-left">${c.name}</td>
+                <td>${c.category.toUpperCase()}</td>
+          `;
+
+          for (let i = 1; i <= 5; i++) {
+            const j = judgesData[`judge${i}`];
+            if (j) {
+              html += /* html */ `
+                <td>${j.intro}</td>
+                <td>${j.theme}</td>
+                <td>${j.speech}</td>
+                <td>${j.formal}</td>
+                <td>${j.qa}</td>
+              `;
+            } else {
+              html += /* html */ `
+                <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+              `;
+            }
+          }
+
+          html += /* html */ `
+                <td class="bg-total">${grandTotal}</td>
+              </tr>
+          `;
+        });
+
+        html += /* html */ `
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 35px; display: flex; justify-content: space-around;">
+            <div style="text-align: center;">
+              ลงชื่อ..........................................................<br><br>
+              (..........................................................)<br><br>
+              ผู้สรุปผลคะแนน
+            </div>
+            <div style="text-align: center;">
+              ลงชื่อ..........................................................<br><br>
+              (..........................................................)<br><br>
+              ประธานกรรมการตัดสิน
+            </div>
+          </div>
+          <script>
+            window.onload = function() {
+              window.print();
+            };
+          <\/script>
+        </body>
+        </html>
+        `;
+
+        printWindow.document.write(html);
+        printWindow.document.close();
       }
     </script>
   </body>
