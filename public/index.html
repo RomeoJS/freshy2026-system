@@ -627,34 +627,6 @@
         }
       }
 
-      //   const contestants = {
-      //     mister: [
-      //       { id: "M1", name: "นายกฤษกร นภาสิริ" },
-      //       { id: "M2", name: "นายธนพล สุวรรณเวช" },
-      //       { id: "M3", name: "นายพงศกร วงศ์ชัย" },
-      //     ],
-      //     miss: [
-      //       { id: "W1", name: "นางสาวณัฐชา อรุณสวัสดิ์" },
-      //       { id: "W2", name: "นางสาวพิมพ์ลภัส ใจดี" },
-      //       { id: "W3", name: "นางสาววิลาวัณย์ ทองคำ" },
-      //     ],
-      //     queen: [
-      //       { id: "Q1", name: "พชรมนต์ จันทราทิพย์" },
-      //       { id: "Q2", name: "ณัชชารีย์ สิริพงศ์" },
-      //       { id: "Q3", name: "ธัญญลักษณ์ วิเศษศรี" },
-      //     ],
-      //     congeniality: [
-      //       { id: "MC1", name: "นางสาวปรียาภรณ์ ชัยชนะ" },
-      //       { id: "MC2", name: "นายณัฐพงศ์ ศรีสุข" },
-      //       { id: "MC3", name: "นางสาวศศิธร มงคล" },
-      //     ],
-      //     jumbo: [
-      //       { id: "MJ1", name: "นางสาวสุดารัตน์ สมบูรณ์" },
-      //       { id: "MJ2", name: "นายอรุณเดช ชัยพร" },
-      //       { id: "MJ3", name: "นางสาวชลธิชา บุญมี" },
-      //     ],
-      //   };
-
       const criteria = [
         { id: "intro", name: "แนะนำตัว", max: 10 },
         { id: "theme", name: "ชุดธีม", max: 20 },
@@ -837,25 +809,28 @@
 
       function renderContestants() {
         const container = document.getElementById("contestants-container");
+        if (!container) return;
         container.innerHTML = "";
 
-        // ถ้าระบบเป็นโหมด Top 5 ให้ใช้ข้อมูลที่กรองมาแล้ว
+        // ป้องกัน Error กรณีดึงข้อมูลหมวดหมู่ที่ยังไม่มีรายชื่อ
         const targetContestants =
           currentCategory === "top5"
             ? getAutoTop5()
-            : contestants[currentCategory];
+            : contestants[currentCategory] || [];
 
-        if (currentCategory === "top5" && targetContestants.length === 0) {
-          container.innerHTML = `<div class="col-span-2 text-center text-gray-300 py-10">ยังไม่มีข้อมูลคะแนนสำหรับการประมวลผล Top 5</div>`;
+        if (targetContestants.length === 0) {
+          container.innerHTML = `<div class="col-span-2 text-center text-gray-300 py-10">ยังไม่มีข้อมูลในหมวดหมู่นี้</div>`;
           return;
         }
 
         targetContestants.forEach((contestant) => {
           const cId = contestant.id;
           const cName = contestant.name;
-          const record = allScores.find(
-            (s) => s.judge_id === currentUser && s.contestant_id === cId,
-          );
+
+          // ตรวจสอบว่า record มีอยู่จริงหรือไม่ก่อนเช็ค hasVoted
+          const record = (
+            typeof allScores !== "undefined" ? allScores : []
+          ).find((s) => s.judge_id === currentUser && s.contestant_id === cId);
           const hasVoted = !!record;
 
           const score = record || {
@@ -865,6 +840,7 @@
             score_formal: 0,
             score_qa: 0,
           };
+
           let total =
             (score.score_intro || 0) +
             (score.score_theme || 0) +
@@ -883,48 +859,51 @@
           const btnText = hasVoted ? "บันทึกเรียบร้อยแล้ว" : "บันทึกคะแนน";
 
           let html = `
-                    <div class="glass-panel p-6 rounded-3xl border-t-2 ${hasVoted ? "border-gray-500" : "border-[#FFDE42]"} relative transition-all duration-300 hover:shadow-[0_15px_40px_rgba(84,120,255,0.3)] hover:-translate-y-1 flex flex-col md:flex-row gap-6 items-center md:items-stretch">
-                        <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-6 md:pb-0 md:pr-6">
-                            <div class="w-full flex flex-col items-center">
-                                <div class="relative w-full h-64 md:h-72 rounded-2xl overflow-hidden border-2 ${hasVoted ? "border-green-400/80" : "border-[#FFDE42]"} bg-[#111FA2] shadow-[0_0_20px_rgba(255,222,66,0.25)] group mb-3">
-                                    img src="images/contestants/${contestant.image || "default.jpg"}" onerror="this.onerror=null; this.src='[https://placehold.co/400x500/111FA2/FFDE42?text=$](https://placehold.co/400x500/111FA2/FFDE42?text=$){cId}';" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                    
-                                    ${
-                                      currentCategory === "top5"
-                                        ? `<div class="absolute top-2 left-2 bg-red-600/90 border border-white text-white font-bold px-3 py-1 rounded-lg text-sm shadow-md animate-pulse"><i class="fas fa-fire mr-1"></i> TOP 5</div>`
-                                        : `<div class="absolute top-2 left-2 bg-[#111FA2]/90 border border-[#FFDE42] text-[#FFDE42] font-bold px-3 py-1 rounded-lg text-sm shadow-md">${cId}</div>`
-                                    }
+            <div class="glass-panel p-6 rounded-3xl border-t-2 ${hasVoted ? "border-gray-500" : "border-[#FFDE42]"} relative transition-all duration-300 hover:shadow-[0_15px_40px_rgba(84,120,255,0.3)] hover:-translate-y-1 flex flex-col md:flex-row gap-6 items-center md:items-stretch">
+                <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-6 md:pb-0 md:pr-6">
+                    <div class="w-full flex flex-col items-center">
+                        <div class="relative w-full h-64 md:h-72 rounded-2xl overflow-hidden border-2 ${hasVoted ? "border-green-400/80" : "border-[#FFDE42]"} bg-[#111FA2] shadow-[0_0_20px_rgba(255,222,66,0.25)] group mb-3">
+                            
+                            <!-- แก้ไขแท็ก img ที่ตกหล่น และลิงก์ onerror ที่ผิดพลาด -->
+                            <img src="images/contestants/${contestant.image || "default.jpg"}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/111FA2/FFDE42?text=${cId}';" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                            ${
+                              currentCategory === "top5"
+                                ? `<div class="absolute top-2 left-2 bg-red-600/90 border border-white text-white font-bold px-3 py-1 rounded-lg text-sm shadow-md animate-pulse"><i class="fas fa-fire mr-1"></i> TOP 5</div>`
+                                : `<div class="absolute top-2 left-2 bg-[#111FA2]/90 border border-[#FFDE42] text-[#FFDE42] font-bold px-3 py-1 rounded-lg text-sm shadow-md">${cId}</div>`
+                            }
 
-                                    ${hasVoted ? '<div class="absolute top-2 right-2 bg-green-600 border border-green-300 text-white font-bold text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1"><i class="fas fa-lock text-xs"></i> ส่งแล้ว</div>' : ""}
-                                </div>
-                                <h4 class="text-lg font-bold text-white tracking-wide mt-1">${cName}</h4>
-                                <div class="mt-2 px-4 py-1.5 bg-[#111FA2]/80 rounded-full text-[#FFDE42] font-bold text-sm border border-[#5478FF]/40">
-                                    รวม <span id="total-${cId}" class="text-xl ml-1">${total}</span> / 100
-                                </div>
-                            </div>
-                            <button onclick="submitScore('${cId}')" ${disabledAttr} class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform ${btnStyle}">
-                                <i class="fas ${btnIcon} mr-2"></i> ${btnText}
-                            </button>
+                            ${hasVoted ? '<div class="absolute top-2 right-2 bg-green-600 border border-green-300 text-white font-bold text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1"><i class="fas fa-lock text-xs"></i> ส่งแล้ว</div>' : ""}
                         </div>
-                        <div class="w-full md:w-7/12 space-y-3 bg-[#091054]/60 p-4 rounded-2xl border border-[#5478FF]/20 flex flex-col justify-center">
-                `;
+                        <h4 class="text-lg font-bold text-white tracking-wide mt-1">${cName}</h4>
+                        <div class="mt-2 px-4 py-1.5 bg-[#111FA2]/80 rounded-full text-[#FFDE42] font-bold text-sm border border-[#5478FF]/40">
+                            รวม <span id="total-${cId}" class="text-xl ml-1">${total}</span> / 100
+                        </div>
+                    </div>
+                    <button onclick="submitScore('${cId}')" ${disabledAttr} class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform ${btnStyle}">
+                        <i class="fas ${btnIcon} mr-2"></i> ${btnText}
+                    </button>
+                </div>
+                <div class="w-full md:w-7/12 space-y-3 bg-[#091054]/60 p-4 rounded-2xl border border-[#5478FF]/20 flex flex-col justify-center">
+        `;
 
-          criteria.forEach((crit) => {
+          (typeof criteria !== "undefined" ? criteria : []).forEach((crit) => {
             let val = score[`score_${crit.id}`] || 0;
             html += `
-                            <div class="flex justify-between items-center group">
-                                <div class="flex flex-col transition-transform duration-300 ${hasVoted ? "" : "group-hover:translate-x-1"}">
-                                    <span class="text-sm font-medium text-gray-200 ${hasVoted ? "" : "group-hover:text-[#FFDE42]"} transition-colors">${crit.name}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <input type="number" min="0" max="${crit.max}" value="${val}" id="${crit.id}-${cId}" ${disabledAttr} 
-                                        class="w-16 h-9 ${disabledInputClass} rounded-xl text-center font-bold text-[#FFDE42]" 
-                                        onchange="updateTotal('${cId}', this, ${crit.max})">
-                                    <span class="text-xs text-gray-400 w-8">/${crit.max}</span>
-                                </div>
-                            </div>
-                    `;
+                <div class="flex justify-between items-center group">
+                    <div class="flex flex-col transition-transform duration-300 ${hasVoted ? "" : "group-hover:translate-x-1"}">
+                        <span class="text-sm font-medium text-gray-200 ${hasVoted ? "" : "group-hover:text-[#FFDE42]"} transition-colors">${crit.name}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="number" min="0" max="${crit.max}" value="${val}" id="${crit.id}-${cId}" ${disabledAttr} 
+                            class="w-16 h-9 ${disabledInputClass} rounded-xl text-center font-bold text-[#FFDE42]" 
+                            onchange="updateTotal('${cId}', this, ${crit.max})">
+                        <span class="text-xs text-gray-400 w-8">/${crit.max}</span>
+                    </div>
+                </div>
+            `;
           });
+
           html += `</div></div>`;
           container.innerHTML += html;
         });
