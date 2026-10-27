@@ -377,24 +377,31 @@
               </p>
             </div>
 
-            <table class="w-full text-sm text-left text-gray-200">
-              <thead class="text-xs uppercase bg-[#FFDE42] text-[#111FA2] font-bold">
-                <tr>
-                  <th class="px-4 py-3.5 rounded-tl-xl text-center">อันดับ</th>
-                  <th class="px-4 py-3.5 text-center">รูปภาพ</th>
-                  <th class="px-4 py-3.5">รหัส / ชื่อ-นามสกุล</th>
-                  <th class="px-4 py-3.5 text-center">หมวดหมู่ตัวแทน</th>
-                  <th class="px-4 py-3.5 text-center bg-blue-900/40 text-white">คะแนนรอบ 29 คน<br><span class="text-[10px] font-normal">(รวม 5 กรรมการ)</span></th>
-                  <th class="px-4 py-3.5 text-center">ก.1</th>
-                  <th class="px-4 py-3.5 text-center">ก.2</th>
-                  <th class="px-4 py-3.5 text-center">ก.3</th>
-                  <th class="px-4 py-3.5 text-center">ก.4</th>
-                  <th class="px-4 py-3.5 text-center">ก.5</th>
-                  <th class="px-4 py-3.5 text-center bg-yellow-400/20 text-[#111FA2]">รวมตอบคำถาม<br><span class="text-[10px] font-normal">(เต็ม 500)</span></th>
-                  <th class="px-4 py-3.5 text-center bg-blue-600 text-white">คะแนนรวมสุทธิ<br><span class="text-[10px] font-normal">(29 คน + ตอบคำถาม)</span></th>
-                  <th class="px-4 py-3.5 text-center font-bold text-base bg-[#111FA2] text-[#FFDE42] rounded-tr-xl">
-                    คะแนนเฉลี่ยสุทธิ<br><span class="text-[10px] font-normal text-amber-200">(÷ 5 กรรมการ)</span>
-                  </th>
+            <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
+              <thead class="text-xs uppercase font-bold">
+                <tr class="bg-[#FFDE42] text-[#111FA2]">
+                  <th rowspan="2" class="px-3 py-3 rounded-tl-xl text-center align-middle">อันดับ</th>
+                  <th rowspan="2" class="px-3 py-3 text-center align-middle">รูปภาพ</th>
+                  <th rowspan="2" class="px-3 py-3 align-middle">รหัส / ชื่อ-นามสกุล</th>
+                  <th rowspan="2" class="px-3 py-3 text-center align-middle">หมวดหมู่</th>
+                  <th colspan="6" class="px-2 py-2.5 text-center bg-blue-900/70 text-blue-100 border-l border-blue-600">คะแนนรอบ 29 คน (รายกรรมการ 4 รอบรวม)</th>
+                  <th colspan="6" class="px-2 py-2.5 text-center bg-amber-700/70 text-amber-100 border-l border-amber-500">คะแนนรอบตอบคำถาม (รายกรรมการ)</th>
+                  <th rowspan="2" class="px-3 py-3 text-center align-middle bg-blue-600 text-white">รวมสุทธิ</th>
+                  <th rowspan="2" class="px-3 py-3 text-center align-middle bg-[#111FA2] text-[#FFDE42] rounded-tr-xl">คะแนนเฉลี่ย<br><span class="text-[9px] font-normal text-amber-200">(÷5 ก.)</span></th>
+                </tr>
+                <tr class="bg-[#091054] text-gray-300 border-b-2 border-[#5478FF]/40">
+                  <th class="px-2 py-2 text-center text-[10px] border-l border-blue-800/50 bg-blue-950/60">ก.1</th>
+                  <th class="px-2 py-2 text-center text-[10px] bg-blue-950/60">ก.2</th>
+                  <th class="px-2 py-2 text-center text-[10px] bg-blue-950/60">ก.3</th>
+                  <th class="px-2 py-2 text-center text-[10px] bg-blue-950/60">ก.4</th>
+                  <th class="px-2 py-2 text-center text-[10px] bg-blue-950/60">ก.5</th>
+                  <th class="px-2 py-2 text-center text-[10px] font-bold text-[#FFDE42] bg-blue-950/80 border-l border-[#FFDE42]/30">รวม<br><span class="text-[8px] text-gray-400">(เต็ม 2,000)</span></th>
+                  <th class="px-2 py-2 text-center text-[10px] border-l border-amber-600/50 bg-amber-950/40">ก.1</th>
+                  <th class="px-2 py-2 text-center text-[10px] bg-amber-950/40">ก.2</th>
+                  <th class="px-2 py-2 text-center text-[10px] bg-amber-950/40">ก.3</th>
+                  <th class="px-2 py-2 text-center text-[10px] bg-amber-950/40">ก.4</th>
+                  <th class="px-2 py-2 text-center text-[10px] bg-amber-950/40">ก.5</th>
+                  <th class="px-2 py-2 text-center text-[10px] font-bold text-[#FFDE42] bg-amber-950/60 border-l border-[#FFDE42]/30">รวม<br><span class="text-[8px] text-gray-400">(เต็ม 500)</span></th>
                 </tr>
               </thead>
               <tbody id="top5-table-body"></tbody>
@@ -1103,7 +1110,7 @@
         renderAdminRound29Table();
       }
 
-      // ตารางผลตัดสินรอบ TOP 5
+      // ตารางผลตัดสินรอบ TOP 5 (แสดงรายกรรมการทั้งรอบ 29 + QA)
       function renderAdminTop5Table() {
         const tbody = document.getElementById('top5-table-body');
         if (!tbody || !summaryData || !summaryData.top5) return;
@@ -1111,7 +1118,7 @@
 
         const top5 = summaryData.top5;
         if (top5.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="13" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลการตัดสินรอบ TOP 5</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="18" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลการตัดสินรอบ TOP 5</td></tr>';
           return;
         }
 
@@ -1123,45 +1130,48 @@
           '<span class="px-2 py-0.5 rounded-lg bg-blue-900/60 text-gray-200 text-xs font-semibold">รองชนะเลิศอันดับ 4</span>'
         ];
 
+        const judges = ['judge1','judge2','judge3','judge4','judge5'];
+
         top5.forEach((f, idx) => {
           const isWinner = idx === 0;
           const imagePath = f.image && f.image !== 'default.jpg'
             ? `/images/contestants/${f.image}`
             : `https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}`;
 
+          // คะแนนรอบ 29 รายกรรมการ (รวม 4 รอบ)
+          let r29JudgeCells = '';
+          judges.forEach(jId => {
+            const jScore = f.judgeTotals29 ? (f.judgeTotals29[jId] || 0) : 0;
+            r29JudgeCells += `<td class="px-2 py-3 text-center font-medium bg-blue-950/40 ${jScore > 0 ? 'text-blue-200' : 'text-gray-600'}">${jScore}</td>`;
+          });
+
+          // คะแนน QA รายกรรมการ
+          let qaJudgeCells = '';
+          judges.forEach(jId => {
+            const qScore = f.qaJudges ? (f.qaJudges[jId] || 0) : 0;
+            qaJudgeCells += `<td class="px-2 py-3 text-center font-medium bg-amber-950/30 ${qScore > 0 ? 'text-amber-200' : 'text-gray-600'}">${qScore}</td>`;
+          });
+
           let row = `
             <tr class="border-b border-[#5478FF]/20 ${isWinner ? 'bg-gradient-to-r from-yellow-500/20 via-amber-500/10 to-yellow-500/20' : 'hover:bg-[#5478FF]/10'} transition-colors">
-              <td class="px-4 py-3.5 text-center font-extrabold text-lg ${isWinner ? 'text-[#FFDE42]' : 'text-gray-300'}">
+              <td class="px-3 py-3 text-center font-extrabold text-lg ${isWinner ? 'text-[#FFDE42]' : 'text-gray-300'}">
                 ${idx === 0 ? '👑 1' : (idx + 1)}
               </td>
-              <td class="px-4 py-3.5 text-center">
-                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-12 h-12 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto">
+              <td class="px-3 py-3 text-center">
+                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-11 h-11 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto">
               </td>
-              <td class="px-4 py-3.5">
-                <div class="font-bold text-white text-base">${f.name}</div>
+              <td class="px-3 py-3">
+                <div class="font-bold text-white text-sm">${f.name}</div>
                 <div class="text-xs text-[#FFDE42]">${f.id} • ${f.categoryName}</div>
                 <div class="mt-1">${awardBadges[idx] || ''}</div>
               </td>
-              <td class="px-4 py-3.5 text-center font-semibold text-gray-200">
-                ${f.categoryName}
-              </td>
-              <td class="px-4 py-3.5 text-center font-bold text-white bg-blue-900/30">
-                ${f.round29Total}
-              </td>
-              <td class="px-4 py-3.5 text-center text-gray-300">${f.qaJudges.judge1 || 0}</td>
-              <td class="px-4 py-3.5 text-center text-gray-300">${f.qaJudges.judge2 || 0}</td>
-              <td class="px-4 py-3.5 text-center text-gray-300">${f.qaJudges.judge3 || 0}</td>
-              <td class="px-4 py-3.5 text-center text-gray-300">${f.qaJudges.judge4 || 0}</td>
-              <td class="px-4 py-3.5 text-center text-gray-300">${f.qaJudges.judge5 || 0}</td>
-              <td class="px-4 py-3.5 text-center font-bold text-yellow-300 bg-yellow-500/10">
-                ${f.qaTotal}
-              </td>
-              <td class="px-4 py-3.5 text-center font-bold text-blue-300 bg-blue-950/40">
-                ${f.grandTotal}
-              </td>
-              <td class="px-4 py-3.5 text-center font-extrabold text-xl text-[#FFDE42] bg-[#111FA2]/80">
-                ${f.avgScore.toFixed(2)}
-              </td>
+              <td class="px-3 py-3 text-center text-xs font-semibold text-gray-200">${f.categoryName}</td>
+              ${r29JudgeCells}
+              <td class="px-2 py-3 text-center font-bold text-[#FFDE42] bg-blue-950/60 border-l border-[#FFDE42]/30 text-base">${f.round29Total}</td>
+              ${qaJudgeCells}
+              <td class="px-2 py-3 text-center font-bold text-[#FFDE42] bg-amber-950/50 border-l border-[#FFDE42]/30 text-base">${f.qaTotal}</td>
+              <td class="px-3 py-3 text-center font-bold text-blue-300 bg-blue-950/40">${f.grandTotal}</td>
+              <td class="px-3 py-3 text-center font-extrabold text-xl text-[#FFDE42] bg-[#111FA2]/80">${f.avgScore.toFixed(2)}</td>
             </tr>
           `;
           tbody.innerHTML += row;
