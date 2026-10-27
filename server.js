@@ -214,6 +214,41 @@ app.post('/api/logout', (req, res) => {
 });
 
 // ==========================================
+// ⚙️ DB Migration Endpoint (admin only, one-time use)
+// ==========================================
+app.post('/api/admin/migrate-scores', async (req, res) => {
+    const { secret } = req.body;
+    if (secret !== 'freshy2026-migrate') return res.status(403).json({ error: 'Forbidden' });
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+        // ตรวจสอบ columns ปัจจุบัน
+        const [cols] = await connection.execute(`SHOW COLUMNS FROM scores`).catch(() => [[]]);
+        console.log('Current scores columns:', cols.map(c => c.Field));
+        
+        await connection.execute(`DROP TABLE IF EXISTS scores`);
+        await connection.execute(`
+            CREATE TABLE scores (
+                judge_id VARCHAR(20) NOT NULL,
+                contestant_id VARCHAR(20) NOT NULL,
+                round_id VARCHAR(30) NOT NULL,
+                score_c1 INT DEFAULT 0,
+                score_c2 INT DEFAULT 0,
+                score_c3 INT DEFAULT 0,
+                total_score INT DEFAULT 0,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                PRIMARY KEY (judge_id, contestant_id, round_id)
+            )
+        `);
+        await connection.end();
+        console.log('✅ scores table migrated successfully via API.');
+        res.json({ success: true, message: 'scores table recreated with round_id column' });
+    } catch (error) {
+        console.error('❌ Migration error:', error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ==========================================
 // 3. API Contestants
 // ==========================================
 app.get('/api/contestants', async (req, res) => {
