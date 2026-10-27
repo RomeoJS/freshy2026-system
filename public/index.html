@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RMUTK FRESHY 2026</title>
+    <title>RMUTK FRESHY 2026 - ระบบตัดสินการประกวด</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -18,16 +18,8 @@
         font-family: "Prompt", sans-serif;
         background-color: #050a30;
         background-image:
-          radial-gradient(
-            circle at 50% 15%,
-            rgba(84, 120, 255, 0.25) 0%,
-            transparent 55%
-          ),
-          radial-gradient(
-            circle at 50% 85%,
-            rgba(255, 222, 66, 0.12) 0%,
-            transparent 50%
-          );
+          radial-gradient(circle at 50% 15%, rgba(84, 120, 255, 0.25) 0%, transparent 55%),
+          radial-gradient(circle at 50% 85%, rgba(255, 222, 66, 0.12) 0%, transparent 50%);
         background-attachment: fixed;
         color: #ffffff;
         min-height: 100vh;
@@ -43,8 +35,9 @@
           0 0 15px rgba(255, 222, 66, 0.8),
           0 0 30px rgba(84, 120, 255, 0.5);
       }
-      .hidden {
-        display: none !important;
+      .gold-border {
+        border-color: #ffde42;
+        box-shadow: 0 0 20px rgba(255, 222, 66, 0.3);
       }
       .input-dark {
         background: rgba(9, 16, 84, 0.75);
@@ -59,6 +52,7 @@
       }
       ::-webkit-scrollbar {
         width: 8px;
+        height: 8px;
       }
       ::-webkit-scrollbar-track {
         background: rgba(9, 16, 84, 0.8);
@@ -72,52 +66,53 @@
       }
     </style>
   </head>
-  <body class="p-4 md:p-8 flex flex-col justify-between min-h-screen">
-    <header class="text-center mb-6 mt-2 relative z-10 w-full">
+  <body class="p-3 md:p-6 flex flex-col justify-between min-h-screen">
+    <!-- Header -->
+    <header class="text-center mb-6 mt-1 relative z-10 w-full">
       <div class="relative inline-block">
-        <div
-          class="absolute -inset-4 rounded-full bg-gradient-to-r from-[#5478FF]/30 to-[#FFDE42]/20 blur-xl"
-        ></div>
+        <div class="absolute -inset-4 rounded-full bg-gradient-to-r from-[#5478FF]/30 to-[#FFDE42]/20 blur-xl"></div>
         <img
           src="images/logo.png"
           alt="RMUTK FRESHY 2026"
-          class="relative mx-auto h-24 md:h-32 object-contain drop-shadow-[0_0_20px_rgba(255,222,66,0.4)] hover:scale-105 transition-transform duration-300"
+          class="relative mx-auto h-20 md:h-28 object-contain drop-shadow-[0_0_20px_rgba(255,222,66,0.4)] hover:scale-105 transition-transform duration-300"
         />
       </div>
 
-      <div id="user-info" class="mt-3 text-sm text-gray-300 hidden">
-        กำลังใช้งาน:
-        <span id="current-role-display" class="font-bold text-[#FFDE42]"></span>
+      <div id="user-info" class="mt-2 text-sm text-gray-300 hidden flex items-center justify-center gap-3">
+        <span class="bg-[#111FA2]/80 px-4 py-1.5 rounded-full border border-[#5478FF]/40 text-xs">
+          <i class="fas fa-user-circle text-[#FFDE42] mr-1.5"></i> ผู้ใช้งาน:
+          <span id="current-role-display" class="font-bold text-[#FFDE42]"></span>
+        </span>
         <button
           onclick="logout()"
-          class="ml-4 text-gray-300 hover:text-[#FFDE42] underline transition"
+          class="px-3.5 py-1 rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-300 border border-red-500/30 text-xs font-medium transition flex items-center gap-1.5"
         >
           <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
         </button>
       </div>
     </header>
 
-    <!-- Login -->
+    <!-- Main Content -->
     <main class="w-full my-auto flex flex-col items-center justify-center">
+      <!-- 1. LOGIN SECTION -->
       <div
         id="login-section"
         class="max-w-md w-full glass-panel rounded-3xl p-6 md:p-8 border border-[#5478FF]/40 relative z-20 transition-all duration-300 shadow-2xl"
       >
         <div class="text-center mb-6">
           <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow tracking-wide">
-            เข้าสู่ระบบ
+            เข้าสู่ระบบตัดสิน
           </h3>
           <p class="text-xs text-gray-300 mt-1 font-light tracking-wider">
-            ระบบลงคะแนนการประกวด FRESHY 2026
+            ระบบลงคะแนนการประกวด FRESHY 2026 (รอบ 29 คน & TOP 5)
           </p>
         </div>
 
-        <div class="space-y-5">
+        <div class="space-y-4">
           <div>
-            <label
-              class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-1.5"
-              >เลือกผู้ใช้งาน</label
-            >
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-1.5">
+              เลือกผู้ใช้งาน
+            </label>
             <div class="relative">
               <button
                 type="button"
@@ -126,118 +121,54 @@
                 class="w-full p-3.5 px-4 rounded-2xl input-dark flex justify-between items-center text-left text-white font-medium focus:ring-2 focus:ring-[#FFDE42] shadow-lg transition-all border border-[#5478FF]/40 hover:border-[#FFDE42]"
               >
                 <span id="selected-role-label" class="flex items-center gap-2">
-                  <i class="fas fa-user-shield text-[#FFDE42]"></i> ผู้ดูแลระบบ
-                  (Admin)
+                  <i class="fas fa-user-shield text-[#FFDE42]"></i> ผู้ดูแลระบบ (Admin)
                 </span>
-                <i
-                  class="fas fa-chevron-down text-[#FFDE42] text-xs transition-transform duration-300"
-                  id="dropdown-arrow"
-                ></i>
+                <i class="fas fa-chevron-down text-[#FFDE42] text-xs transition-transform duration-300" id="dropdown-arrow"></i>
               </button>
               <input type="hidden" id="login-role" value="admin" />
               <div
                 id="role-dropdown-menu"
-                class="hidden absolute top-full left-0 right-0 mt-2 bg-[#091054]/95 backdrop-blur-2xl border border-[#5478FF]/60 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden z-50 divide-y divide-[#5478FF]/15 transition-all"
+                class="hidden absolute top-full left-0 right-0 mt-2 bg-[#091054]/95 backdrop-blur-2xl border border-[#5478FF]/60 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden z-50 divide-y divide-[#5478FF]/15"
               >
-                <div
-                  onclick="
-                    selectRole('admin', 'ผู้ดูแลระบบ (Admin)', 'fa-user-shield')
-                  "
-                  class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-white"
-                >
-                  <span class="flex items-center gap-2.5"
-                    ><i class="fas fa-user-shield text-[#FFDE42]"></i>
-                    ผู้ดูแลระบบ (Admin)</span
-                  >
-                  <i
-                    class="fas fa-check text-[#FFDE42] check-icon"
-                    id="check-admin"
-                  ></i>
+                <div onclick="selectRole('admin', 'ผู้ดูแลระบบ (Admin)', 'fa-user-shield')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-white">
+                  <span class="flex items-center gap-2.5"><i class="fas fa-user-shield text-[#FFDE42]"></i> ผู้ดูแลระบบ (Admin)</span>
+                  <i class="fas fa-check text-[#FFDE42] check-icon" id="check-admin"></i>
                 </div>
-                <div
-                  onclick="selectRole('judge1', 'กรรมการท่านที่ 1', 'fa-gavel')"
-                  class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200"
-                >
-                  <span class="flex items-center gap-2.5"
-                    ><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่
-                    1</span
-                  >
-                  <i
-                    class="fas fa-check text-[#FFDE42] check-icon hidden"
-                    id="check-judge1"
-                  ></i>
+                <div onclick="selectRole('judge1', 'กรรมการท่านที่ 1', 'fa-gavel')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-gray-200">
+                  <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 1</span>
+                  <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge1"></i>
                 </div>
-                <div
-                  onclick="selectRole('judge2', 'กรรมการท่านที่ 2', 'fa-gavel')"
-                  class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200"
-                >
-                  <span class="flex items-center gap-2.5"
-                    ><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่
-                    2</span
-                  >
-                  <i
-                    class="fas fa-check text-[#FFDE42] check-icon hidden"
-                    id="check-judge2"
-                  ></i>
+                <div onclick="selectRole('judge2', 'กรรมการท่านที่ 2', 'fa-gavel')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-gray-200">
+                  <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 2</span>
+                  <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge2"></i>
                 </div>
-                <div
-                  onclick="selectRole('judge3', 'กรรมการท่านที่ 3', 'fa-gavel')"
-                  class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200"
-                >
-                  <span class="flex items-center gap-2.5"
-                    ><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่
-                    3</span
-                  >
-                  <i
-                    class="fas fa-check text-[#FFDE42] check-icon hidden"
-                    id="check-judge3"
-                  ></i>
+                <div onclick="selectRole('judge3', 'กรรมการท่านที่ 3', 'fa-gavel')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-gray-200">
+                  <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 3</span>
+                  <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge3"></i>
                 </div>
-                <div
-                  onclick="selectRole('judge4', 'กรรมการท่านที่ 4', 'fa-gavel')"
-                  class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200"
-                >
-                  <span class="flex items-center gap-2.5"
-                    ><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่
-                    4</span
-                  >
-                  <i
-                    class="fas fa-check text-[#FFDE42] check-icon hidden"
-                    id="check-judge4"
-                  ></i>
+                <div onclick="selectRole('judge4', 'กรรมการท่านที่ 4', 'fa-gavel')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-gray-200">
+                  <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 4</span>
+                  <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge4"></i>
                 </div>
-                <div
-                  onclick="selectRole('judge5', 'กรรมการท่านที่ 5', 'fa-gavel')"
-                  class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition-all flex justify-between items-center text-gray-200"
-                >
-                  <span class="flex items-center gap-2.5"
-                    ><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่
-                    5</span
-                  >
-                  <i
-                    class="fas fa-check text-[#FFDE42] check-icon hidden"
-                    id="check-judge5"
-                  ></i>
+                <div onclick="selectRole('judge5', 'กรรมการท่านที่ 5', 'fa-gavel')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-gray-200">
+                  <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่ 5</span>
+                  <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-judge5"></i>
                 </div>
               </div>
             </div>
           </div>
 
           <div>
-            <label
-              class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-1.5"
-              >รหัสผ่าน (PIN)</label
-            >
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-widest mb-1.5">รหัสผ่าน (PIN)</label>
             <div class="relative">
               <input
                 type="password"
                 id="login-password"
                 class="w-full p-3.5 px-4 pr-12 rounded-2xl input-dark text-white font-medium focus:ring-2 focus:ring-[#FFDE42]"
                 placeholder="กรอกรหัสผ่าน..."
+                onkeyup="if(event.key === 'Enter') attemptLogin()"
               />
-              <div
-                class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400"
-              >
+              <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
                 <i class="fas fa-key"></i>
               </div>
             </div>
@@ -250,245 +181,363 @@
             <span>เข้าสู่ระบบ</span>
             <i class="fas fa-arrow-right text-base"></i>
           </button>
-          <p
-            id="login-error"
-            class="text-red-400 text-sm text-center font-medium hidden bg-red-500/10 p-3 rounded-xl border border-red-500/20"
-          ></p>
+          <p id="login-error" class="text-red-400 text-sm text-center font-medium hidden bg-red-500/10 p-3 rounded-xl border border-red-500/20"></p>
         </div>
       </div>
 
-      <!-- Judge Dashboard -->
-      <div id="judge-section" class="max-w-7xl w-full hidden my-4">
-        <div class="flex flex-wrap justify-center gap-3 md:gap-4 mb-10">
-          <button
-            onclick="switchCategory('mister')"
-            id="tab-mister"
-            class="px-6 py-2 rounded-full glass-panel border-2 border-transparent text-gray-300 font-semibold transition-all"
-          >
-            Mister
-          </button>
-          <button
-            onclick="switchCategory('miss')"
-            id="tab-miss"
-            class="px-6 py-2 rounded-full glass-panel border-2 border-transparent text-gray-300 font-semibold transition-all"
-          >
-            Miss
-          </button>
-          <button
-            onclick="switchCategory('queen')"
-            id="tab-queen"
-            class="px-6 py-2 rounded-full glass-panel border-2 border-transparent text-gray-300 font-semibold transition-all"
-          >
-            Miss Queen
-          </button>
-          <button
-            onclick="switchCategory('congeniality')"
-            id="tab-congeniality"
-            class="px-6 py-2 rounded-full glass-panel border-2 border-transparent text-gray-300 font-semibold transition-all"
-          >
-            Miss Congeniality
-          </button>
-          <button
-            onclick="switchCategory('jumbo')"
-            id="tab-jumbo"
-            class="px-6 py-2 rounded-full glass-panel border-2 border-transparent text-gray-300 font-semibold transition-all"
-          >
-            Miss Jumbo
-          </button>
-
-          <!-- 🌟 เพิ่มปุ่ม Top 5 -->
-          <button
-            onclick="switchCategory('top5')"
-            id="tab-top5"
-            class="px-6 py-2 rounded-full border-2 border-[#FFDE42] text-[#FFDE42] font-bold bg-[#111FA2]/80 hover:bg-[#FFDE42] hover:text-[#111FA2] transition-all shadow-[0_0_15px_rgba(255,222,66,0.4)]"
-          >
-            <i class="fas fa-star mr-1"></i> รอบ TOP 5
-          </button>
-        </div>
-        <div
-          id="contestants-container"
-          class="grid grid-cols-1 lg:grid-cols-2 gap-8"
-        ></div>
-      </div>
-
-      <!-- Admin Dashboard -->
-      <div id="admin-section" class="max-w-7xl w-full hidden my-4">
-        <div
-          class="glass-panel p-6 md:p-8 rounded-3xl mb-8 border border-[#5478FF]/30"
-        >
-          <h3 class="text-xl font-bold text-[#FFDE42] mb-4">
-            <i class="fas fa-user-plus mr-2"></i> เพิ่ม/แก้ไขผู้เข้าประกวด
-          </h3>
-          <form
-            id="add-contestant-form"
-            class="flex flex-wrap gap-4 items-end"
-            onsubmit="addContestant(event)"
-          >
-            <div>
-              <label class="block text-xs mb-1 text-gray-300"
-                >รหัส (เช่น M1)</label
-              >
-              <input
-                type="text"
-                id="add-id"
-                required
-                class="input-dark p-2 rounded-xl w-24"
-              />
+      <!-- 2. JUDGE DASHBOARD -->
+      <div id="judge-section" class="max-w-7xl w-full hidden my-2">
+        <!-- 🌟 แถบเลือกรอบการตัดสิน (Rounds Navigation) -->
+        <div class="glass-panel p-4 md:p-5 rounded-3xl mb-6 border border-[#5478FF]/40 shadow-xl">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#FFDE42] animate-ping"></span>
+              <h4 class="text-sm font-bold text-[#FFDE42] uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fas fa-layer-group"></i> เลือกรอบการให้คะแนน (อย่างละ 100 คะแนน)
+              </h4>
             </div>
-            <div>
-              <label class="block text-xs mb-1 text-gray-300"
-                >ชื่อ-นามสกุล</label
-              >
-              <input
-                type="text"
-                id="add-name"
-                required
-                class="input-dark p-2 rounded-xl w-48"
-              />
-            </div>
-            <div>
-              <label class="block text-xs mb-1 text-gray-300">หมวดหมู่</label>
-              <select id="add-category" class="input-dark p-2 rounded-xl">
-                <option value="mister">Mister</option>
-                <option value="miss">Miss</option>
-                <option value="queen">Miss Queen</option>
-                <option value="congeniality">Congeniality</option>
-                <option value="jumbo">Jumbo</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs mb-1 text-gray-300">รูปภาพ</label>
-              <input
-                type="file"
-                id="add-image"
-                accept="image/*"
-                class="text-gray-300 text-sm"
-              />
-            </div>
-            <button
-              type="submit"
-              class="px-5 py-2 bg-gradient-to-r from-[#FFDE42] to-yellow-400 text-[#111FA2] font-bold rounded-xl hover:scale-105 transition-transform"
-            >
-              <i class="fas fa-save mr-1"></i> บันทึก
-            </button>
-          </form>
-        </div>
-        <div
-          class="glass-panel rounded-3xl p-6 md:p-8 mb-8 overflow-x-auto border border-[#5478FF]/30"
-        >
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow">
-              <i class="fas fa-chart-bar mr-2"></i> สรุปคะแนนรวม
-            </h3>
-            <div class="flex gap-2">
-              <button
-                onclick="printScoreSheet()"
-                class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition-all rounded-xl shadow-md border border-purple-400/50"
-              >
-                <i class="fas fa-print mr-1"></i> พิมพ์ใบคะแนน
-              </button>
-              <a
-                href="/api/export"
-                class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all rounded-xl shadow-md border border-emerald-400/50"
-                ><i class="fas fa-file-excel mr-1"></i> โหลดไฟล์ Excel</a
-              >
-              <button
-                onclick="refreshAdminData()"
-                class="px-4 py-2 bg-[#5478FF] hover:bg-blue-400 text-white font-bold transition-all rounded-xl shadow-md"
-              >
-                <i class="fas fa-sync-alt"></i> อัปเดตล่าสุด
-              </button>
+            <div id="round-criteria-info" class="text-xs text-gray-300 bg-[#091054]/80 px-3 py-1.5 rounded-xl border border-[#5478FF]/30">
+              <span class="text-[#FFDE42] font-semibold">เกณฑ์ย่อย:</span> 1.บุคลิก ผิวพรรณ (40) | 2.ความมั่นใจและการแก้ปัญหา (30) | 3.ความเรียบร้อยการแต่งกาย (30)
             </div>
           </div>
-          <table class="w-full text-sm text-left text-gray-200">
-            <thead
-              class="text-xs text-[#111FA2] uppercase bg-[#FFDE42] font-bold"
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+            <button
+              onclick="switchRound('intro')"
+              id="tab-round-intro"
+              class="round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group"
             >
-              <tr>
-                <th class="px-4 py-3.5 rounded-tl-xl">รหัส</th>
-                <th class="px-4 py-3.5 text-center">รูปภาพ</th>
-                <th class="px-4 py-3.5">ชื่อ-นามสกุล</th>
-                <th class="px-4 py-3.5 text-center">ก.1</th>
-                <th class="px-4 py-3.5 text-center">ก.2</th>
-                <th class="px-4 py-3.5 text-center">ก.3</th>
-                <th class="px-4 py-3.5 text-center">ก.4</th>
-                <th class="px-4 py-3.5 text-center">ก.5</th>
-                <th
-                  class="px-4 py-3.5 text-center font-bold text-base rounded-tr-xl"
-                >
-                  รวม
-                </th>
-              </tr>
-            </thead>
-            <tbody id="admin-table-body"></tbody>
-          </table>
+              <i class="fas fa-microphone-alt text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
+              <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">1. แนะนำตัว</div>
+              <div class="text-[11px] text-gray-300">รอบ 29 คน (100 คะแนน)</div>
+            </button>
+
+            <button
+              onclick="switchRound('grand')"
+              id="tab-round-grand"
+              class="round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group"
+            >
+              <i class="fas fa-star text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
+              <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">2. Grand Opening</div>
+              <div class="text-[11px] text-gray-300">รอบ 29 คน (100 คะแนน)</div>
+            </button>
+
+            <button
+              onclick="switchRound('speech')"
+              id="tab-round-speech"
+              class="round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group"
+            >
+              <i class="fas fa-comment-dots text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
+              <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">3. Speech 1 min</div>
+              <div class="text-[11px] text-gray-300">รอบ 29 คน (100 คะแนน)</div>
+            </button>
+
+            <button
+              onclick="switchRound('theme')"
+              id="tab-round-theme"
+              class="round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group"
+            >
+              <i class="fas fa-tshirt text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
+              <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">4. รอบชุดธีม</div>
+              <div class="text-[11px] text-gray-300">รอบ 29 คน (100 คะแนน)</div>
+            </button>
+
+            <button
+              onclick="switchRound('qa')"
+              id="tab-round-qa"
+              class="round-nav-btn col-span-2 sm:col-span-1 p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#111FA2]/80 text-center transition-all duration-300 shadow-[0_0_15px_rgba(255,222,66,0.3)] hover:scale-105 group"
+            >
+              <i class="fas fa-crown text-xl mb-1 text-[#FFDE42] gold-glow animate-bounce"></i>
+              <div class="text-sm font-bold text-[#FFDE42]">5. รอบตอบคำถาม</div>
+              <div class="text-[11px] text-amber-200">👑 TOP 5 ตัดสิน (100 คะแนน)</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- 🌟 แถบกรองหมวดหมู่ (เมื่ออยู่ในรอบ 29 คน) -->
+        <div id="category-filter-bar" class="flex flex-wrap justify-center gap-2 md:gap-3 mb-6">
+          <button onclick="switchCategory('all')" id="tab-cat-all" class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+            ทั้งหมด (29 คน)
+          </button>
+          <button onclick="switchCategory('mister')" id="tab-cat-mister" class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+            Mister
+          </button>
+          <button onclick="switchCategory('miss')" id="tab-cat-miss" class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+            Miss
+          </button>
+          <button onclick="switchCategory('queen')" id="tab-cat-queen" class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+            Miss Queen
+          </button>
+          <button onclick="switchCategory('congeniality')" id="tab-cat-congeniality" class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+            Miss Congeniality
+          </button>
+          <button onclick="switchCategory('jumbo')" id="tab-cat-jumbo" class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+            Miss Jumbo
+          </button>
+        </div>
+
+        <!-- แบนเนอร์พิเศษสำหรับรอบ TOP 5 ตอบคำถาม -->
+        <div id="top5-banner" class="hidden glass-panel p-4 rounded-2xl mb-6 border-2 border-[#FFDE42] bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/90 to-[#111FA2]/90 text-center shadow-[0_0_30px_rgba(255,222,66,0.3)]">
+          <h4 class="text-lg font-bold text-[#FFDE42] gold-glow flex items-center justify-center gap-2">
+            <i class="fas fa-crown text-xl"></i> รอบ 5 คนสุดท้าย (คัดจากผู้มีคะแนนรอบแรกสูงสุด 5 อันดับแรก)
+          </h4>
+          <p class="text-xs text-gray-300 mt-1">
+            เกณฑ์รอบนี้: 1.บุคลิกในการตอบคำถาม (40) | 2.ความเข้าใจคำถาม (30) | 3.ความมั่นใจในการตอบคำถาม (30)<br>
+            <span class="text-[#FFDE42] font-semibold">สูตรการคิดคะแนนสุทธิ:</span> (คะแนนสะสมรอบ 29 คน + คะแนนรอบตอบคำถาม) ÷ 5 กรรมการ
+          </p>
+        </div>
+
+        <!-- รายการผู้เข้าประกวดสำหรับการให้คะแนน -->
+        <div id="contestants-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+      </div>
+
+      <!-- 3. ADMIN DASHBOARD -->
+      <div id="admin-section" class="max-w-7xl w-full hidden my-2 space-y-6">
+        <!-- Quick Stats Banner -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
+            <div class="text-xs text-gray-300 mb-1">ผู้เข้าประกวดทั้งหมด</div>
+            <div class="text-2xl font-bold text-[#FFDE42]" id="stat-contestants-count">29 คน</div>
+            <div class="text-[10px] text-gray-400">5 ประเภทการประกวด</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
+            <div class="text-xs text-gray-300 mb-1">จำนวนกรรมการ</div>
+            <div class="text-2xl font-bold text-blue-400">5 ท่าน</div>
+            <div class="text-[10px] text-gray-400">หาร 5 เพื่อเฉลี่ยคะแนนสุทธิ</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
+            <div class="text-xs text-gray-300 mb-1">รอบคัดเลือก 29 คน</div>
+            <div class="text-2xl font-bold text-emerald-400">4 รอบ (400 คะแนน)</div>
+            <div class="text-[10px] text-gray-400">แนะนำ / Grand / Speech / ธีม</div>
+          </div>
+          <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
+            <div class="text-xs text-gray-300 mb-1">รอบตัดสินชี้ขาด</div>
+            <div class="text-2xl font-bold text-[#FFDE42]">TOP 5 ตอบคำถาม</div>
+            <div class="text-[10px] text-amber-200">5 อันดับแรกคะแนนสูงสุดรอบแรก</div>
+          </div>
+        </div>
+
+        <!-- แท็บสลับหน้ามุมมองของแอดมิน -->
+        <div class="flex flex-wrap items-center justify-between gap-4 glass-panel p-4 rounded-2xl border border-[#5478FF]/30">
+          <div class="flex gap-2">
+            <button
+              onclick="switchAdminView('top5')"
+              id="admin-tab-top5"
+              class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_15px_rgba(255,222,66,0.4)]"
+            >
+              <i class="fas fa-crown"></i> 🏆 ผลตัดสิน TOP 5 (Official)
+            </button>
+            <button
+              onclick="switchAdminView('round29')"
+              id="admin-tab-round29"
+              class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel"
+            >
+              <i class="fas fa-users"></i> ตารางคะแนนรอบ 29 คน (4 รอบ)
+            </button>
+            <button
+              onclick="switchAdminView('manage')"
+              id="admin-tab-manage"
+              class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel"
+            >
+              <i class="fas fa-user-edit"></i> จัดการผู้เข้าประกวด
+            </button>
+          </div>
+
+          <div class="flex gap-2">
+            <button
+              onclick="printScoreSheet()"
+              class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition rounded-xl text-xs flex items-center gap-1.5 shadow-md"
+            >
+              <i class="fas fa-print"></i> พิมพ์ใบคะแนน
+            </button>
+            <a
+              href="/api/export"
+              class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition rounded-xl text-xs flex items-center gap-1.5 shadow-md"
+            >
+              <i class="fas fa-file-excel"></i> โหลด Excel
+            </a>
+            <button
+              onclick="refreshAdminData()"
+              class="px-4 py-2 bg-[#5478FF] hover:bg-blue-400 text-white font-bold transition rounded-xl text-xs flex items-center gap-1.5 shadow-md"
+            >
+              <i class="fas fa-sync-alt"></i> อัปเดตล่าสุด
+            </button>
+          </div>
+        </div>
+
+        <!-- วิว 1: 🏆 ผลการตัดสินรอบ TOP 5 (Official Leaderboard) -->
+        <div id="admin-view-top5" class="space-y-6">
+          <div class="glass-panel p-6 rounded-3xl border-2 border-[#FFDE42] shadow-[0_0_40px_rgba(255,222,66,0.2)] overflow-x-auto">
+            <div class="text-center mb-6">
+              <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow flex items-center justify-center gap-2">
+                <i class="fas fa-trophy text-3xl"></i> ผลการตัดสินอย่างเป็นทางการ: รอบ 5 คนสุดท้าย (TOP 5)
+              </h3>
+              <p class="text-xs text-gray-300 mt-1">
+                สูตรคำนวณ: [ คะแนนรอบ 29 คน (รวม 5 ก.) + คะแนนรอบตอบคำถาม (รวม 5 ก.) ] ÷ 5 กรรมการ = คะแนนเฉลี่ยสุทธิ
+              </p>
+            </div>
+
+            <table class="w-full text-sm text-left text-gray-200">
+              <thead class="text-xs uppercase bg-[#FFDE42] text-[#111FA2] font-bold">
+                <tr>
+                  <th class="px-4 py-3.5 rounded-tl-xl text-center">อันดับ</th>
+                  <th class="px-4 py-3.5 text-center">รูปภาพ</th>
+                  <th class="px-4 py-3.5">รหัส / ชื่อ-นามสกุล</th>
+                  <th class="px-4 py-3.5 text-center">หมวดหมู่ตัวแทน</th>
+                  <th class="px-4 py-3.5 text-center bg-blue-900/40 text-white">คะแนนรอบ 29 คน<br><span class="text-[10px] font-normal">(รวม 5 กรรมการ)</span></th>
+                  <th class="px-4 py-3.5 text-center">ก.1</th>
+                  <th class="px-4 py-3.5 text-center">ก.2</th>
+                  <th class="px-4 py-3.5 text-center">ก.3</th>
+                  <th class="px-4 py-3.5 text-center">ก.4</th>
+                  <th class="px-4 py-3.5 text-center">ก.5</th>
+                  <th class="px-4 py-3.5 text-center bg-yellow-400/20 text-[#111FA2]">รวมตอบคำถาม<br><span class="text-[10px] font-normal">(เต็ม 500)</span></th>
+                  <th class="px-4 py-3.5 text-center bg-blue-600 text-white">คะแนนรวมสุทธิ<br><span class="text-[10px] font-normal">(29 คน + ตอบคำถาม)</span></th>
+                  <th class="px-4 py-3.5 text-center font-bold text-base bg-[#111FA2] text-[#FFDE42] rounded-tr-xl">
+                    คะแนนเฉลี่ยสุทธิ<br><span class="text-[10px] font-normal text-amber-200">(÷ 5 กรรมการ)</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="top5-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- วิว 2: ตารางคะแนนรอบ 29 คน (4 รอบ) -->
+        <div id="admin-view-round29" class="hidden space-y-4">
+          <div class="glass-panel p-6 rounded-3xl border border-[#5478FF]/30 overflow-x-auto">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+              <div>
+                <h3 class="text-xl font-bold text-[#FFDE42] flex items-center gap-2">
+                  <i class="fas fa-list-ol"></i> สรุปผลคะแนนรอบแรก 29 คน (ครบ 4 รอบ)
+                </h3>
+                <p class="text-xs text-gray-300">
+                  รวม 4 รอบ: แนะนำตัว (100) + Grand Opening (100) + Speech 1 min (100) + ชุดธีม (100) = เต็ม 400 คะแนนต่อกรรมการ (รวม 2,000 คะแนน)
+                </p>
+              </div>
+              <div class="flex gap-2">
+                <select id="admin-category-filter" onchange="renderAdminRound29Table()" class="input-dark p-2 rounded-xl text-xs font-semibold">
+                  <option value="all">แสดงทุกหมวดหมู่ (29 คน)</option>
+                  <option value="mister">Mister</option>
+                  <option value="miss">Miss</option>
+                  <option value="queen">Miss Queen</option>
+                  <option value="congeniality">Miss Congeniality</option>
+                  <option value="jumbo">Miss Jumbo</option>
+                </select>
+              </div>
+            </div>
+
+            <table class="w-full text-sm text-left text-gray-200">
+              <thead class="text-xs uppercase bg-[#111FA2] text-[#FFDE42] font-bold border-b border-[#5478FF]/40">
+                <tr>
+                  <th class="px-4 py-3 text-center">รหัส</th>
+                  <th class="px-4 py-3 text-center">รูป</th>
+                  <th class="px-4 py-3">ชื่อ-นามสกุล</th>
+                  <th class="px-4 py-3 text-center">หมวดหมู่</th>
+                  <th class="px-4 py-3 text-center">แนะนำตัว<br><span class="text-[10px] text-gray-300 font-normal">(รวม 5 ก.)</span></th>
+                  <th class="px-4 py-3 text-center">Grand Opening<br><span class="text-[10px] text-gray-300 font-normal">(รวม 5 ก.)</span></th>
+                  <th class="px-4 py-3 text-center">Speech 1 min<br><span class="text-[10px] text-gray-300 font-normal">(รวม 5 ก.)</span></th>
+                  <th class="px-4 py-3 text-center">ชุดธีม<br><span class="text-[10px] text-gray-300 font-normal">(รวม 5 ก.)</span></th>
+                  <th class="px-4 py-3 text-center font-bold text-white bg-blue-900/60">รวมรอบ 29 คน<br><span class="text-[10px] text-amber-200 font-normal">(เต็ม 2,000)</span></th>
+                  <th class="px-4 py-3 text-center">สถานะ TOP 5</th>
+                </tr>
+              </thead>
+              <tbody id="round29-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- วิว 3: จัดการข้อมูลผู้เข้าประกวด -->
+        <div id="admin-view-manage" class="hidden space-y-6">
+          <div class="glass-panel p-6 rounded-3xl border border-[#5478FF]/30">
+            <h3 class="text-lg font-bold text-[#FFDE42] mb-4 flex items-center gap-2">
+              <i class="fas fa-user-plus"></i> เพิ่ม / อัปเดตข้อมูลผู้เข้าประกวด
+            </h3>
+            <form id="add-contestant-form" class="flex flex-wrap gap-4 items-end" onsubmit="addContestant(event)">
+              <div>
+                <label class="block text-xs mb-1 text-gray-300">รหัส (เช่น M1, W1)</label>
+                <input type="text" id="add-id" required class="input-dark p-2.5 rounded-xl w-28 text-white font-semibold" placeholder="รหัสผู้เข้าประกวด" />
+              </div>
+              <div>
+                <label class="block text-xs mb-1 text-gray-300">ชื่อ-นามสกุล</label>
+                <input type="text" id="add-name" required class="input-dark p-2.5 rounded-xl w-60 text-white font-semibold" placeholder="ชื่อ-นามสกุล (ชื่อเล่น)" />
+              </div>
+              <div>
+                <label class="block text-xs mb-1 text-gray-300">หมวดหมู่การประกวด</label>
+                <select id="add-category" class="input-dark p-2.5 rounded-xl text-white font-semibold">
+                  <option value="mister">Mister</option>
+                  <option value="miss">Miss</option>
+                  <option value="queen">Miss Queen</option>
+                  <option value="congeniality">Miss Congeniality</option>
+                  <option value="jumbo">Miss Jumbo</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs mb-1 text-gray-300">อัปโหลดรูปภาพ</label>
+                <input type="file" id="add-image" accept="image/*" class="text-gray-300 text-sm file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#5478FF] file:text-white hover:file:bg-blue-400 cursor-pointer" />
+              </div>
+              <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#FFDE42] to-yellow-400 text-[#111FA2] font-bold rounded-xl hover:scale-105 transition-transform flex items-center gap-1.5 shadow-md">
+                <i class="fas fa-save"></i> บันทึกข้อมูล
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </main>
 
-    <!-- Modals -->
-    <div
-      id="custom-confirm-modal"
-      class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300"
-    >
-      <div
-        class="glass-panel max-w-md w-full rounded-3xl p-6 md:p-8 border-2 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.35)] transform transition-all text-center relative"
-      >
-        <div
-          class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#111FA2] border-2 border-[#FFDE42] flex items-center justify-center shadow-[0_0_20px_rgba(255,222,66,0.5)]"
-        >
-          <i
-            class="fas fa-exclamation-triangle text-2xl text-[#FFDE42] gold-glow"
-          ></i>
+    <!-- Modals: ยืนยันการบันทึกคะแนน -->
+    <div id="custom-confirm-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
+      <div class="glass-panel max-w-md w-full rounded-3xl p-6 md:p-8 border-2 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.35)] transform transition-all text-center relative">
+        <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-[#111FA2] border-2 border-[#FFDE42] flex items-center justify-center shadow-[0_0_20px_rgba(255,222,66,0.5)]">
+          <i class="fas fa-gavel text-2xl text-[#FFDE42] gold-glow"></i>
         </div>
-        <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow mb-2">
-          ยืนยันการบันทึกคะแนน
-        </h3>
-        <p class="text-gray-300 text-sm mb-4">
-          โปรดตรวจสอบความถูกต้องก่อนยืนยัน
-        </p>
-        <div
-          class="bg-[#091054]/80 p-4 rounded-2xl border border-[#5478FF]/30 text-left mb-5 space-y-2 text-sm"
-        >
+        <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow mb-1">ยืนยันการบันทึกคะแนน</h3>
+        <p id="modal-round-title" class="text-sm font-semibold text-blue-300 mb-4"></p>
+
+        <div class="bg-[#091054]/80 p-4 rounded-2xl border border-[#5478FF]/30 text-left mb-4 space-y-2 text-sm">
           <div class="flex justify-between">
-            <span class="text-gray-400">ผู้แข่งขัน:</span>
+            <span class="text-gray-400">ผู้เข้าประกวด:</span>
             <span id="modal-cname" class="font-bold text-white"></span>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-400">รหัสประจำตัว:</span>
             <span id="modal-cid" class="font-bold text-[#FFDE42]"></span>
           </div>
+          <div class="border-t border-[#5478FF]/20 pt-2 space-y-1 text-xs text-gray-300">
+            <div class="flex justify-between">
+              <span id="modal-lbl-c1">1. บุคลิก ผิวพรรณ:</span>
+              <span id="modal-val-c1" class="font-bold text-[#FFDE42]">0/40</span>
+            </div>
+            <div class="flex justify-between">
+              <span id="modal-lbl-c2">2. ความมั่นใจฯ:</span>
+              <span id="modal-val-c2" class="font-bold text-[#FFDE42]">0/30</span>
+            </div>
+            <div class="flex justify-between">
+              <span id="modal-lbl-c3">3. ความเรียบร้อยการแต่งกาย:</span>
+              <span id="modal-val-c3" class="font-bold text-[#FFDE42]">0/30</span>
+            </div>
+          </div>
           <div class="flex justify-between border-t border-[#5478FF]/20 pt-2">
-            <span class="text-gray-300 font-medium">คะแนนรวมสุทธิ:</span>
-            <span class="font-bold text-[#FFDE42] text-lg"
-              ><span id="modal-score">0</span> / 100</span
-            >
+            <span class="text-gray-200 font-semibold">คะแนนรวมรอบนี้:</span>
+            <span class="font-bold text-[#FFDE42] text-xl"><span id="modal-score">0</span> / 100</span>
           </div>
         </div>
-        <div
-          class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300 text-xs text-center mb-6"
-        >
-          <i class="fas fa-lock mr-1"></i> เมื่อกดบันทึกแล้ว
-          จะไม่สามารถแก้ไขคะแนนได้อีก<br />
-          (คะแนนจะถูกเซฟลง Excel อัตโนมัติ)
+
+        <div class="p-2.5 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-200 text-xs text-center mb-5">
+          <i class="fas fa-info-circle mr-1"></i> เมื่อกดยืนยัน ระบบจะบันทึกลงฐานข้อมูลและไฟล์ Excel อัตโนมัติ
         </div>
+
         <div class="flex gap-3">
-          <button
-            onclick="closeModal()"
-            class="w-1/2 py-3 rounded-xl border border-gray-500 text-gray-300 hover:bg-gray-800 transition-all font-semibold"
-          >
+          <button onclick="closeModal()" class="w-1/2 py-3 rounded-xl border border-gray-500 text-gray-300 hover:bg-gray-800 transition font-semibold text-sm">
             ยกเลิก
           </button>
-          <button
-            onclick="confirmSubmitScore()"
-            class="w-1/2 py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-105 transition-all"
-          >
-            บันทึกคะแนน
+          <button onclick="confirmSubmitScore()" class="w-1/2 py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-105 transition text-sm">
+            ยืนยันบันทึก
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Toast Notification -->
     <div
       id="toast"
       class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-500 bg-[#FFDE42] border-l-4 border-[#111FA2] text-[#111FA2] font-bold px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(255,222,66,0.6)] z-50 flex items-center"
@@ -501,130 +550,75 @@
       © 2026 RMUTK FRESHY PAGEANT SYSTEM. ALL RIGHTS RESERVED.
     </footer>
 
+    <!-- Scripts -->
     <script>
       let currentUser = null;
       let sessionToken = null;
       let heartbeatInterval = null;
       let pollingInterval = null;
-      let currentCategory = "mister";
+      
+      let currentRound = 'intro'; // 'intro', 'grand', 'speech', 'theme', 'qa'
+      let currentCategory = 'all'; // 'all', 'mister', 'miss', 'queen', 'congeniality', 'jumbo'
+      let adminCurrentView = 'top5'; // 'top5', 'round29', 'manage'
+
       let allScores = [];
-      let pendingSubmitContestantId = null;
-      let contestants = {
-        mister: [],
-        miss: [],
-        queen: [],
-        congeniality: [],
-        jumbo: [],
+      let allContestants = [];
+      let summaryData = null;
+      let pendingSubmitData = null;
+
+      const ROUNDS = [
+        { id: 'intro', name: '1. แนะนำตัว', fullTitle: 'รอบแนะนำตัว (รอบแรก 29 คน)', max: 100 },
+        { id: 'grand', name: '2. Grand Opening', fullTitle: 'รอบ Grand Opening (รอบแรก 29 คน)', max: 100 },
+        { id: 'speech', name: '3. Speech 1 min', fullTitle: 'รอบ Speech 1 min (รอบแรก 29 คน)', max: 100 },
+        { id: 'theme', name: '4. รอบชุดธีม', fullTitle: 'รอบชุดธีม (รอบแรก 29 คน)', max: 100 },
+        { id: 'qa', name: '5. ตอบคำถาม', fullTitle: 'รอบตอบคำถาม 5 คนสุดท้าย (TOP 5)', max: 100 }
+      ];
+
+      const CRITERIA_ROUND29 = [
+        { id: 'c1', name: '1. บุคลิก ผิวพรรณ', max: 40 },
+        { id: 'c2', name: '2. ความมั่นใจและการแก้ไขปัญหา', max: 30 },
+        { id: 'c3', name: '3. ความเรียบร้อยของการแต่งกาย', max: 30 }
+      ];
+
+      const CRITERIA_TOP5 = [
+        { id: 'c1', name: '1. บุคลิกในการตอบคำถาม', max: 40 },
+        { id: 'c2', name: '2. ความเข้าใจคำถาม', max: 30 },
+        { id: 'c3', name: '3. ความมั่นใจในการตอบคำถาม', max: 30 }
+      ];
+
+      const CATEGORIES = {
+        mister: 'Mister',
+        miss: 'Miss',
+        queen: 'Miss Queen',
+        congeniality: 'Miss Congeniality',
+        jumbo: 'Miss Jumbo'
       };
 
-      async function loadContestants() {
-        try {
-          const res = await fetch("/api/contestants");
-          const data = await res.json();
-          contestants = {
-            mister: [],
-            miss: [],
-            queen: [],
-            congeniality: [],
-            jumbo: [],
-          };
-          data.forEach((c) => {
-            if (contestants[c.category]) contestants[c.category].push(c);
-          });
-        } catch (e) {
-          console.error("Failed to load contestants");
-        }
-      }
-
-      async function addContestant(e) {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append("id", document.getElementById("add-id").value);
-        formData.append("name", document.getElementById("add-name").value);
-        formData.append(
-          "category",
-          document.getElementById("add-category").value,
-        );
-
-        const imageFile = document.getElementById("add-image").files[0];
-        if (imageFile) {
-          formData.append("image", imageFile);
-        }
-
-        try {
-          const res = await fetch("/api/contestants", {
-            method: "POST",
-            body: formData,
-          });
-          const data = await res.json();
-
-          if (res.ok && data.success) {
-            alert("✅ บันทึกข้อมูลเรียบร้อย");
-            document.getElementById("add-contestant-form").reset();
-
-            // โหลดข้อมูลใหม่และรีเฟรชตารางของแอดมิน
-            await loadContestants();
-            if (typeof fetchScores === "function") {
-              fetchScores();
-            }
-          } else {
-            alert(
-              "❌ เกิดข้อผิดพลาดจากฝั่งเซิร์ฟเวอร์: " +
-                (data.error || data.message || "ไม่ทราบสาเหตุ"),
-            );
-            console.error("Server Error:", data);
-          }
-        } catch (error) {
-          alert("❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้");
-          console.error("Network Error:", error);
-        }
-      }
-
-      const criteria = [
-        { id: "intro", name: "แนะนำตัว", max: 10 },
-        { id: "theme", name: "ชุดธีม", max: 20 },
-        { id: "speech", name: "Speech 1 Min", max: 20 },
-        { id: "formal", name: "เดินชุดพิธีการ", max: 20 },
-        { id: "qa", name: "ตอบคำถาม", max: 30 },
-      ];
-
-      const allCategories = [
-        "mister",
-        "miss",
-        "queen",
-        "congeniality",
-        "jumbo",
-      ];
-
+      // ==========================================
+      // Role & Login
+      // ==========================================
       function toggleRoleDropdown() {
-        document
-          .getElementById("role-dropdown-menu")
-          .classList.toggle("hidden");
-        document
-          .getElementById("dropdown-arrow")
-          .classList.toggle("rotate-180");
+        document.getElementById('role-dropdown-menu').classList.toggle('hidden');
+        document.getElementById('dropdown-arrow').classList.toggle('rotate-180');
       }
 
       function selectRole(val, label, icon) {
-        document.getElementById("login-role").value = val;
-        document.getElementById("selected-role-label").innerHTML =
-          `<i class="fas ${icon} text-[#FFDE42]"></i> ${label}`;
-        document
-          .querySelectorAll(".check-icon")
-          .forEach((el) => el.classList.add("hidden"));
-        document.getElementById(`check-${val}`).classList.remove("hidden");
+        document.getElementById('login-role').value = val;
+        document.getElementById('selected-role-label').innerHTML = `<i class="fas ${icon} text-[#FFDE42]"></i> ${label}`;
+        document.querySelectorAll('.check-icon').forEach(el => el.classList.add('hidden'));
+        document.getElementById(`check-${val}`).classList.remove('hidden');
         toggleRoleDropdown();
       }
 
       async function attemptLogin() {
-        const role = document.getElementById("login-role").value;
-        const password = document.getElementById("login-password").value;
-        const errLabel = document.getElementById("login-error");
+        const role = document.getElementById('login-role').value;
+        const password = document.getElementById('login-password').value;
+        const errLabel = document.getElementById('login-error');
 
         try {
-          const res = await fetch("/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+          const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ role, password }),
           });
           const data = await res.json();
@@ -632,48 +626,39 @@
           if (data.success) {
             currentUser = data.role;
             sessionToken = data.token;
-            errLabel.classList.add("hidden");
+            errLabel.classList.add('hidden');
 
-            document.getElementById("login-section").classList.add("hidden");
-            document.getElementById("user-info").classList.remove("hidden");
-            document.getElementById("current-role-display").innerText =
-              role.toUpperCase();
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('user-info').classList.remove('hidden');
+            document.getElementById('current-role-display').innerText = role.toUpperCase();
 
-            // ดึงข้อมูลผู้เข้าประกวดจากฐานข้อมูล
             await loadContestants();
+            await fetchScores();
             startHeartbeat();
 
-            if (role === "admin") {
-              document
-                .getElementById("admin-section")
-                .classList.remove("hidden");
-              // สั่งวาดตารางแอดมิน
-              if (typeof renderAdminTable === "function") {
-                renderAdminTable();
-              }
-              fetchScores();
+            if (role === 'admin') {
+              document.getElementById('admin-section').classList.remove('hidden');
+              switchAdminView('top5');
               pollingInterval = setInterval(fetchScores, 5000);
             } else {
-              document
-                .getElementById("judge-section")
-                .classList.remove("hidden");
-              switchCategory("mister");
+              document.getElementById('judge-section').classList.remove('hidden');
+              switchRound('intro');
             }
           } else {
             errLabel.innerText = data.message;
-            errLabel.classList.remove("hidden");
+            errLabel.classList.remove('hidden');
           }
         } catch (e) {
-          alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
+          alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
         }
       }
 
       function startHeartbeat() {
         heartbeatInterval = setInterval(async () => {
           try {
-            const res = await fetch("/api/ping", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
+            const res = await fetch('/api/ping', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ role: currentUser, token: sessionToken }),
             });
             const data = await res.json();
@@ -683,9 +668,9 @@
       }
 
       async function logout() {
-        await fetch("/api/logout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        await fetch('/api/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ role: currentUser, token: sessionToken }),
         });
         forceLogout();
@@ -696,482 +681,669 @@
         clearInterval(pollingInterval);
         currentUser = null;
         sessionToken = null;
-        document.getElementById("login-password").value = "";
-        document.getElementById("login-section").classList.remove("hidden");
-        document.getElementById("judge-section").classList.add("hidden");
-        document.getElementById("admin-section").classList.add("hidden");
-        document.getElementById("user-info").classList.add("hidden");
+        document.getElementById('login-password').value = '';
+        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('judge-section').classList.add('hidden');
+        document.getElementById('admin-section').classList.add('hidden');
+        document.getElementById('user-info').classList.add('hidden');
+      }
+
+      // ==========================================
+      // Data Loaders
+      // ==========================================
+      async function loadContestants() {
+        try {
+          const res = await fetch('/api/contestants');
+          const data = await res.json();
+          allContestants = Array.isArray(data) ? data : [];
+          document.getElementById('stat-contestants-count').innerText = `${allContestants.length} คน`;
+        } catch (e) {
+          console.error('Failed to load contestants');
+        }
       }
 
       async function fetchScores() {
         try {
-          const res = await fetch("/api/scores");
-          const data = await res.json();
-          if (Array.isArray(data)) allScores = data;
-          if (currentUser === "admin") renderAdminTable();
+          const [resScores, resSummary] = await Promise.all([
+            fetch('/api/scores'),
+            fetch('/api/summary')
+          ]);
+          allScores = await resScores.json();
+          summaryData = await resSummary.json();
+
+          if (currentUser === 'admin') {
+            renderAdminViews();
+          } else if (currentUser && currentUser.startsWith('judge')) {
+            renderJudgeCards();
+          }
         } catch (error) {
-          allScores = [];
+          console.error('Error fetching scores:', error);
         }
+      }
+
+      // ==========================================
+      // Judge Round & Category Navigation
+      // ==========================================
+      function switchRound(rId) {
+        currentRound = rId;
+
+        // ไฮไลท์ปุ่มรอบ
+        ROUNDS.forEach(r => {
+          const btn = document.getElementById(`tab-round-${r.id}`);
+          if (!btn) return;
+          if (r.id === rId) {
+            btn.className = "round-nav-btn p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#FFDE42] text-[#111FA2] text-center transition-all duration-300 scale-105 shadow-[0_0_20px_rgba(255,222,66,0.5)] font-bold";
+            const icon = btn.querySelector('i');
+            if (icon) icon.className = icon.className.replace('text-[#5478FF]', 'text-[#111FA2]').replace('text-[#FFDE42]', 'text-[#111FA2]');
+            const texts = btn.querySelectorAll('div');
+            if (texts[0]) texts[0].className = "text-sm font-bold text-[#111FA2]";
+            if (texts[1]) texts[1].className = "text-[11px] text-blue-950 font-medium";
+          } else {
+            const isQa = r.id === 'qa';
+            btn.className = isQa 
+              ? "round-nav-btn col-span-2 sm:col-span-1 p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#111FA2]/80 text-center transition-all duration-300 shadow-[0_0_15px_rgba(255,222,66,0.3)] hover:scale-105 group"
+              : "round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group";
+            const icon = btn.querySelector('i');
+            if (icon) icon.className = isQa ? "fas fa-crown text-xl mb-1 text-[#FFDE42] gold-glow" : icon.className.replace('text-[#111FA2]', 'text-[#5478FF]');
+            const texts = btn.querySelectorAll('div');
+            if (texts[0]) texts[0].className = isQa ? "text-sm font-bold text-[#FFDE42]" : "text-sm font-bold text-white group-hover:text-[#FFDE42]";
+            if (texts[1]) texts[1].className = isQa ? "text-[11px] text-amber-200" : "text-[11px] text-gray-300";
+          }
+        });
+
+        const catBar = document.getElementById('category-filter-bar');
+        const top5Banner = document.getElementById('top5-banner');
+        const hintEl = document.getElementById('round-criteria-info');
+
+        if (rId === 'qa') {
+          catBar.classList.add('hidden');
+          top5Banner.classList.remove('hidden');
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5:</span> 1.บุคลิกตอบคำถาม (40) | 2.ความเข้าใจคำถาม (30) | 3.ความมั่นใจตอบคำถาม (30)';
+        } else {
+          catBar.classList.remove('hidden');
+          top5Banner.classList.add('hidden');
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์ย่อย:</span> 1.บุคลิก ผิวพรรณ (40) | 2.ความมั่นใจและการแก้ปัญหา (30) | 3.ความเรียบร้อยการแต่งกาย (30)';
+          switchCategory(currentCategory || 'all');
+        }
+
+        renderJudgeCards();
       }
 
       function switchCategory(cat) {
         currentCategory = cat;
+        const allCats = ['all', 'mister', 'miss', 'queen', 'congeniality', 'jumbo'];
 
-        const baseClass =
-          "px-6 py-2 rounded-full glass-panel border-2 border-transparent text-gray-300 font-semibold transition-all duration-300 hover:border-[#5478FF] hover:text-white";
-        const activeClass =
-          "px-6 py-2 rounded-full glass-panel border-2 border-[#FFDE42] text-[#FFDE42] font-bold bg-[#111FA2]/60 transition-all duration-300 scale-105 shadow-[0_0_15px_rgba(255,222,66,0.3)]";
-
-        allCategories.forEach((c) => {
-          const el = document.getElementById(`tab-${c}`);
-          if (el) el.className = c === cat ? activeClass : baseClass;
+        allCats.forEach(c => {
+          const btn = document.getElementById(`tab-cat-${c}`);
+          if (btn) {
+            if (c === cat) {
+              btn.className = "cat-nav-btn px-5 py-2 rounded-full border-2 border-[#FFDE42] text-[#111FA2] font-bold bg-[#FFDE42] transition-all scale-105 shadow-[0_0_15px_rgba(255,222,66,0.4)] text-sm";
+            } else {
+              btn.className = "cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white";
+            }
+          }
         });
 
-        // สไตล์พิเศษสำหรับปุ่ม Top 5
-        const top5Btn = document.getElementById("tab-top5");
-        if (cat === "top5") {
-          top5Btn.className =
-            "px-6 py-2 rounded-full border-2 border-[#FFDE42] text-[#111FA2] font-bold bg-[#FFDE42] transition-all scale-105 shadow-[0_0_20px_rgba(255,222,66,0.6)]";
+        renderJudgeCards();
+      }
+
+      // ==========================================
+      // Render Judge Contestant Cards
+      // ==========================================
+      function renderJudgeCards() {
+        const container = document.getElementById('contestants-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        let targetList = [];
+        const isQa = currentRound === 'qa';
+
+        if (isQa) {
+          // ดึงผู้ผ่านเข้ารอบ TOP 5 (อันดับ 1 ของแต่ละหมวดจากรอบ 29 คน)
+          if (summaryData && summaryData.top5) {
+            targetList = summaryData.top5;
+          } else {
+            targetList = getAutoTop5Local();
+          }
         } else {
-          top5Btn.className =
-            "px-6 py-2 rounded-full border-2 border-[#FFDE42] text-[#FFDE42] font-bold bg-[#111FA2]/80 hover:bg-[#FFDE42] hover:text-[#111FA2] transition-all shadow-[0_0_15px_rgba(255,222,66,0.4)]";
+          // รอบ 29 คน
+          if (currentCategory === 'all') {
+            targetList = allContestants;
+          } else {
+            targetList = allContestants.filter(c => c.category === currentCategory);
+          }
         }
 
-        fetchScores().then(() => renderContestants());
-      }
-
-      // 🌟 ดึงรายชื่ออันดับ 1 ของแต่ละหมวดอัตโนมัติมาเป็น Top 5
-      function getAutoTop5() {
-        let top5Arr = [];
-        allCategories.forEach((cat) => {
-          let catData = contestants[cat].map((c) => {
-            let sum = 0;
-            for (let i = 1; i <= 5; i++) {
-              const rec = allScores.find(
-                (s) => s.judge_id === `judge${i}` && s.contestant_id === c.id,
-              );
-              if (rec)
-                sum +=
-                  rec.score_intro +
-                  rec.score_theme +
-                  rec.score_speech +
-                  rec.score_formal +
-                  rec.score_qa;
-            }
-            return { ...c, totalOverall: sum };
-          });
-          catData.sort((a, b) => b.totalOverall - a.totalOverall);
-          if (catData.length > 0) top5Arr.push(catData[0]); // ดึงอันดับ 1 ของหมวดนี้
-        });
-        return top5Arr;
-      }
-
-      function renderContestants() {
-        const container = document.getElementById("contestants-container");
-        if (!container) return;
-        container.innerHTML = "";
-
-        // ป้องกัน Error กรณีดึงข้อมูลหมวดหมู่ที่ยังไม่มีรายชื่อ
-        const targetContestants =
-          currentCategory === "top5"
-            ? getAutoTop5()
-            : contestants[currentCategory] || [];
-
-        if (targetContestants.length === 0) {
-          container.innerHTML = `<div class="col-span-2 text-center text-gray-300 py-10">ยังไม่มีข้อมูลในหมวดหมู่นี้</div>`;
+        if (targetList.length === 0) {
+          container.innerHTML = `<div class="col-span-2 text-center text-gray-300 py-12 glass-panel rounded-3xl">ยังไม่มีข้อมูลในหมวดหมู่นี้ หรือยังไม่มีคะแนนสำหรับคัดเลือก TOP 5</div>`;
           return;
         }
 
-        targetContestants.forEach((contestant) => {
+        const criteriaList = isQa ? CRITERIA_TOP5 : CRITERIA_ROUND29;
+
+        targetList.forEach(contestant => {
           const cId = contestant.id;
           const cName = contestant.name;
+          const cCat = contestant.category;
+          const catTitle = CATEGORIES[cCat] || cCat;
 
-          // ตรวจสอบว่า record มีอยู่จริงหรือไม่ก่อนเช็ค hasVoted
-          const record = (
-            typeof allScores !== "undefined" ? allScores : []
-          ).find((s) => s.judge_id === currentUser && s.contestant_id === cId);
+          // ค้นหาคะแนนเดิมของกรรมการท่านนี้ในรอบนี้
+          const record = (allScores || []).find(
+            s => s.judge_id === currentUser && s.contestant_id === cId && s.round_id === currentRound
+          );
           const hasVoted = !!record;
 
-          const score = record || {
-            score_intro: 0,
-            score_theme: 0,
-            score_speech: 0,
-            score_formal: 0,
-            score_qa: 0,
-          };
+          const val1 = record ? record.score_c1 : 0;
+          const val2 = record ? record.score_c2 : 0;
+          const val3 = record ? record.score_c3 : 0;
+          const totalScore = val1 + val2 + val3;
 
-          let total =
-            (score.score_intro || 0) +
-            (score.score_theme || 0) +
-            (score.score_speech || 0) +
-            (score.score_formal || 0) +
-            (score.score_qa || 0);
+          const imagePath = contestant.image && contestant.image !== 'default.jpg'
+            ? `/images/contestants/${contestant.image}`
+            : `https://placehold.co/400x500/111FA2/FFDE42?text=${cId}`;
 
-          const disabledAttr = hasVoted ? "disabled" : "";
-          const disabledInputClass = hasVoted
-            ? "opacity-60 cursor-not-allowed bg-gray-900/80 border-gray-600 text-gray-300"
-            : "input-dark";
-          const btnStyle = hasVoted
-            ? "bg-gray-800/80 border border-gray-600 text-gray-400 cursor-not-allowed opacity-80"
-            : "bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] hover:shadow-[0_0_20px_rgba(255,222,66,0.6)] hover:scale-[1.02] active:scale-95";
-          const btnIcon = hasVoted ? "fa-lock" : "fa-crown";
-          const btnText = hasVoted ? "บันทึกเรียบร้อยแล้ว" : "บันทึกคะแนน";
+          const roundObj = ROUNDS.find(r => r.id === currentRound);
+          const roundName = roundObj ? roundObj.name : currentRound;
 
-          let html = `
-            <div class="glass-panel p-6 rounded-3xl border-t-2 ${hasVoted ? "border-gray-500" : "border-[#FFDE42]"} relative transition-all duration-300 hover:shadow-[0_15px_40px_rgba(84,120,255,0.3)] hover:-translate-y-1 flex flex-col md:flex-row gap-6 items-center md:items-stretch">
-                <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-6 md:pb-0 md:pr-6">
-                    <div class="w-full flex flex-col items-center">
-                        <div class="relative w-full h-64 md:h-72 rounded-2xl overflow-hidden border-2 ${hasVoted ? "border-green-400/80" : "border-[#FFDE42]"} bg-[#111FA2] shadow-[0_0_20px_rgba(255,222,66,0.25)] group mb-3">
-                            
-                            <!-- แก้ไขแท็ก img ที่ตกหล่น และลิงก์ onerror ที่ผิดพลาด -->
-                            <img src="images/contestants/${contestant.image || "default.jpg"}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/111FA2/FFDE42?text=${cId}';" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            
-                            ${
-                              currentCategory === "top5"
-                                ? `<div class="absolute top-2 left-2 bg-red-600/90 border border-white text-white font-bold px-3 py-1 rounded-lg text-sm shadow-md animate-pulse"><i class="fas fa-fire mr-1"></i> TOP 5</div>`
-                                : `<div class="absolute top-2 left-2 bg-[#111FA2]/90 border border-[#FFDE42] text-[#FFDE42] font-bold px-3 py-1 rounded-lg text-sm shadow-md">${cId}</div>`
-                            }
-
-                            ${hasVoted ? '<div class="absolute top-2 right-2 bg-green-600 border border-green-300 text-white font-bold text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1"><i class="fas fa-lock text-xs"></i> ส่งแล้ว</div>' : ""}
-                        </div>
-                        <h4 class="text-lg font-bold text-white tracking-wide mt-1">${cName}</h4>
-                        <div class="mt-2 px-4 py-1.5 bg-[#111FA2]/80 rounded-full text-[#FFDE42] font-bold text-sm border border-[#5478FF]/40">
-                            รวม <span id="total-${cId}" class="text-xl ml-1">${total}</span> / 100
-                        </div>
+          let cardHtml = `
+            <div class="glass-panel p-5 md:p-6 rounded-3xl border-t-2 ${hasVoted ? 'border-emerald-400' : 'border-[#FFDE42]'} relative transition-all duration-300 hover:shadow-[0_15px_40px_rgba(84,120,255,0.3)] flex flex-col md:flex-row gap-5 items-stretch">
+              <!-- ฝั่งซ้าย: รูปภาพและข้อมูล -->
+              <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-5 md:pb-0 md:pr-5">
+                <div class="w-full flex flex-col items-center">
+                  <div class="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden border-2 ${hasVoted ? 'border-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'border-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.25)]'} bg-[#111FA2] group mb-2">
+                    <img src="${imagePath}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/111FA2/FFDE42?text=${cId}';" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    
+                    <div class="absolute top-2 left-2 bg-[#111FA2]/90 border border-[#FFDE42] text-[#FFDE42] font-bold px-3 py-1 rounded-lg text-xs shadow-md">
+                      ${cId} • ${catTitle}
                     </div>
-                    <button onclick="submitScore('${cId}')" ${disabledAttr} class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform ${btnStyle}">
-                        <i class="fas ${btnIcon} mr-2"></i> ${btnText}
-                    </button>
+
+                    ${hasVoted ? '<div class="absolute top-2 right-2 bg-emerald-600 border border-emerald-300 text-white font-bold text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1"><i class="fas fa-check-circle"></i> บันทึกแล้ว</div>' : ''}
+                  </div>
+                  
+                  <h4 class="text-base font-bold text-white tracking-wide mt-1">${cName}</h4>
+                  
+                  ${isQa ? `
+                    <div class="mt-1 px-3 py-1 bg-yellow-500/20 rounded-lg text-amber-300 text-xs border border-yellow-500/30 font-medium">
+                      ⭐ ผู้ผ่านเข้ารอบ TOP 5 (คะแนนสะสมรอบแรก: <strong>${contestant.round29Total || 0}</strong> คะแนน)
+                    </div>
+                  ` : ''}
+
+                  <div class="mt-2.5 px-4 py-1.5 bg-[#111FA2]/80 rounded-full text-[#FFDE42] font-bold text-sm border border-[#5478FF]/40">
+                    รอบนี้ <span id="total-${cId}" class="text-xl ml-1 font-extrabold">${totalScore}</span> / 100
+                  </div>
                 </div>
-                <div class="w-full md:w-7/12 space-y-3 bg-[#091054]/60 p-4 rounded-2xl border border-[#5478FF]/20 flex flex-col justify-center">
-        `;
 
-          (typeof criteria !== "undefined" ? criteria : []).forEach((crit) => {
-            let val = score[`score_${crit.id}`] || 0;
-            html += `
-                <div class="flex justify-between items-center group">
-                    <div class="flex flex-col transition-transform duration-300 ${hasVoted ? "" : "group-hover:translate-x-1"}">
-                        <span class="text-sm font-medium text-gray-200 ${hasVoted ? "" : "group-hover:text-[#FFDE42]"} transition-colors">${crit.name}</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <input type="number" min="0" max="${crit.max}" value="${val}" id="${crit.id}-${cId}" ${disabledAttr} 
-                            class="w-16 h-9 ${disabledInputClass} rounded-xl text-center font-bold text-[#FFDE42]" 
-                            onchange="updateTotal('${cId}', this, ${crit.max})">
-                        <span class="text-xs text-gray-400 w-8">/${crit.max}</span>
-                    </div>
+                <button onclick="openSubmitModal('${cId}', '${cName}')" class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 ${hasVoted ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white' : 'bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] hover:shadow-[0_0_20px_rgba(255,222,66,0.6)] hover:scale-[1.02] active:scale-95'}">
+                  <i class="fas ${hasVoted ? 'fa-check' : 'fa-gavel'}"></i>
+                  <span>${hasVoted ? 'แก้ไขคะแนนรอบนี้' : 'บันทึกคะแนนรอบนี้'}</span>
+                </button>
+              </div>
+
+              <!-- ฝั่งขวา: ช่องกรอกเกณฑ์ย่อย 3 ข้อ -->
+              <div class="w-full md:w-7/12 flex flex-col justify-between bg-[#091054]/60 p-4 md:p-5 rounded-2xl border border-[#5478FF]/20 space-y-4">
+                <div class="border-b border-[#5478FF]/20 pb-2">
+                  <div class="text-xs uppercase font-bold text-[#FFDE42] flex items-center justify-between">
+                    <span>เกณฑ์การให้คะแนน: ${roundName}</span>
+                    <span class="text-gray-300 text-[11px] font-normal">รวม 100 คะแนน</span>
+                  </div>
                 </div>
+
+                <div class="space-y-4 my-auto">
+          `;
+
+          criteriaList.forEach((crit, idx) => {
+            let val = idx === 0 ? val1 : (idx === 1 ? val2 : val3);
+            cardHtml += `
+              <div class="p-3 rounded-xl bg-[#050a30]/60 border border-[#5478FF]/30 hover:border-[#FFDE42]/60 transition-colors">
+                <div class="flex justify-between items-center mb-1.5">
+                  <span class="text-sm font-semibold text-gray-200">${crit.name}</span>
+                  <span class="text-xs font-bold text-[#FFDE42]">เต็ม ${crit.max}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <input
+                    type="range"
+                    min="0"
+                    max="${crit.max}"
+                    value="${val}"
+                    id="slider-${crit.id}-${cId}"
+                    class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#FFDE42]"
+                    oninput="onScoreSliderChange('${cId}', '${crit.id}', ${crit.max}, this.value)"
+                  >
+                  <input
+                    type="number"
+                    min="0"
+                    max="${crit.max}"
+                    value="${val}"
+                    id="input-${crit.id}-${cId}"
+                    class="w-16 h-10 input-dark rounded-xl text-center font-bold text-lg text-[#FFDE42] border border-[#5478FF]/40"
+                    oninput="onScoreInputChange('${cId}', '${crit.id}', ${crit.max}, this.value)"
+                  >
+                </div>
+              </div>
             `;
           });
 
-          html += `</div></div>`;
-          container.innerHTML += html;
+          cardHtml += `
+                </div>
+              </div>
+            </div>
+          `;
+          container.innerHTML += cardHtml;
         });
       }
 
-      function updateTotal(cId, input, max) {
-        let val = parseInt(input.value) || 0;
-        if (val > max) input.value = max;
-        if (val < 0) input.value = 0;
-        let sum = 0;
-        criteria.forEach(
-          (crit) =>
-            (sum +=
-              parseInt(document.getElementById(`${crit.id}-${cId}`).value) ||
-              0),
-        );
-
-        const totalEl = document.getElementById(`total-${cId}`);
-        totalEl.innerText = sum;
-        totalEl.parentElement.classList.add("scale-110", "bg-[#5478FF]/40");
-        setTimeout(
-          () =>
-            totalEl.parentElement.classList.remove(
-              "scale-110",
-              "bg-[#5478FF]/40",
-            ),
-          200,
-        );
+      function onScoreSliderChange(cId, critId, max, val) {
+        val = Math.min(max, Math.max(0, parseInt(val) || 0));
+        const input = document.getElementById(`input-${critId}-${cId}`);
+        if (input) input.value = val;
+        recalculateCardTotal(cId);
       }
 
-      function submitScore(cId) {
-        let sum = 0;
-        criteria.forEach(
-          (crit) =>
-            (sum +=
-              parseInt(document.getElementById(`${crit.id}-${cId}`).value) ||
-              0),
-        );
-        let targetList =
-          currentCategory === "top5"
-            ? getAutoTop5()
-            : contestants[currentCategory];
-        const contestant = targetList.find((c) => c.id === cId);
+      function onScoreInputChange(cId, critId, max, val) {
+        val = Math.min(max, Math.max(0, parseInt(val) || 0));
+        const slider = document.getElementById(`slider-${critId}-${cId}`);
+        if (slider) slider.value = val;
+        recalculateCardTotal(cId);
+      }
 
-        document.getElementById("modal-cid").innerText = cId;
-        document.getElementById("modal-cname").innerText = contestant
-          ? contestant.name
-          : "";
-        document.getElementById("modal-score").innerText = sum;
-        pendingSubmitContestantId = cId;
-        document
-          .getElementById("custom-confirm-modal")
-          .classList.remove("hidden");
+      function recalculateCardTotal(cId) {
+        const isQa = currentRound === 'qa';
+        const criteriaList = isQa ? CRITERIA_TOP5 : CRITERIA_ROUND29;
+
+        let total = 0;
+        criteriaList.forEach(crit => {
+          const input = document.getElementById(`input-${crit.id}-${cId}`);
+          if (input) total += (parseInt(input.value) || 0);
+        });
+
+        const totalEl = document.getElementById(`total-${cId}`);
+        if (totalEl) {
+          totalEl.innerText = total;
+          totalEl.parentElement.classList.add('scale-110', 'bg-[#5478FF]/40');
+          setTimeout(() => totalEl.parentElement.classList.remove('scale-110', 'bg-[#5478FF]/40'), 200);
+        }
+      }
+
+      function getAutoTop5Local() {
+        let allWithScores = allContestants.map(c => {
+          let sum = 0;
+          for (let i = 1; i <= 5; i++) {
+            ['intro', 'grand', 'speech', 'theme'].forEach(rId => {
+              const rec = (allScores || []).find(s => s.judge_id === `judge${i}` && s.contestant_id === c.id && s.round_id === rId);
+              if (rec) sum += rec.total_score;
+            });
+          }
+          return { ...c, categoryName: CATEGORIES[c.category] || c.category, round29Total: sum };
+        });
+        allWithScores.sort((a, b) => b.round29Total - a.round29Total);
+        return allWithScores.slice(0, 5);
+      }
+
+      // ==========================================
+      // Score Submission & Modal
+      // ==========================================
+      function openSubmitModal(cId, cName) {
+        const isQa = currentRound === 'qa';
+        const criteriaList = isQa ? CRITERIA_TOP5 : CRITERIA_ROUND29;
+
+        const val1 = parseInt(document.getElementById(`input-c1-${cId}`)?.value) || 0;
+        const val2 = parseInt(document.getElementById(`input-c2-${cId}`)?.value) || 0;
+        const val3 = parseInt(document.getElementById(`input-c3-${cId}`)?.value) || 0;
+        const total = val1 + val2 + val3;
+
+        pendingSubmitData = {
+          cId,
+          cName,
+          roundId: currentRound,
+          score_c1: val1,
+          score_c2: val2,
+          score_c3: val3,
+          total
+        };
+
+        const roundObj = ROUNDS.find(r => r.id === currentRound);
+        document.getElementById('modal-round-title').innerText = roundObj ? roundObj.fullTitle : currentRound;
+        document.getElementById('modal-cid').innerText = cId;
+        document.getElementById('modal-cname').innerText = cName;
+        
+        document.getElementById('modal-lbl-c1').innerText = criteriaList[0].name + ':';
+        document.getElementById('modal-val-c1').innerText = `${val1} / ${criteriaList[0].max}`;
+        
+        document.getElementById('modal-lbl-c2').innerText = criteriaList[1].name + ':';
+        document.getElementById('modal-val-c2').innerText = `${val2} / ${criteriaList[1].max}`;
+        
+        document.getElementById('modal-lbl-c3').innerText = criteriaList[2].name + ':';
+        document.getElementById('modal-val-c3').innerText = `${val3} / ${criteriaList[2].max}`;
+        
+        document.getElementById('modal-score').innerText = total;
+
+        document.getElementById('custom-confirm-modal').classList.remove('hidden');
       }
 
       function closeModal() {
-        document.getElementById("custom-confirm-modal").classList.add("hidden");
-        pendingSubmitContestantId = null;
+        document.getElementById('custom-confirm-modal').classList.add('hidden');
+        pendingSubmitData = null;
       }
 
       async function confirmSubmitScore() {
-        if (!pendingSubmitContestantId) return;
-        const cId = pendingSubmitContestantId;
+        if (!pendingSubmitData) return;
+        const data = pendingSubmitData;
         closeModal();
 
-        const scores = {
-          intro: parseInt(document.getElementById(`intro-${cId}`).value) || 0,
-          theme: parseInt(document.getElementById(`theme-${cId}`).value) || 0,
-          speech: parseInt(document.getElementById(`speech-${cId}`).value) || 0,
-          formal: parseInt(document.getElementById(`formal-${cId}`).value) || 0,
-          qa: parseInt(document.getElementById(`qa-${cId}`).value) || 0,
-        };
+        try {
+          const res = await fetch('/api/scores', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              judge_id: currentUser,
+              contestant_id: data.cId,
+              round_id: data.roundId,
+              score_c1: data.score_c1,
+              score_c2: data.score_c2,
+              score_c3: data.score_c3
+            })
+          });
+          const result = await res.json();
 
-        await fetch("/api/scores", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            judge_id: currentUser,
-            contestant_id: cId,
-            scores,
-          }),
-        });
-
-        document.getElementById("toast-msg").innerText =
-          `บันทึกคะแนนรหัส ${cId} เรียบร้อย (Auto-saved to Excel)`;
-        const toast = document.getElementById("toast");
-        toast.classList.remove("translate-y-20", "opacity-0");
-        setTimeout(
-          () => toast.classList.add("translate-y-20", "opacity-0"),
-          3000,
-        );
-
-        await fetchScores();
-        renderContestants();
+          if (result.success) {
+            showToast(`บันทึกคะแนน ${data.cId} (${data.cName}) เรียบร้อย (รวม ${data.total} คะแนน)`);
+            await fetchScores();
+          } else {
+            alert('เกิดข้อผิดพลาด: ' + (result.error || result.message));
+          }
+        } catch (e) {
+          alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์เพื่อบันทึกคะแนนได้');
+        }
       }
 
-      function renderAdminTable() {
-        const tbody = document.getElementById("admin-table-body");
-        if (!tbody) return;
-        tbody.innerHTML = "";
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-msg').innerText = msg;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3500);
+      }
 
-        const allContestants = [
-          ...(contestants.mister || []),
-          ...(contestants.miss || []),
-          ...(contestants.queen || []),
-          ...(contestants.congeniality || []),
-          ...(contestants.jumbo || []),
-        ];
-
-        if (allContestants.length === 0) {
-          tbody.innerHTML =
-            '<tr><td colspan="9" class="text-center py-6 text-gray-400">ยังไม่มีข้อมูลผู้เข้าประกวด</td></tr>';
-          return;
-        }
-
-        allContestants.forEach((c) => {
-          // ใช้ c.image ดึงชื่อไฟล์จากฐานข้อมูล
-          const imagePath =
-            c.image && c.image !== "default.jpg"
-              ? `/images/contestants/${c.image}`
-              : `https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}`;
-
-          let rowHtml = `<tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors duration-300">
-            <td class="px-4 py-3 font-bold text-[#FFDE42]">${c.id}</td>
-            <td class="px-4 py-3 text-center">
-                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-10 h-10 rounded-full object-cover border border-[#FFDE42] mx-auto shadow-sm">
-            </td>
-            <td class="px-4 py-3 text-white min-w-[150px]">${c.name}</td>`;
-
-          let total = 0;
-          for (let i = 1; i <= 5; i++) {
-            const record = (allScores || []).find(
-              (s) => s.judge_id === `judge${i}` && s.contestant_id === c.id,
-            );
-            if (record) {
-              let sum =
-                (record.score_intro || 0) +
-                (record.score_theme || 0) +
-                (record.score_speech || 0) +
-                (record.score_formal || 0) +
-                (record.score_qa || 0);
-              total += sum;
-              rowHtml += `<td class="px-4 py-3 text-center text-gray-200">${sum}</td>`;
+      // ==========================================
+      // Admin Dashboard Management
+      // ==========================================
+      function switchAdminView(view) {
+        adminCurrentView = view;
+        const views = ['top5', 'round29', 'manage'];
+        
+        views.forEach(v => {
+          const btn = document.getElementById(`admin-tab-${v}`);
+          const section = document.getElementById(`admin-view-${v}`);
+          if (btn && section) {
+            if (v === view) {
+              btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_15px_rgba(255,222,66,0.4)]";
+              section.classList.remove('hidden');
             } else {
-              rowHtml += `<td class="px-4 py-3 text-center text-gray-500">-</td>`;
+              btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel";
+              section.classList.add('hidden');
             }
           }
-          rowHtml += `<td class="px-4 py-3 text-center font-bold text-[#FFDE42] text-lg bg-[#111FA2]/50">${total}</td></tr>`;
-          tbody.innerHTML += rowHtml;
         });
+
+        renderAdminViews();
       }
-      async function refreshAdminData() {
-        // 1. ดึงข้อมูลผู้เข้าประกวดใหม่จากฐานข้อมูล
-        await loadContestants();
 
-        // 2. ดึงคะแนนล่าสุด (ฟังก์ชันนี้มีคำสั่ง renderAdminTable() อยู่แล้ว)
-        await fetchScores();
-
-        // 3. แสดงแจ้งเตือนว่าอัปเดตแล้ว
-        document.getElementById("toast-msg").innerText =
-          "อัปเดตข้อมูลรายชื่อและคะแนนล่าสุดเรียบร้อย";
-        const toast = document.getElementById("toast");
-        toast.classList.remove("translate-y-20", "opacity-0");
-        setTimeout(
-          () => toast.classList.add("translate-y-20", "opacity-0"),
-          3000,
-        );
+      function renderAdminViews() {
+        renderAdminTop5Table();
+        renderAdminRound29Table();
       }
-      function printScoreSheet() {
-        const allContestants = [
-          ...(contestants.mister || []),
-          ...(contestants.miss || []),
-          ...(contestants.queen || []),
-          ...(contestants.congeniality || []),
-          ...(contestants.jumbo || []),
-        ];
 
-        if (allContestants.length === 0) {
-          alert("ยังไม่มีข้อมูลผู้เข้าประกวดสำหรับพิมพ์");
+      // ตารางผลตัดสินรอบ TOP 5
+      function renderAdminTop5Table() {
+        const tbody = document.getElementById('top5-table-body');
+        if (!tbody || !summaryData || !summaryData.top5) return;
+        tbody.innerHTML = '';
+
+        const top5 = summaryData.top5;
+        if (top5.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="13" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลการตัดสินรอบ TOP 5</td></tr>';
           return;
         }
 
-        const printWindow = window.open("", "_blank", "width=1100,height=700");
+        const awardBadges = [
+          '<span class="px-2.5 py-1 rounded-lg bg-yellow-500 text-blue-950 font-extrabold text-xs shadow-md"><i class="fas fa-crown text-yellow-900 mr-1"></i> THE WINNER FRESHY 2026</span>',
+          '<span class="px-2 py-0.5 rounded-lg bg-slate-300 text-slate-900 font-bold text-xs">🥈 รองชนะเลิศอันดับ 1</span>',
+          '<span class="px-2 py-0.5 rounded-lg bg-amber-700 text-amber-100 font-bold text-xs">🥉 รองชนะเลิศอันดับ 2</span>',
+          '<span class="px-2 py-0.5 rounded-lg bg-blue-900/60 text-gray-200 text-xs font-semibold">รองชนะเลิศอันดับ 3</span>',
+          '<span class="px-2 py-0.5 rounded-lg bg-blue-900/60 text-gray-200 text-xs font-semibold">รองชนะเลิศอันดับ 4</span>'
+        ];
 
-        let html = /* html */ `
+        top5.forEach((f, idx) => {
+          const isWinner = idx === 0;
+          const imagePath = f.image && f.image !== 'default.jpg'
+            ? `/images/contestants/${f.image}`
+            : `https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}`;
+
+          let row = `
+            <tr class="border-b border-[#5478FF]/20 ${isWinner ? 'bg-gradient-to-r from-yellow-500/20 via-amber-500/10 to-yellow-500/20' : 'hover:bg-[#5478FF]/10'} transition-colors">
+              <td class="px-4 py-3.5 text-center font-extrabold text-lg ${isWinner ? 'text-[#FFDE42]' : 'text-gray-300'}">
+                ${idx === 0 ? '👑 1' : (idx + 1)}
+              </td>
+              <td class="px-4 py-3.5 text-center">
+                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-12 h-12 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto">
+              </td>
+              <td class="px-4 py-3.5">
+                <div class="font-bold text-white text-base">${f.name}</div>
+                <div class="text-xs text-[#FFDE42]">${f.id} • ${f.categoryName}</div>
+                <div class="mt-1">${awardBadges[idx] || ''}</div>
+              </td>
+              <td class="px-4 py-3.5 text-center font-semibold text-gray-200">
+                ${f.categoryName}
+              </td>
+              <td class="px-4 py-3.5 text-center font-bold text-white bg-blue-900/30">
+                ${f.round29Total}
+              </td>
+              <td class="px-4 py-3.5 text-center text-gray-300">${f.qaJudges.judge1 || 0}</td>
+              <td class="px-4 py-3.5 text-center text-gray-300">${f.qaJudges.judge2 || 0}</td>
+              <td class="px-4 py-3.5 text-center text-gray-300">${f.qaJudges.judge3 || 0}</td>
+              <td class="px-4 py-3.5 text-center text-gray-300">${f.qaJudges.judge4 || 0}</td>
+              <td class="px-4 py-3.5 text-center text-gray-300">${f.qaJudges.judge5 || 0}</td>
+              <td class="px-4 py-3.5 text-center font-bold text-yellow-300 bg-yellow-500/10">
+                ${f.qaTotal}
+              </td>
+              <td class="px-4 py-3.5 text-center font-bold text-blue-300 bg-blue-950/40">
+                ${f.grandTotal}
+              </td>
+              <td class="px-4 py-3.5 text-center font-extrabold text-xl text-[#FFDE42] bg-[#111FA2]/80">
+                ${f.avgScore.toFixed(2)}
+              </td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        });
+      }
+
+      // ตารางคะแนนรอบ 29 คน
+      function renderAdminRound29Table() {
+        const tbody = document.getElementById('round29-table-body');
+        if (!tbody || !summaryData || !summaryData.categories) return;
+        tbody.innerHTML = '';
+
+        const selectedCat = document.getElementById('admin-category-filter')?.value || 'all';
+        let list = [];
+
+        if (selectedCat === 'all') {
+          Object.keys(summaryData.categories).forEach(k => {
+            list = list.concat(summaryData.categories[k]);
+          });
+        } else {
+          list = summaryData.categories[selectedCat] || [];
+        }
+
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลคะแนนรอบ 29 คน</td></tr>';
+          return;
+        }
+
+        list.forEach(c => {
+          // ตรวจสอบว่า c อยู่ใน TOP 5 คะแนนสูงสุดหรือไม่
+          const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.round29Total > 0;
+
+          const imagePath = c.image && c.image !== 'default.jpg'
+            ? `/images/contestants/${c.image}`
+            : `https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}`;
+
+          let row = `
+            <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
+              <td class="px-4 py-3 text-center font-bold text-[#FFDE42]">${c.id}</td>
+              <td class="px-4 py-3 text-center">
+                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto">
+              </td>
+              <td class="px-4 py-3 font-semibold text-white">${c.name}</td>
+              <td class="px-4 py-3 text-center text-xs text-gray-300 font-medium">${c.categoryName}</td>
+              <td class="px-4 py-3 text-center text-gray-200">${c.rounds.intro.total}</td>
+              <td class="px-4 py-3 text-center text-gray-200">${c.rounds.grand.total}</td>
+              <td class="px-4 py-3 text-center text-gray-200">${c.rounds.speech.total}</td>
+              <td class="px-4 py-3 text-center text-gray-200">${c.rounds.theme.total}</td>
+              <td class="px-4 py-3 text-center font-bold text-lg text-[#FFDE42] bg-[#111FA2]/50">${c.round29Total}</td>
+              <td class="px-4 py-3 text-center">
+                ${isTop5 
+                  ? '<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold"><i class="fas fa-crown text-yellow-300 mr-1"></i> ผ่านเข้ารอบ TOP 5</span>'
+                  : '<span class="text-xs text-gray-400">-</span>'
+                }
+              </td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        });
+      }
+
+      async function refreshAdminData() {
+        await loadContestants();
+        await fetchScores();
+        showToast('อัปเดตข้อมูลคะแนนและสรุปผลล่าสุดเรียบร้อย');
+      }
+
+      async function addContestant(e) {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('id', document.getElementById('add-id').value);
+        formData.append('name', document.getElementById('add-name').value);
+        formData.append('category', document.getElementById('add-category').value);
+
+        const imageFile = document.getElementById('add-image').files[0];
+        if (imageFile) formData.append('image', imageFile);
+
+        try {
+          const res = await fetch('/api/contestants', {
+            method: 'POST',
+            body: formData,
+          });
+          const data = await res.json();
+
+          if (res.ok && data.success) {
+            showToast('✅ บันทึกข้อมูลผู้เข้าประกวดเรียบร้อย');
+            document.getElementById('add-contestant-form').reset();
+            await refreshAdminData();
+          } else {
+            alert('เกิดข้อผิดพลาด: ' + (data.error || data.message));
+          }
+        } catch (error) {
+          alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+        }
+      }
+
+      // ==========================================
+      // Print Official Score Sheet
+      // ==========================================
+      function printScoreSheet() {
+        if (!summaryData || !summaryData.top5) {
+          alert('ยังไม่มีข้อมูลคะแนนสำหรับพิมพ์');
+          return;
+        }
+
+        const printWindow = window.open('', '_blank', 'width=1100,height=750');
+        const top5 = summaryData.top5;
+
+        let html = `
         <!DOCTYPE html>
         <html lang="th">
         <head>
           <meta charset="UTF-8">
-          <title>รายละเอียดคะแนน RMUTK FRESHY 2026</title>
+          <title>ใบคะแนนอย่างเป็นทางการ RMUTK FRESHY 2026</title>
           <style>
-            @page { size: A4 landscape; margin: 1cm; }
-            body { font-family: 'Sarabun', 'Prompt', sans-serif; padding: 10px; color: #000; font-size: 12px; }
-            h2 { text-align: center; margin-bottom: 2px; font-size: 18px; }
-            p.date { text-align: center; font-size: 12px; color: #444; margin-top: 0; margin-bottom: 15px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th, td { border: 1px solid #000; padding: 5px 3px; text-align: center; font-size: 11px; }
-            th { background-color: #f0f0f0; font-weight: bold; }
-            .text-left { text-align: left; padding-left: 5px; }
-            .bg-total { background-color: #f9f9f9; font-weight: bold; }
-            .sub-header { font-size: 10px; font-weight: normal; }
+            @page { size: A4 landscape; margin: 0.8cm; }
+            body { font-family: 'Prompt', 'Sarabun', sans-serif; padding: 10px; color: #000; font-size: 11px; }
+            h2 { text-align: center; margin-bottom: 2px; font-size: 18px; font-weight: bold; }
+            h3 { text-align: center; margin-top: 2px; margin-bottom: 2px; font-size: 14px; font-weight: bold; color: #333; }
+            p.sub { text-align: center; font-size: 11px; color: #555; margin-top: 0; margin-bottom: 12px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; margin-bottom: 15px; }
+            th, td { border: 1px solid #000; padding: 4px 3px; text-align: center; font-size: 10px; }
+            th { background-color: #f2f2f2; font-weight: bold; }
+            .text-left { text-align: left; padding-left: 6px; }
+            .bg-highlight { background-color: #fff9db; font-weight: bold; }
+            .signature-box { margin-top: 25px; display: flex; justify-content: space-around; }
+            .sign-col { text-align: center; font-size: 11px; }
           </style>
         </head>
         <body>
-          <h2>รายละเอียดคะแนนรายเกณฑ์ RMUTK FRESHY 2026</h2>
-          <p class="date">ข้อมูล ณ วันที่: ${new Date().toLocaleString("th-TH")}</p>
+          <h2>ผลการตัดสินการประกวด RMUTK FRESHY 2026</h2>
+          <h3>สรุปผลรอบ 5 คนสุดท้าย (TOP 5 Finalists คัดจากผู้มีคะแนนรอบแรกสูงสุด 5 อันดับแรก)</h3>
+          <p class="sub">สูตรการคิดคะแนน: (คะแนนรอบ 29 คน + คะแนนรอบตอบคำถาม) ÷ 5 กรรมการ | พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</p>
+          
           <table>
             <thead>
               <tr>
-                <th rowspan="2" width="5%">รหัส</th>
-                <th rowspan="2" width="15%" class="text-left">ชื่อ-นามสกุล</th>
-                <th rowspan="2" width="8%">หมวดหมู่</th>
-                <th colspan="5">ก.1</th>
-                <th colspan="5">ก.2</th>
-                <th colspan="5">ก.3</th>
-                <th colspan="5">ก.4</th>
-                <th colspan="5">ก.5</th>
-                <th rowspan="2" width="6%" class="bg-total">คะแนน<br>รวมสุทธิ</th>
-              </tr>
-              <tr>
-                <th class="sub-header">แนะนำ</th><th class="sub-header">ธีม</th><th class="sub-header">Speech</th><th class="sub-header">ชุด</th><th class="sub-header">Q&A</th>
-                <th class="sub-header">แนะนำ</th><th class="sub-header">ธีม</th><th class="sub-header">Speech</th><th class="sub-header">ชุด</th><th class="sub-header">Q&A</th>
-                <th class="sub-header">แนะนำ</th><th class="sub-header">ธีม</th><th class="sub-header">Speech</th><th class="sub-header">ชุด</th><th class="sub-header">Q&A</th>
-                <th class="sub-header">แนะนำ</th><th class="sub-header">ธีม</th><th class="sub-header">Speech</th><th class="sub-header">ชุด</th><th class="sub-header">Q&A</th>
-                <th class="sub-header">แนะนำ</th><th class="sub-header">ธีม</th><th class="sub-header">Speech</th><th class="sub-header">ชุด</th><th class="sub-header">Q&A</th>
+                <th width="5%">อันดับ</th>
+                <th width="8%">รหัส</th>
+                <th width="20%" class="text-left">ชื่อ-นามสกุล</th>
+                <th width="12%">หมวดหมู่ตัวแทน</th>
+                <th width="12%">คะแนนรอบ 29 คน<br>(รวม 5 กรรมการ)</th>
+                <th width="5%">ก.1</th>
+                <th width="5%">ก.2</th>
+                <th width="5%">ก.3</th>
+                <th width="5%">ก.4</th>
+                <th width="5%">ก.5</th>
+                <th width="9%">รวมตอบคำถาม</th>
+                <th width="10%">คะแนนรวมสุทธิ</th>
+                <th width="12%" class="bg-highlight">คะแนนเฉลี่ยสุทธิ<br>(หาร 5 กรรมการ)</th>
               </tr>
             </thead>
             <tbody>
         `;
 
-        allContestants.forEach((c) => {
-          let grandTotal = 0;
-          let judgesData = {};
-
-          for (let i = 1; i <= 5; i++) {
-            const judgeKey = `judge${i}`;
-            const record = (allScores || []).find(
-              (s) => s.judge_id === judgeKey && s.contestant_id === c.id
-            );
-            
-            if (record) {
-              judgesData[judgeKey] = {
-                intro: record.score_intro || 0,
-                theme: record.score_theme || 0,
-                speech: record.score_speech || 0,
-                formal: record.score_formal || 0,
-                qa: record.score_qa || 0,
-              };
-              grandTotal +=
-                (record.score_intro || 0) +
-                (record.score_theme || 0) +
-                (record.score_speech || 0) +
-                (record.score_formal || 0) +
-                (record.score_qa || 0);
-            } else {
-              judgesData[judgeKey] = null;
-            }
-          }
-
-          html += /* html */ `
-              <tr>
-                <td><strong>${c.id}</strong></td>
-                <td class="text-left">${c.name}</td>
-                <td>${c.category.toUpperCase()}</td>
-          `;
-
-          for (let i = 1; i <= 5; i++) {
-            const j = judgesData[`judge${i}`];
-            if (j) {
-              html += /* html */ `
-                <td>${j.intro}</td>
-                <td>${j.theme}</td>
-                <td>${j.speech}</td>
-                <td>${j.formal}</td>
-                <td>${j.qa}</td>
-              `;
-            } else {
-              html += /* html */ `
-                <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
-              `;
-            }
-          }
-
-          html += /* html */ `
-                <td class="bg-total">${grandTotal}</td>
-              </tr>
+        top5.forEach((f, idx) => {
+          html += `
+            <tr ${idx === 0 ? 'style="font-weight:bold; background-color:#fef9e7;"' : ''}>
+              <td>${idx + 1}</td>
+              <td>${f.id}</td>
+              <td class="text-left">${f.name}</td>
+              <td>${f.categoryName}</td>
+              <td>${f.round29Total}</td>
+              <td>${f.qaJudges.judge1 || 0}</td>
+              <td>${f.qaJudges.judge2 || 0}</td>
+              <td>${f.qaJudges.judge3 || 0}</td>
+              <td>${f.qaJudges.judge4 || 0}</td>
+              <td>${f.qaJudges.judge5 || 0}</td>
+              <td>${f.qaTotal}</td>
+              <td>${f.grandTotal}</td>
+              <td class="bg-highlight" style="font-size:12px;">${f.avgScore.toFixed(2)}</td>
+            </tr>
           `;
         });
 
-        html += /* html */ `
+        html += `
             </tbody>
           </table>
-          
-          <div style="margin-top: 35px; display: flex; justify-content: space-around;">
-            <div style="text-align: center;">
+
+          <div class="signature-box">
+            <div class="sign-col">
               ลงชื่อ..........................................................<br><br>
-              (..........................................................)<br><br>
-              ผู้สรุปผลคะแนน
+              (..........................................................)<br>
+              เจ้าหน้าที่ผู้บันทึกคะแนน
             </div>
-            <div style="text-align: center;">
+            <div class="sign-col">
               ลงชื่อ..........................................................<br><br>
-              (..........................................................)<br><br>
-              ประธานกรรมการตัดสิน
+              (..........................................................)<br>
+              ประธานคณะกรรมการตัดสิน
             </div>
           </div>
           <script>
-            window.onload = function() {
-              window.print();
-            };
+            window.onload = function() { window.print(); };
           <\/script>
         </body>
         </html>
