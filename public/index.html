@@ -402,45 +402,55 @@
           </div>
         </div>
 
-        <!-- วิว 2: ตารางคะแนนรอบ 29 คน (4 รอบ) -->
+        <!-- วิว 2: ตารางคะแนนรอบ 29 คน (แยกตามรอบ + เกณฑ์ย่อยรายกรรมการ) -->
         <div id="admin-view-round29" class="hidden space-y-4">
-          <div class="glass-panel p-6 rounded-3xl border border-[#5478FF]/30 overflow-x-auto">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+          <!-- Header, Round Tabs & Category Filter -->
+          <div class="glass-panel p-5 rounded-2xl border border-[#5478FF]/30">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
               <div>
                 <h3 class="text-xl font-bold text-[#FFDE42] flex items-center gap-2">
-                  <i class="fas fa-list-ol"></i> สรุปผลคะแนนรอบแรก 29 คน (ครบ 4 รอบ)
+                  <i class="fas fa-list-ol"></i> ตารางคะแนนรอบ 29 คน (4 รอบ)
                 </h3>
-                <p class="text-xs text-gray-300">
-                  รวม 4 รอบ: แนะนำตัว (100) + Grand Opening (100) + Speech 1 min (100) + ชุดธีม (100) = เต็ม 400 คะแนนต่อกรรมการ (รวม 2,000 คะแนน)
-                </p>
+                <p class="text-xs text-gray-300 mt-0.5">เลือกแท็บรอบเพื่อดูเกณฑ์ย่อยรายกรรมการ หรือแท็บ "สรุปรวม" เพื่อดูคะแนนรวมทุกรอบ</p>
               </div>
-              <div class="flex gap-2">
-                <select id="admin-category-filter" onchange="renderAdminRound29Table()" class="input-dark p-2 rounded-xl text-xs font-semibold">
-                  <option value="all">แสดงทุกหมวดหมู่ (29 คน)</option>
-                  <option value="mister">Mister</option>
-                  <option value="miss">Miss</option>
-                  <option value="queen">Miss Queen</option>
-                  <option value="congeniality">Miss Congeniality</option>
-                  <option value="jumbo">Miss Jumbo</option>
-                </select>
-              </div>
+              <select id="admin-category-filter" onchange="renderAdminRound29Table()" class="input-dark p-2 rounded-xl text-xs font-semibold shrink-0">
+                <option value="all">ทุกหมวดหมู่ (29 คน)</option>
+                <option value="mister">Mister</option>
+                <option value="miss">Miss</option>
+                <option value="queen">Miss Queen</option>
+                <option value="congeniality">Miss Congeniality</option>
+                <option value="jumbo">Miss Jumbo</option>
+              </select>
             </div>
+            <!-- Round Tabs -->
+            <div class="flex flex-wrap gap-2">
+              <button onclick="switchAdminRound29('intro')" id="admin-r29-tab-intro"
+                class="r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]">
+                <i class="fas fa-microphone-alt"></i> 1. แนะนำตัว
+              </button>
+              <button onclick="switchAdminRound29('grand')" id="admin-r29-tab-grand"
+                class="r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
+                <i class="fas fa-star"></i> 2. Grand Opening
+              </button>
+              <button onclick="switchAdminRound29('speech')" id="admin-r29-tab-speech"
+                class="r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
+                <i class="fas fa-comment-dots"></i> 3. Speech 1 min
+              </button>
+              <button onclick="switchAdminRound29('theme')" id="admin-r29-tab-theme"
+                class="r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
+                <i class="fas fa-tshirt"></i> 4. ชุดธีม
+              </button>
+              <button onclick="switchAdminRound29('all')" id="admin-r29-tab-all"
+                class="r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white border border-[#5478FF]/40">
+                <i class="fas fa-table"></i> สรุปรวม 4 รอบ
+              </button>
+            </div>
+          </div>
 
-            <table class="w-full text-sm text-left text-gray-200">
-              <thead class="text-xs uppercase bg-[#111FA2] text-[#FFDE42] font-bold border-b border-[#5478FF]/40">
-                <tr>
-                  <th class="px-4 py-3 text-center">รหัส</th>
-                  <th class="px-4 py-3 text-center">รูป</th>
-                  <th class="px-4 py-3">ชื่อ-นามสกุล</th>
-                  <th class="px-4 py-3 text-center">หมวดหมู่</th>
-                  <th class="px-4 py-3 text-center">แนะนำตัว<br><span class="text-[10px] text-gray-300 font-normal">(รวม 5 ก.)</span></th>
-                  <th class="px-4 py-3 text-center">Grand Opening<br><span class="text-[10px] text-gray-300 font-normal">(รวม 5 ก.)</span></th>
-                  <th class="px-4 py-3 text-center">Speech 1 min<br><span class="text-[10px] text-gray-300 font-normal">(รวม 5 ก.)</span></th>
-                  <th class="px-4 py-3 text-center">ชุดธีม<br><span class="text-[10px] text-gray-300 font-normal">(รวม 5 ก.)</span></th>
-                  <th class="px-4 py-3 text-center font-bold text-white bg-blue-900/60">รวมรอบ 29 คน<br><span class="text-[10px] text-amber-200 font-normal">(เต็ม 2,000)</span></th>
-                  <th class="px-4 py-3 text-center">สถานะ TOP 5</th>
-                </tr>
-              </thead>
+          <!-- Table Area -->
+          <div class="glass-panel p-4 rounded-3xl border border-[#5478FF]/30 overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
+              <thead id="round29-thead"></thead>
               <tbody id="round29-table-body"></tbody>
             </table>
           </div>
@@ -560,6 +570,7 @@
       let currentRound = 'intro'; // 'intro', 'grand', 'speech', 'theme', 'qa'
       let currentCategory = 'all'; // 'all', 'mister', 'miss', 'queen', 'congeniality', 'jumbo'
       let adminCurrentView = 'top5'; // 'top5', 'round29', 'manage'
+      let adminRound29View = 'intro'; // 'intro', 'grand', 'speech', 'theme', 'all'
 
       let allScores = [];
       let allContestants = [];
@@ -1157,59 +1168,164 @@
         });
       }
 
-      // ตารางคะแนนรอบ 29 คน
+      // ==================================================
+      // สลับ Tab รอบใน Admin Round29 View
+      // ==================================================
+      function switchAdminRound29(roundId) {
+        adminRound29View = roundId;
+        const roundIds = ['intro', 'grand', 'speech', 'theme', 'all'];
+        roundIds.forEach(r => {
+          const btn = document.getElementById(`admin-r29-tab-${r}`);
+          if (!btn) return;
+          if (r === roundId) {
+            btn.className = 'r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]';
+          } else {
+            btn.className = 'r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white';
+          }
+        });
+        renderAdminRound29Table();
+      }
+
+      // ==================================================
+      // ตารางคะแนนรอบ 29 คน (แยกตามรอบ + เกณฑ์ย่อยรายกรรมการ)
+      // ==================================================
       function renderAdminRound29Table() {
         const tbody = document.getElementById('round29-table-body');
-        if (!tbody || !summaryData || !summaryData.categories) return;
-        tbody.innerHTML = '';
+        const thead = document.getElementById('round29-thead');
+        if (!tbody || !thead || !summaryData || !summaryData.categories) return;
 
         const selectedCat = document.getElementById('admin-category-filter')?.value || 'all';
         let list = [];
-
         if (selectedCat === 'all') {
-          Object.keys(summaryData.categories).forEach(k => {
-            list = list.concat(summaryData.categories[k]);
-          });
+          Object.keys(summaryData.categories).forEach(k => { list = list.concat(summaryData.categories[k]); });
         } else {
           list = summaryData.categories[selectedCat] || [];
         }
 
         if (list.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลคะแนนรอบ 29 คน</td></tr>';
+          thead.innerHTML = '';
+          tbody.innerHTML = '<tr><td colspan="16" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลคะแนนในหมวดหมู่นี้</td></tr>';
           return;
         }
 
-        list.forEach(c => {
-          // ตรวจสอบว่า c อยู่ใน TOP 5 คะแนนสูงสุดหรือไม่
-          const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.round29Total > 0;
+        const judges = ['judge1','judge2','judge3','judge4','judge5'];
+        const criteriaLabels = [
+          { name: 'บุคลิก ผิวพรรณ', max: 40, short: 'บุคลิกฯ' },
+          { name: 'ความมั่นใจฯ', max: 30, short: 'มั่นใจฯ' },
+          { name: 'ความเรียบร้อย', max: 30, short: 'แต่งกาย' }
+        ];
+        const judgeColors = [
+          'bg-blue-950/60', 'bg-purple-950/50', 'bg-indigo-950/50', 'bg-cyan-950/50', 'bg-teal-950/50'
+        ];
+        const judgeHeaderColors = [
+          'bg-blue-900/70', 'bg-purple-900/60', 'bg-indigo-900/60', 'bg-cyan-900/60', 'bg-teal-900/60'
+        ];
 
-          const imagePath = c.image && c.image !== 'default.jpg'
-            ? `/images/contestants/${c.image}`
-            : `https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}`;
+        const topBadge = '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-0.5"></i> TOP 5</span>';
+        const noBadge = '<span class="text-[10px] text-gray-500">-</span>';
 
-          let row = `
+        if (adminRound29View === 'all') {
+          // ===== มุมมองสรุปรวม 4 รอบ =====
+          thead.innerHTML = `
+          <tr class="bg-[#111FA2] text-[#FFDE42] text-xs uppercase">
+            <th class="px-3 py-3 text-center">รหัส</th>
+            <th class="px-3 py-3 text-center">รูป</th>
+            <th class="px-3 py-3">ชื่อ-นามสกุล</th>
+            <th class="px-3 py-3 text-center">หมวด</th>
+            <th class="px-3 py-3 text-center">1. แนะนำตัว<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 500)</span></th>
+            <th class="px-3 py-3 text-center">2. Grand Opening<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 500)</span></th>
+            <th class="px-3 py-3 text-center">3. Speech 1 min<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 500)</span></th>
+            <th class="px-3 py-3 text-center">4. ชุดธีม<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 500)</span></th>
+            <th class="px-3 py-3 text-center bg-blue-900/60 text-white">รวมทั้งหมด<br><span class="text-amber-200 text-[9px] font-normal normal-case">(เต็ม 2,000)</span></th>
+            <th class="px-3 py-3 text-center">สถานะ</th>
+          </tr>`;
+
+          tbody.innerHTML = '';
+          list.forEach(c => {
+            const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.round29Total > 0;
+            const img = c.image && c.image !== 'default.jpg' ? `/images/contestants/${c.image}` : `https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}`;
+            tbody.innerHTML += `
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
-              <td class="px-4 py-3 text-center font-bold text-[#FFDE42]">${c.id}</td>
-              <td class="px-4 py-3 text-center">
-                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto">
-              </td>
-              <td class="px-4 py-3 font-semibold text-white">${c.name}</td>
-              <td class="px-4 py-3 text-center text-xs text-gray-300 font-medium">${c.categoryName}</td>
-              <td class="px-4 py-3 text-center text-gray-200">${c.rounds.intro.total}</td>
-              <td class="px-4 py-3 text-center text-gray-200">${c.rounds.grand.total}</td>
-              <td class="px-4 py-3 text-center text-gray-200">${c.rounds.speech.total}</td>
-              <td class="px-4 py-3 text-center text-gray-200">${c.rounds.theme.total}</td>
-              <td class="px-4 py-3 text-center font-bold text-lg text-[#FFDE42] bg-[#111FA2]/50">${c.round29Total}</td>
-              <td class="px-4 py-3 text-center">
-                ${isTop5 
-                  ? '<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold"><i class="fas fa-crown text-yellow-300 mr-1"></i> ผ่านเข้ารอบ TOP 5</span>'
-                  : '<span class="text-xs text-gray-400">-</span>'
-                }
-              </td>
-            </tr>
-          `;
-          tbody.innerHTML += row;
-        });
+              <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
+              <td class="px-3 py-3 text-center"><img src="${img}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto"></td>
+              <td class="px-3 py-3 font-semibold text-white text-sm whitespace-nowrap">${c.name}</td>
+              <td class="px-3 py-3 text-center text-[11px] text-gray-300">${c.categoryName}</td>
+              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.intro.total}</td>
+              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.grand.total}</td>
+              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.speech.total}</td>
+              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.theme.total}</td>
+              <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/50">${c.round29Total}</td>
+              <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
+            </tr>`;
+          });
+
+        } else {
+          // ===== มุมมองรายรอบ: แสดงเกณฑ์ย่อยรายกรรมการ =====
+          const roundNames = { intro: '1. แนะนำตัว', grand: '2. Grand Opening', speech: '3. Speech 1 min', theme: '4. ชุดธีม' };
+          const roundName = roundNames[adminRound29View];
+
+          // Build thead row 1: judge group headers
+          let judgeGroupHeaders = judges.map((j, i) =>
+            `<th colspan="4" class="px-2 py-2.5 text-center text-[11px] font-bold border-l border-[#5478FF]/30 ${judgeHeaderColors[i]}">กรรมการ ${i+1}</th>`
+          ).join('');
+
+          // Build thead row 2: criteria sub-headers per judge
+          let criteriaSubHeaders = judges.map((j, i) =>
+            criteriaLabels.map(crit =>
+              `<th class="px-2 py-2 text-center text-[9px] font-semibold whitespace-nowrap ${judgeColors[i]} border-l border-[#5478FF]/20 text-gray-300">${crit.short}<br><span class="text-[#FFDE42]">(${crit.max})</span></th>`
+            ).join('') +
+            `<th class="px-2 py-2 text-center text-[9px] font-bold ${judgeColors[i]} border-l-2 border-[#FFDE42]/40 text-[#FFDE42] whitespace-nowrap">รวม<br>(100)</th>`
+          ).join('');
+
+          thead.innerHTML = `
+          <tr class="bg-[#111FA2] text-[#FFDE42] text-xs uppercase">
+            <th rowspan="2" class="px-3 py-3 text-center align-middle">รหัส</th>
+            <th rowspan="2" class="px-3 py-3 text-center align-middle">รูป</th>
+            <th rowspan="2" class="px-3 py-3 align-middle">ชื่อ-นามสกุล</th>
+            <th rowspan="2" class="px-3 py-3 text-center align-middle">หมวด</th>
+            ${judgeGroupHeaders}
+            <th rowspan="2" class="px-3 py-3 text-center align-middle bg-[#FFDE42]/10 text-[#FFDE42] border-l-2 border-[#FFDE42]/50 whitespace-nowrap">รวมรอบ<br><span class="text-[9px] text-amber-200 font-normal normal-case">(เต็ม 500)</span></th>
+            <th rowspan="2" class="px-3 py-3 text-center align-middle">สถานะ</th>
+          </tr>
+          <tr class="bg-[#091054] border-b-2 border-[#5478FF]/40">
+            ${criteriaSubHeaders}
+          </tr>`;
+
+          tbody.innerHTML = '';
+          list.forEach(c => {
+            const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.round29Total > 0;
+            const img = c.image && c.image !== 'default.jpg' ? `/images/contestants/${c.image}` : `https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}`;
+
+            let judeCells = '';
+            let roundTotal = 0;
+            judges.forEach((jId, jIdx) => {
+              const rec = (allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === adminRound29View);
+              const s1 = rec ? (rec.score_c1 || 0) : null;
+              const s2 = rec ? (rec.score_c2 || 0) : null;
+              const s3 = rec ? (rec.score_c3 || 0) : null;
+              const tot = rec ? (rec.total_score || 0) : null;
+              if (tot !== null) roundTotal += tot;
+              const bg = judgeColors[jIdx];
+              const na = '<span class="text-gray-600 text-xs">-</span>';
+              judeCells += `
+                <td class="px-2 py-2.5 text-center text-sm ${bg} border-l border-[#5478FF]/20">${s1 !== null ? `<span class="font-medium text-blue-200">${s1}</span>` : na}</td>
+                <td class="px-2 py-2.5 text-center text-sm ${bg}">${s2 !== null ? `<span class="font-medium text-purple-200">${s2}</span>` : na}</td>
+                <td class="px-2 py-2.5 text-center text-sm ${bg}">${s3 !== null ? `<span class="font-medium text-green-200">${s3}</span>` : na}</td>
+                <td class="px-2 py-2.5 text-center font-bold ${bg} border-l-2 border-[#FFDE42]/30">${tot !== null ? `<span class="text-[#FFDE42] text-base">${tot}</span>` : na}</td>`;
+            });
+
+            tbody.innerHTML += `
+            <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
+              <td class="px-3 py-3 text-center font-bold text-[#FFDE42] whitespace-nowrap">${c.id}</td>
+              <td class="px-3 py-3 text-center"><img src="${img}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto"></td>
+              <td class="px-3 py-3 font-semibold text-white text-sm whitespace-nowrap">${c.name}</td>
+              <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}</td>
+              ${judeCells}
+              <td class="px-3 py-3 text-center font-bold text-lg text-[#FFDE42] bg-[#111FA2]/60 border-l-2 border-[#FFDE42]/30">${roundTotal || '-'}</td>
+              <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
+            </tr>`;
+          });
+        }
       }
 
       async function refreshAdminData() {
