@@ -400,11 +400,14 @@ app.post('/api/scores', async (req, res) => {
         await connection.execute(query, [judge_id, contestant_id, round_id, c1, c2, c3, total]);
         await connection.end();
         
-        await generateAndSaveExcel();
+        // ✅ ตอบกลับทันทีหลังบันทึก DB สำเร็จ — ไม่รอ Excel (กัน timeout/filesystem error บน cloud)
         res.json({ success: true, message: 'บันทึกคะแนนสำเร็จ', total_score: total });
+
+        // 🔥 สร้าง Excel แบบ background (fire-and-forget) ไม่ block response
+        generateAndSaveExcel().catch(e => console.error('⚠️ Excel gen error (non-critical):', e.message));
     } catch (error) {
-        console.error('❌ Error saving score:', error);
-        res.status(500).json({ success: false, error: 'Failed to save score' });
+        console.error('❌ Error saving score:', error.message, error.stack);
+        res.status(500).json({ success: false, error: 'Failed to save score', detail: error.message });
     }
 });
 
