@@ -72,13 +72,14 @@ async function initDB() {
             )
         `);
 
-        // ตรวจสอบโครงสร้างตาราง scores
+        // ตรวจสอบโครงสร้างตาราง scores — ใช้ DATABASE() เพื่อรองรับทุก environment
         const [scoreCols] = await connection.execute(`
             SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
-            WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'scores' AND COLUMN_NAME = 'round_id'
-        `, [dbConfig.database]);
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'scores' AND COLUMN_NAME = 'round_id'
+        `);
 
         if (scoreCols.length === 0) {
+            console.log('⚠️ scores table missing round_id column — recreating...');
             await connection.execute(`DROP TABLE IF EXISTS scores`);
             await connection.execute(`
                 CREATE TABLE scores (
@@ -94,6 +95,8 @@ async function initDB() {
                 )
             `);
             console.log('✅ Created new scores table schema with round_id.');
+        } else {
+            console.log('✅ scores table schema OK (round_id exists).');
         }
 
         // ตาราง 3: Top 5
@@ -164,7 +167,8 @@ async function initDB() {
 
         await connection.end();
         console.log('✅ Database tables initialized (3 Tables).');
-        await generateAndSaveExcel();
+        // Fire-and-forget Excel gen (ไม่ block startup บน cloud)
+        generateAndSaveExcel().catch(e => console.warn('⚠️ Excel init skip:', e.message));
     } catch (error) {
         console.error('❌ DB Init Error:', error.message);
     }
