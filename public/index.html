@@ -14,21 +14,32 @@
       rel="stylesheet"
     />
     <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
       body {
         font-family: "Prompt", sans-serif;
         background-color: #050a30;
         background-image:
-          radial-gradient(circle at 50% 15%, rgba(84, 120, 255, 0.25) 0%, transparent 55%),
-          radial-gradient(circle at 50% 85%, rgba(255, 222, 66, 0.12) 0%, transparent 50%);
+          radial-gradient(circle at 50% 12%, rgba(84, 120, 255, 0.28) 0%, transparent 60%),
+          radial-gradient(circle at 15% 80%, rgba(84, 120, 255, 0.15) 0%, transparent 45%),
+          radial-gradient(circle at 85% 85%, rgba(255, 222, 66, 0.12) 0%, transparent 50%);
         background-attachment: fixed;
         color: #ffffff;
         min-height: 100vh;
+        overflow-x: hidden;
       }
       .glass-panel {
         background: rgba(17, 31, 162, 0.25);
-        backdrop-filter: blur(20px);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
         border: 1px solid rgba(84, 120, 255, 0.35);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .gold-glow {
         text-shadow:
@@ -43,23 +54,186 @@
         background: rgba(9, 16, 84, 0.75);
         border: 1px solid rgba(84, 120, 255, 0.4);
         color: white;
-        transition: all 0.3s;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
       }
       .input-dark:focus {
         border-color: #ffde42;
-        box-shadow: 0 0 15px rgba(255, 222, 66, 0.4);
+        box-shadow: 0 0 18px rgba(255, 222, 66, 0.45);
         outline: none;
       }
+
+      /* Custom Range Slider */
+      .score-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 7px;
+        border-radius: 9999px;
+        background: linear-gradient(to right, #FFDE42 0%, #FFDE42 var(--pct, 0%), rgba(84, 120, 255, 0.35) var(--pct, 0%), rgba(84, 120, 255, 0.35) 100%);
+        outline: none;
+        cursor: pointer;
+        transition: background 0.1s ease-out;
+      }
+      .score-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #fff5a6 0%, #FFDE42 60%, #e6be12 100%);
+        border: 2px solid #091054;
+        box-shadow: 0 0 12px rgba(255, 222, 66, 0.75);
+        cursor: grab;
+        transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .score-slider:hover::-webkit-slider-thumb {
+        transform: scale(1.18);
+        box-shadow: 0 0 18px rgba(255, 222, 66, 0.95);
+      }
+      .score-slider:active::-webkit-slider-thumb {
+        cursor: grabbing;
+        transform: scale(1.28);
+        box-shadow: 0 0 25px rgba(255, 222, 66, 1);
+      }
+      .score-slider::-moz-range-thumb {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #fff5a6 0%, #FFDE42 60%, #e6be12 100%);
+        border: 2px solid #091054;
+        box-shadow: 0 0 12px rgba(255, 222, 66, 0.75);
+        cursor: grab;
+        transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .score-slider:hover::-moz-range-thumb {
+        transform: scale(1.18);
+        box-shadow: 0 0 18px rgba(255, 222, 66, 0.95);
+      }
+      .score-slider:active::-moz-range-thumb {
+        cursor: grabbing;
+        transform: scale(1.28);
+      }
+
+      /* Card Entrance & Stagger */
+      @keyframes cardEntrance {
+        0% {
+          opacity: 0;
+          transform: translateY(20px) scale(0.97);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      .contestant-card {
+        animation: cardEntrance 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+        will-change: transform, opacity;
+      }
+
+      /* Score Number Pulse */
+      @keyframes scorePulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); color: #FFDE42; text-shadow: 0 0 15px rgba(255, 222, 66, 0.9); }
+        100% { transform: scale(1); }
+      }
+      .score-pulsing {
+        animation: scorePulse 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* View Fade In */
+      @keyframes viewFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .view-animated {
+        animation: viewFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      /* Modal Smooth Transitions */
+      .modal-backdrop {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .modal-backdrop.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal-dialog {
+        transform: scale(0.93) translateY(16px);
+        opacity: 0;
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .modal-backdrop.open .modal-dialog {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+
+      /* Role Dropdown Smooth Transition */
+      .dropdown-menu {
+        opacity: 0;
+        transform: scale(0.97) translateY(-8px);
+        pointer-events: none;
+        transform-origin: top center;
+        transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .dropdown-menu.open {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        pointer-events: auto;
+      }
+
+      /* Toast Notification */
+      #toast {
+        transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        will-change: transform, opacity;
+      }
+      #toast.toast-show {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      #toast.toast-hide {
+        transform: translateY(32px);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Table Rows Smooth Transition */
+      table tbody tr {
+        transition: background-color 0.2s ease;
+      }
+      table tbody tr:hover {
+        background-color: rgba(84, 120, 255, 0.14) !important;
+      }
+
+      /* Buttons Smooth Scale & Transition */
+      button, a.btn-link {
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      }
+      button:active, a.btn-link:active {
+        transform: scale(0.96) !important;
+      }
+
+      /* Scrollbar */
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: rgba(9, 16, 84, 0.8);
+        background: rgba(9, 16, 84, 0.7);
+        border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb {
-        background: #5478ff;
-        border-radius: 4px;
+        background: rgba(84, 120, 255, 0.6);
+        border-radius: 9999px;
+        transition: background 0.2s ease;
       }
       ::-webkit-scrollbar-thumb:hover {
         background: #ffde42;
@@ -128,7 +302,7 @@
               <input type="hidden" id="login-role" value="admin" />
               <div
                 id="role-dropdown-menu"
-                class="hidden absolute top-full left-0 right-0 mt-2 bg-[#091054]/95 backdrop-blur-2xl border border-[#5478FF]/60 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden z-50 divide-y divide-[#5478FF]/15"
+                class="dropdown-menu hidden absolute top-full left-0 right-0 mt-2 bg-[#091054]/95 backdrop-blur-2xl border border-[#5478FF]/60 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden z-50 divide-y divide-[#5478FF]/15"
               >
                 <div onclick="selectRole('admin', 'ผู้ดูแลระบบ (Admin)', 'fa-user-shield')" class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-white">
                   <span class="flex items-center gap-2.5"><i class="fas fa-user-shield text-[#FFDE42]"></i> ผู้ดูแลระบบ (Admin)</span>
@@ -346,19 +520,19 @@
           <div class="flex gap-2">
             <button
               onclick="printScoreSheet()"
-              class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition rounded-xl text-xs flex items-center gap-1.5 shadow-md"
+              class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-purple-500/30"
             >
               <i class="fas fa-print"></i> พิมพ์ใบคะแนน
             </button>
             <a
               href="/api/export"
-              class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition rounded-xl text-xs flex items-center gap-1.5 shadow-md"
+              class="btn-link px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-emerald-500/30"
             >
               <i class="fas fa-file-excel"></i> โหลด Excel
             </a>
             <button
               onclick="refreshAdminData()"
-              class="px-4 py-2 bg-[#5478FF] hover:bg-blue-400 text-white font-bold transition rounded-xl text-xs flex items-center gap-1.5 shadow-md"
+              class="px-4 py-2 bg-[#5478FF] hover:bg-blue-400 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-blue-500/30"
             >
               <i class="fas fa-sync-alt"></i> อัปเดตล่าสุด
             </button>
@@ -492,7 +666,7 @@
                 <label class="block text-xs mb-1 text-gray-300">อัปโหลดรูปภาพ</label>
                 <input type="file" id="add-image" accept="image/*" class="text-gray-300 text-sm file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#5478FF] file:text-white hover:file:bg-blue-400 cursor-pointer" />
               </div>
-              <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#FFDE42] to-yellow-400 text-[#111FA2] font-bold rounded-xl hover:scale-105 transition-transform flex items-center gap-1.5 shadow-md">
+              <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-[#FFDE42] to-yellow-400 text-[#111FA2] font-bold rounded-xl hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-[0_0_20px_rgba(255,222,66,0.5)]">
                 <i class="fas fa-save"></i> บันทึกข้อมูล
               </button>
             </form>
@@ -502,8 +676,8 @@
     </main>
 
     <!-- Modals: ยืนยันการบันทึกคะแนน -->
-    <div id="custom-confirm-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden transition-opacity duration-300">
-      <div class="glass-panel max-w-md w-full rounded-3xl p-6 md:p-8 border-2 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.35)] transform transition-all text-center relative">
+    <div id="custom-confirm-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+      <div class="modal-dialog glass-panel max-w-md w-full rounded-3xl p-6 md:p-8 border-2 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.35)] text-center relative">
         <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-[#111FA2] border-2 border-[#FFDE42] flex items-center justify-center shadow-[0_0_20px_rgba(255,222,66,0.5)]">
           <i class="fas fa-gavel text-2xl text-[#FFDE42] gold-glow"></i>
         </div>
@@ -544,10 +718,10 @@
         </div>
 
         <div class="flex gap-3">
-          <button onclick="closeModal()" class="w-1/2 py-3 rounded-xl border border-gray-500 text-gray-300 hover:bg-gray-800 transition font-semibold text-sm">
+          <button onclick="closeModal()" class="w-1/2 py-3 rounded-xl border border-gray-500 text-gray-300 hover:bg-gray-800 transition font-semibold text-sm active:scale-95">
             ยกเลิก
           </button>
-          <button onclick="confirmSubmitScore()" class="w-1/2 py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-105 transition text-sm">
+          <button onclick="confirmSubmitScore()" class="w-1/2 py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-105 active:scale-95 transition text-sm">
             ยืนยันบันทึก
           </button>
         </div>
@@ -557,10 +731,16 @@
     <!-- Toast Notification -->
     <div
       id="toast"
-      class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-500 bg-[#FFDE42] border-l-4 border-[#111FA2] text-[#111FA2] font-bold px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(255,222,66,0.6)] z-50 flex items-center"
+      class="toast-hide fixed bottom-6 right-6 z-50 glass-panel border border-[#FFDE42]/70 bg-[#091054]/95 text-white font-semibold px-5 py-4 rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.7),0_0_20px_rgba(255,222,66,0.35)] flex items-center gap-3.5 backdrop-blur-xl overflow-hidden"
     >
-      <i class="fas fa-check-circle mr-3 text-xl"></i>
-      <span id="toast-msg"></span>
+      <div class="w-9 h-9 rounded-full bg-[#FFDE42]/20 border border-[#FFDE42] flex items-center justify-center shrink-0">
+        <i class="fas fa-check-circle text-[#FFDE42] text-lg"></i>
+      </div>
+      <div>
+        <div class="text-[11px] text-[#FFDE42] font-bold uppercase tracking-wider">สำเร็จ</div>
+        <div id="toast-msg" class="text-sm text-gray-100 font-medium"></div>
+      </div>
+      <div id="toast-progress" class="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-[#FFDE42] to-amber-300 w-full origin-left scale-x-100"></div>
     </div>
 
     <footer class="text-center text-xs text-gray-400 py-2 z-10 w-full mt-auto">
@@ -615,9 +795,27 @@
       // ==========================================
       // Role & Login
       // ==========================================
-      function toggleRoleDropdown() {
-        document.getElementById('role-dropdown-menu').classList.toggle('hidden');
-        document.getElementById('dropdown-arrow').classList.toggle('rotate-180');
+      function toggleRoleDropdown(forceClose = false) {
+        const menu = document.getElementById('role-dropdown-menu');
+        const arrow = document.getElementById('dropdown-arrow');
+        if (!menu) return;
+
+        const isOpen = menu.classList.contains('open');
+        if (forceClose || isOpen) {
+          menu.classList.remove('open');
+          if (arrow) arrow.classList.remove('rotate-180');
+          setTimeout(() => {
+            if (!menu.classList.contains('open')) {
+              menu.classList.add('hidden');
+            }
+          }, 200);
+        } else {
+          menu.classList.remove('hidden');
+          requestAnimationFrame(() => {
+            menu.classList.add('open');
+            if (arrow) arrow.classList.add('rotate-180');
+          });
+        }
       }
 
       function selectRole(val, label, icon) {
@@ -625,8 +823,19 @@
         document.getElementById('selected-role-label').innerHTML = `<i class="fas ${icon} text-[#FFDE42]"></i> ${label}`;
         document.querySelectorAll('.check-icon').forEach(el => el.classList.add('hidden'));
         document.getElementById(`check-${val}`).classList.remove('hidden');
-        toggleRoleDropdown();
+        toggleRoleDropdown(true);
       }
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        const btn = document.getElementById('dropdown-btn');
+        const menu = document.getElementById('role-dropdown-menu');
+        if (menu && menu.classList.contains('open')) {
+          if (btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+            toggleRoleDropdown(true);
+          }
+        }
+      });
 
       async function attemptLogin() {
         const role = document.getElementById('login-role').value;
@@ -646,25 +855,50 @@
             sessionToken = data.token;
             errLabel.classList.add('hidden');
 
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('user-info').classList.remove('hidden');
-            document.getElementById('current-role-display').innerText = role.toUpperCase();
+            const loginSection = document.getElementById('login-section');
+            loginSection.style.transition = 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+            loginSection.style.opacity = '0';
+            loginSection.style.transform = 'scale(0.96) translateY(-8px)';
 
-            await loadContestants();
-            await fetchScores();
-            startHeartbeat();
+            setTimeout(async () => {
+              loginSection.classList.add('hidden');
+              loginSection.style.opacity = '';
+              loginSection.style.transform = '';
 
-            if (role === 'admin') {
-              document.getElementById('admin-section').classList.remove('hidden');
-              switchAdminView('top5');
-              pollingInterval = setInterval(fetchScores, 5000);
-            } else {
-              document.getElementById('judge-section').classList.remove('hidden');
-              switchRound('intro');
-            }
+              const userInfo = document.getElementById('user-info');
+              userInfo.classList.remove('hidden');
+              userInfo.classList.remove('view-animated');
+              void userInfo.offsetWidth;
+              userInfo.classList.add('view-animated');
+              document.getElementById('current-role-display').innerText = role.toUpperCase();
+
+              await loadContestants();
+              await fetchScores();
+              startHeartbeat();
+
+              if (role === 'admin') {
+                const adminSec = document.getElementById('admin-section');
+                adminSec.classList.remove('hidden');
+                adminSec.classList.remove('view-animated');
+                void adminSec.offsetWidth;
+                adminSec.classList.add('view-animated');
+                switchAdminView('top5');
+                pollingInterval = setInterval(fetchScores, 5000);
+              } else {
+                const judgeSec = document.getElementById('judge-section');
+                judgeSec.classList.remove('hidden');
+                judgeSec.classList.remove('view-animated');
+                void judgeSec.offsetWidth;
+                judgeSec.classList.add('view-animated');
+                switchRound('intro');
+              }
+            }, 250);
           } else {
             errLabel.innerText = data.message;
             errLabel.classList.remove('hidden');
+            errLabel.classList.remove('view-animated');
+            void errLabel.offsetWidth;
+            errLabel.classList.add('view-animated');
           }
         } catch (e) {
           alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
@@ -700,7 +934,13 @@
         currentUser = null;
         sessionToken = null;
         document.getElementById('login-password').value = '';
-        document.getElementById('login-section').classList.remove('hidden');
+
+        const loginSec = document.getElementById('login-section');
+        loginSec.classList.remove('hidden');
+        loginSec.classList.remove('view-animated');
+        void loginSec.offsetWidth;
+        loginSec.classList.add('view-animated');
+
         document.getElementById('judge-section').classList.add('hidden');
         document.getElementById('admin-section').classList.add('hidden');
         document.getElementById('user-info').classList.add('hidden');
@@ -750,7 +990,7 @@
           const btn = document.getElementById(`tab-round-${r.id}`);
           if (!btn) return;
           if (r.id === rId) {
-            btn.className = "round-nav-btn p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#FFDE42] text-[#111FA2] text-center transition-all duration-300 scale-105 shadow-[0_0_20px_rgba(255,222,66,0.5)] font-bold";
+            btn.className = "round-nav-btn p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#FFDE42] text-[#111FA2] text-center transition-all duration-300 scale-105 shadow-[0_0_22px_rgba(255,222,66,0.55)] font-bold active:scale-95";
             const icon = btn.querySelector('i');
             if (icon) icon.className = icon.className.replace('text-[#5478FF]', 'text-[#111FA2]').replace('text-[#FFDE42]', 'text-[#111FA2]');
             const texts = btn.querySelectorAll('div');
@@ -759,8 +999,8 @@
           } else {
             const isQa = r.id === 'qa';
             btn.className = isQa 
-              ? "round-nav-btn col-span-2 sm:col-span-1 p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#111FA2]/80 text-center transition-all duration-300 shadow-[0_0_15px_rgba(255,222,66,0.3)] hover:scale-105 group"
-              : "round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group";
+              ? "round-nav-btn col-span-2 sm:col-span-1 p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#111FA2]/80 text-center transition-all duration-300 shadow-[0_0_15px_rgba(255,222,66,0.3)] hover:scale-105 hover:shadow-[0_0_20px_rgba(255,222,66,0.5)] active:scale-95 group"
+              : "round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] hover:-translate-y-0.5 active:scale-95 group";
             const icon = btn.querySelector('i');
             if (icon) icon.className = isQa ? "fas fa-crown text-xl mb-1 text-[#FFDE42] gold-glow" : icon.className.replace('text-[#111FA2]', 'text-[#5478FF]');
             const texts = btn.querySelectorAll('div');
@@ -776,6 +1016,9 @@
         if (rId === 'qa') {
           catBar.classList.add('hidden');
           top5Banner.classList.remove('hidden');
+          top5Banner.classList.remove('view-animated');
+          void top5Banner.offsetWidth;
+          top5Banner.classList.add('view-animated');
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5:</span> 1.บุคลิกตอบคำถาม (40) | 2.ความเข้าใจคำถาม (30) | 3.ความมั่นใจตอบคำถาม (30)';
         } else {
           catBar.classList.remove('hidden');
@@ -795,9 +1038,9 @@
           const btn = document.getElementById(`tab-cat-${c}`);
           if (btn) {
             if (c === cat) {
-              btn.className = "cat-nav-btn px-5 py-2 rounded-full border-2 border-[#FFDE42] text-[#111FA2] font-bold bg-[#FFDE42] transition-all scale-105 shadow-[0_0_15px_rgba(255,222,66,0.4)] text-sm";
+              btn.className = "cat-nav-btn px-5 py-2 rounded-full border-2 border-[#FFDE42] text-[#111FA2] font-bold bg-[#FFDE42] transition-all duration-300 scale-105 shadow-[0_0_18px_rgba(255,222,66,0.5)] text-sm active:scale-95";
             } else {
-              btn.className = "cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white";
+              btn.className = "cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition-all duration-300 hover:border-[#FFDE42] hover:text-white hover:-translate-y-0.5 active:scale-95";
             }
           }
         });
@@ -833,13 +1076,13 @@
         }
 
         if (targetList.length === 0) {
-          container.innerHTML = `<div class="col-span-2 text-center text-gray-300 py-12 glass-panel rounded-3xl">ยังไม่มีข้อมูลในหมวดหมู่นี้ หรือยังไม่มีคะแนนสำหรับคัดเลือก TOP 5</div>`;
+          container.innerHTML = `<div class="col-span-2 text-center text-gray-300 py-12 glass-panel rounded-3xl view-animated">ยังไม่มีข้อมูลในหมวดหมู่นี้ หรือยังไม่มีคะแนนสำหรับคัดเลือก TOP 5</div>`;
           return;
         }
 
         const criteriaList = isQa ? CRITERIA_TOP5 : CRITERIA_ROUND29;
 
-        targetList.forEach(contestant => {
+        targetList.forEach((contestant, cIndex) => {
           const cId = contestant.id;
           const cName = contestant.name;
           const cCat = contestant.category;
@@ -862,14 +1105,15 @@
 
           const roundObj = ROUNDS.find(r => r.id === currentRound);
           const roundName = roundObj ? roundObj.name : currentRound;
+          const animDelay = Math.min(cIndex * 0.04, 0.4);
 
           let cardHtml = `
-            <div class="glass-panel p-5 md:p-6 rounded-3xl border-t-2 ${hasVoted ? 'border-emerald-400' : 'border-[#FFDE42]'} relative transition-all duration-300 hover:shadow-[0_15px_40px_rgba(84,120,255,0.3)] flex flex-col md:flex-row gap-5 items-stretch">
+            <div class="contestant-card glass-panel p-5 md:p-6 rounded-3xl border-t-2 ${hasVoted ? 'border-emerald-400' : 'border-[#FFDE42]'} relative transition-all duration-300 hover:shadow-[0_20px_45px_rgba(84,120,255,0.35)] flex flex-col md:flex-row gap-5 items-stretch" style="animation-delay: ${animDelay}s;">
               <!-- ฝั่งซ้าย: รูปภาพและข้อมูล -->
               <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-5 md:pb-0 md:pr-5">
                 <div class="w-full flex flex-col items-center">
                   <div class="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden border-2 ${hasVoted ? 'border-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'border-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.25)]'} bg-[#111FA2] group mb-2">
-                    <img src="${imagePath}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/111FA2/FFDE42?text=${cId}';" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="${imagePath}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/111FA2/FFDE42?text=${cId}';" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
                     
                     <div class="absolute top-2 left-2 bg-[#111FA2]/90 border border-[#FFDE42] text-[#FFDE42] font-bold px-3 py-1 rounded-lg text-xs shadow-md">
                       ${cId} • ${catTitle}
@@ -886,12 +1130,14 @@
                     </div>
                   ` : ''}
 
-                  <div class="mt-2.5 px-4 py-1.5 bg-[#111FA2]/80 rounded-full text-[#FFDE42] font-bold text-sm border border-[#5478FF]/40">
-                    รอบนี้ <span id="total-${cId}" class="text-xl ml-1 font-extrabold">${totalScore}</span> / 100
+                  <div class="mt-2.5 px-4 py-1.5 bg-[#111FA2]/80 rounded-full text-[#FFDE42] font-bold text-sm border border-[#5478FF]/40 shadow-inner flex items-center justify-center gap-1.5">
+                    <span>รอบนี้</span>
+                    <span id="total-${cId}" class="text-xl font-extrabold transition-all duration-200">${totalScore}</span>
+                    <span class="text-gray-300 font-normal">/ 100</span>
                   </div>
                 </div>
 
-                <button onclick="openSubmitModal('${cId}', '${cName}')" class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 ${hasVoted ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white' : 'bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] hover:shadow-[0_0_20px_rgba(255,222,66,0.6)] hover:scale-[1.02] active:scale-95'}">
+                <button onclick="openSubmitModal('${cId}', '${cName}')" class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 active:scale-95 ${hasVoted ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white hover:shadow-[0_0_20px_rgba(52,211,153,0.5)]' : 'bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] hover:shadow-[0_0_25px_rgba(255,222,66,0.65)] hover:scale-[1.02]'}">
                   <i class="fas ${hasVoted ? 'fa-check' : 'fa-gavel'}"></i>
                   <span>${hasVoted ? 'แก้ไขคะแนนรอบนี้' : 'บันทึกคะแนนรอบนี้'}</span>
                 </button>
@@ -909,22 +1155,24 @@
                 <div class="space-y-4 my-auto">
           `;
 
-          criteriaList.forEach((crit, idx) => {
-            let val = idx === 0 ? val1 : (idx === 1 ? val2 : val3);
+          criteriaList.forEach((crit, critIdx) => {
+            let val = critIdx === 0 ? val1 : (critIdx === 1 ? val2 : val3);
+            let pct = crit.max > 0 ? (val / crit.max) * 100 : 0;
             cardHtml += `
-              <div class="p-3 rounded-xl bg-[#050a30]/60 border border-[#5478FF]/30 hover:border-[#FFDE42]/60 transition-colors">
-                <div class="flex justify-between items-center mb-1.5">
+              <div class="p-3.5 rounded-2xl bg-[#050a30]/60 border border-[#5478FF]/30 hover:border-[#FFDE42]/60 transition-all duration-200">
+                <div class="flex justify-between items-center mb-2">
                   <span class="text-sm font-semibold text-gray-200">${crit.name}</span>
-                  <span class="text-xs font-bold text-[#FFDE42]">เต็ม ${crit.max}</span>
+                  <span class="text-xs font-bold text-[#FFDE42] bg-[#FFDE42]/10 px-2.5 py-0.5 rounded-full border border-[#FFDE42]/20">เต็ม ${crit.max}</span>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3.5">
                   <input
                     type="range"
                     min="0"
                     max="${crit.max}"
                     value="${val}"
                     id="slider-${crit.id}-${cId}"
-                    class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#FFDE42]"
+                    class="score-slider"
+                    style="--pct: ${pct}%;"
                     oninput="onScoreSliderChange('${cId}', '${crit.id}', ${crit.max}, this.value)"
                   >
                   <input
@@ -933,7 +1181,7 @@
                     max="${crit.max}"
                     value="${val}"
                     id="input-${crit.id}-${cId}"
-                    class="w-16 h-10 input-dark rounded-xl text-center font-bold text-lg text-[#FFDE42] border border-[#5478FF]/40"
+                    class="w-16 h-10 input-dark rounded-xl text-center font-bold text-lg text-[#FFDE42] border border-[#5478FF]/40 focus:scale-105 transition-transform"
                     oninput="onScoreInputChange('${cId}', '${crit.id}', ${crit.max}, this.value)"
                   >
                 </div>
@@ -954,13 +1202,18 @@
         val = Math.min(max, Math.max(0, parseInt(val) || 0));
         const input = document.getElementById(`input-${critId}-${cId}`);
         if (input) input.value = val;
+        const slider = document.getElementById(`slider-${critId}-${cId}`);
+        if (slider) slider.style.setProperty('--pct', `${(val / max) * 100}%`);
         recalculateCardTotal(cId);
       }
 
       function onScoreInputChange(cId, critId, max, val) {
         val = Math.min(max, Math.max(0, parseInt(val) || 0));
         const slider = document.getElementById(`slider-${critId}-${cId}`);
-        if (slider) slider.value = val;
+        if (slider) {
+          slider.value = val;
+          slider.style.setProperty('--pct', `${(val / max) * 100}%`);
+        }
         recalculateCardTotal(cId);
       }
 
@@ -977,8 +1230,9 @@
         const totalEl = document.getElementById(`total-${cId}`);
         if (totalEl) {
           totalEl.innerText = total;
-          totalEl.parentElement.classList.add('scale-110', 'bg-[#5478FF]/40');
-          setTimeout(() => totalEl.parentElement.classList.remove('scale-110', 'bg-[#5478FF]/40'), 200);
+          totalEl.classList.remove('score-pulsing');
+          void totalEl.offsetWidth;
+          totalEl.classList.add('score-pulsing');
         }
       }
 
@@ -1035,12 +1289,24 @@
         
         document.getElementById('modal-score').innerText = total;
 
-        document.getElementById('custom-confirm-modal').classList.remove('hidden');
+        const modal = document.getElementById('custom-confirm-modal');
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          modal.classList.add('open');
+        });
       }
 
       function closeModal() {
-        document.getElementById('custom-confirm-modal').classList.add('hidden');
-        pendingSubmitData = null;
+        const modal = document.getElementById('custom-confirm-modal');
+        if (modal) {
+          modal.classList.remove('open');
+          setTimeout(() => {
+            modal.classList.add('hidden');
+            pendingSubmitData = null;
+          }, 250);
+        } else {
+          pendingSubmitData = null;
+        }
       }
 
       async function confirmSubmitScore() {
@@ -1074,11 +1340,32 @@
         }
       }
 
+      let toastTimeout = null;
       function showToast(msg) {
         const toast = document.getElementById('toast');
+        const bar = document.getElementById('toast-progress');
+        if (!toast) return;
+        
         document.getElementById('toast-msg').innerText = msg;
-        toast.classList.remove('translate-y-20', 'opacity-0');
-        setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3500);
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+
+        toast.classList.remove('toast-hide');
+        toast.classList.add('toast-show');
+        
+        if (bar) {
+          bar.style.transition = 'none';
+          bar.style.transform = 'scaleX(1)';
+          setTimeout(() => {
+            bar.style.transition = 'transform 3200ms linear';
+            bar.style.transform = 'scaleX(0)';
+          }, 20);
+        }
+
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('toast-show');
+          toast.classList.add('toast-hide');
+        }, 3400);
       }
 
       // ==========================================
@@ -1093,11 +1380,15 @@
           const section = document.getElementById(`admin-view-${v}`);
           if (btn && section) {
             if (v === view) {
-              btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_15px_rgba(255,222,66,0.4)]";
+              btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_15px_rgba(255,222,66,0.4)] scale-105 active:scale-95";
               section.classList.remove('hidden');
+              section.classList.remove('view-animated');
+              void section.offsetWidth;
+              section.classList.add('view-animated');
             } else {
-              btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel";
+              btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 text-gray-300 hover:text-white glass-panel active:scale-95";
               section.classList.add('hidden');
+              section.classList.remove('view-animated');
             }
           }
         });
@@ -1188,11 +1479,17 @@
           const btn = document.getElementById(`admin-r29-tab-${r}`);
           if (!btn) return;
           if (r === roundId) {
-            btn.className = 'r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]';
+            btn.className = 'r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)] scale-105 active:scale-95';
           } else {
-            btn.className = 'r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white';
+            btn.className = 'r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white active:scale-95';
           }
         });
+        const tbody = document.getElementById('round29-table-body');
+        if (tbody) {
+          tbody.classList.remove('view-animated');
+          void tbody.offsetWidth;
+          tbody.classList.add('view-animated');
+        }
         renderAdminRound29Table();
       }
 
