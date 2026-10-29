@@ -837,6 +837,59 @@
         }
       });
 
+      function saveSession(role, token) {
+        try {
+          localStorage.setItem('freshy_user', role);
+          localStorage.setItem('freshy_token', token);
+        } catch (e) {}
+      }
+
+      function clearSavedSession() {
+        try {
+          localStorage.removeItem('freshy_user');
+          localStorage.removeItem('freshy_token');
+        } catch (e) {}
+      }
+
+      async function activateSession(role, token) {
+        currentUser = role;
+        sessionToken = token;
+        saveSession(role, token);
+
+        const loginSection = document.getElementById('login-section');
+        loginSection.classList.add('hidden');
+        loginSection.style.opacity = '';
+        loginSection.style.transform = '';
+
+        const userInfo = document.getElementById('user-info');
+        userInfo.classList.remove('hidden');
+        userInfo.classList.remove('view-animated');
+        void userInfo.offsetWidth;
+        userInfo.classList.add('view-animated');
+        document.getElementById('current-role-display').innerText = role.toUpperCase();
+
+        await loadContestants();
+        await fetchScores();
+        startHeartbeat();
+
+        if (role === 'admin') {
+          const adminSec = document.getElementById('admin-section');
+          adminSec.classList.remove('hidden');
+          adminSec.classList.remove('view-animated');
+          void adminSec.offsetWidth;
+          adminSec.classList.add('view-animated');
+          switchAdminView('top5');
+          if (!pollingInterval) pollingInterval = setInterval(fetchScores, 5000);
+        } else {
+          const judgeSec = document.getElementById('judge-section');
+          judgeSec.classList.remove('hidden');
+          judgeSec.classList.remove('view-animated');
+          void judgeSec.offsetWidth;
+          judgeSec.classList.add('view-animated');
+          switchRound('intro');
+        }
+      }
+
       async function attemptLogin() {
         const role = document.getElementById('login-role').value;
         const password = document.getElementById('login-password').value;
@@ -851,8 +904,6 @@
           const data = await res.json();
 
           if (data.success) {
-            currentUser = data.role;
-            sessionToken = data.token;
             errLabel.classList.add('hidden');
 
             const loginSection = document.getElementById('login-section');
@@ -861,37 +912,7 @@
             loginSection.style.transform = 'scale(0.96) translateY(-8px)';
 
             setTimeout(async () => {
-              loginSection.classList.add('hidden');
-              loginSection.style.opacity = '';
-              loginSection.style.transform = '';
-
-              const userInfo = document.getElementById('user-info');
-              userInfo.classList.remove('hidden');
-              userInfo.classList.remove('view-animated');
-              void userInfo.offsetWidth;
-              userInfo.classList.add('view-animated');
-              document.getElementById('current-role-display').innerText = role.toUpperCase();
-
-              await loadContestants();
-              await fetchScores();
-              startHeartbeat();
-
-              if (role === 'admin') {
-                const adminSec = document.getElementById('admin-section');
-                adminSec.classList.remove('hidden');
-                adminSec.classList.remove('view-animated');
-                void adminSec.offsetWidth;
-                adminSec.classList.add('view-animated');
-                switchAdminView('top5');
-                pollingInterval = setInterval(fetchScores, 5000);
-              } else {
-                const judgeSec = document.getElementById('judge-section');
-                judgeSec.classList.remove('hidden');
-                judgeSec.classList.remove('view-animated');
-                void judgeSec.offsetWidth;
-                judgeSec.classList.add('view-animated');
-                switchRound('intro');
-              }
+              await activateSession(data.role, data.token);
             }, 250);
           } else {
             errLabel.innerText = data.message;
@@ -905,34 +926,56 @@
         }
       }
 
+      let isHeartbeatPinging = false;
       function startHeartbeat() {
+        if (heartbeatInterval) clearInterval(heartbeatInterval);
         heartbeatInterval = setInterval(async () => {
+          if (!currentUser || !sessionToken || isHeartbeatPinging) return;
+          isHeartbeatPinging = true;
           try {
             const res = await fetch('/api/ping', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ role: currentUser, token: sessionToken }),
             });
-            const data = await res.json();
-            if (!data.success) forceLogout();
-          } catch (e) {}
-        }, 5000);
+            if (res.ok) {
+              const data = await res.json();
+              if (data.success === false) {
+                // หลุดเฉพาะกรณีมีการเข้าสู่ระบบจากเครื่องอื่น หรือเซสชันหมดอายุ
+                forceLogout(data.reason);
+              }
+            }
+          } catch (e) {
+            // ไม่ forceLogout ถ้าเป็นปัญหาการเชื่อมต่อชั่วคราว
+          } finally {
+            isHeartbeatPinging = false;
+          }
+        }, 10000);
       }
 
       async function logout() {
-        await fetch('/api/logout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ role: currentUser, token: sessionToken }),
-        });
+        const u = currentUser;
+        const t = sessionToken;
+        clearSavedSession();
         forceLogout();
+        try {
+          await fetch('/api/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: u, token: t }),
+          });
+        } catch (e) {}
       }
 
-      function forceLogout() {
-        clearInterval(heartbeatInterval);
-        clearInterval(pollingInterval);
+      function forceLogout(reason) {
+        if (heartbeatInterval) clearInterval(heartbeatInterval);
+        if (pollingInterval) clearInterval(pollingInterval);
+        heartbeatInterval = null;
+        pollingInterval = null;
         currentUser = null;
         sessionToken = null;
+        clearSavedSession();
+
         document.getElementById('login-password').value = '';
 
         const loginSec = document.getElementById('login-section');
@@ -944,7 +987,62 @@
         document.getElementById('judge-section').classList.add('hidden');
         document.getElementById('admin-section').classList.add('hidden');
         document.getElementById('user-info').classList.add('hidden');
+
+        if (reason === 'superseded') {
+          showToast('บัญชีนี้ถูกเข้าสู่ระบบจากอุปกรณ์อื่น');
+        }
       }
+
+      // กู้คืนเซสชันเดิมอัตโนมัติเมื่อเปิดหรือรีเฟรชหน้าเว็บ
+      async function initSessionOnLoad() {
+        try {
+          const savedUser = localStorage.getItem('freshy_user');
+          const savedToken = localStorage.getItem('freshy_token');
+
+          if (savedUser && savedToken) {
+            const res = await fetch('/api/ping', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ role: savedUser, token: savedToken }),
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.success) {
+                await activateSession(savedUser, savedToken);
+                return;
+              }
+            }
+            clearSavedSession();
+          }
+        } catch (e) {
+          console.warn('Auto restore session network pause:', e);
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', initSessionOnLoad);
+
+      // เมื่อผู้ใช้สลับกลับมาหน้าเว็บ (จอเปิดใหม่ หรือสลับแท็บกลับมา)
+      document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState === 'visible' && currentUser && sessionToken) {
+          try {
+            const res = await fetch('/api/ping', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ role: currentUser, token: sessionToken }),
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.success) {
+                if (currentUser === 'admin') {
+                  fetchScores();
+                }
+              } else {
+                forceLogout(data.reason);
+              }
+            }
+          } catch (e) {}
+        }
+      });
 
       // ==========================================
       // Data Loaders

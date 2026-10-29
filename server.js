@@ -99,7 +99,19 @@ async function initDB() {
             console.log('✅ scores table schema OK (round_id exists).');
         }
 
-        // ตาราง 3: Top 5
+
+
+
+        // ตาราง 4: sessions (เก็บสถานะการล็อกอินข้ามการรีสตาร์ทเซิร์ฟเวอร์)
+        await connection.execute(`
+            CREATE TABLE IF NOT EXISTS sessions (
+                role VARCHAR(50) NOT NULL,
+                token VARCHAR(100) NOT NULL,
+                last_seen BIGINT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (role, token)
+            )
+        `);
         await connection.execute(`DROP TABLE IF EXISTS top5_finalists`);
         await connection.execute(`
             CREATE TABLE IF NOT EXISTS top5_finalists (
@@ -179,37 +191,127 @@ initDB();
 // 2. ระบบรหัสผ่าน และ Session
 // ==========================================
 const USERS = { 'admin': 'admin2026', 'judge1': '1111', 'judge2': '2222', 'judge3': '3333', 'judge4': '4444', 'judge5': '5555' };
-const activeSessions = {}; 
+const SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 ชั่วโมง
+const activeSessions = {}; // สำหรับ judge: { [role]: { token, lastSeen } }
+const adminSessions = {};  // สำหรับ admin: { [token]: { lastSeen } }
 
-setInterval(() => {
+// ล้าง session เก่าที่หมดอายุ (เกิน 24 ชั่วโมง) ทุก 1 ชั่วโมง
+setInterval(async () => {
     const now = Date.now();
     for (const role in activeSessions) {
-        if (now - activeSessions[role].lastSeen > 15000) delete activeSessions[role];
+        if (now - activeSessions[role].lastSeen > SESSION_TIMEOUT) {
+            delete activeSessions[role];
+        }
     }
-}, 10000);
+    for (const token in adminSessions) {
+        if (now - adminSessions[token].lastSeen > SESSION_TIMEOUT) {
+            delete adminSessions[token];
+        }
+    }
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+        await connection.execute('DELETE FROM sessions WHERE ? - last_seen > ?', [now, SESSION_TIMEOUT]);
+        await connection.end();
+    } catch (e) {}
+}, 60 * 60 * 1000);
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { role, password } = req.body;
-    if (!USERS[role] || USERS[role] !== password) return res.json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
-    if (activeSessions[role] && (Date.now() - activeSessions[role].lastSeen < 15000)) return res.json({ success: false, message: 'บัญชีนี้กำลังถูกใช้งานอยู่ในเครื่องอื่น!' });
+    if (!USERS[role] || USERS[role] !== password) {
+        return res.json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
+    }
 
-    const token = Math.random().toString(36).substring(2, 15);
-    activeSessions[role] = { token, lastSeen: Date.now() };
+    const token = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+    const now = Date.now();
+
+    if (role === 'admin') {
+        adminSessions[token] = { lastSeen: now };
+    } else {
+        activeSessions[role] = { token, lastSeen: now };
+    }
+
+    // บันทึกลง MySQL เพื่อความทนทานต่อการรีสตาร์ทเซิร์ฟเวอร์
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+        if (role !== 'admin') {
+            await connection.execute('DELETE FROM sessions WHERE role = ?', [role]);
+        }
+        await connection.execute(
+            'INSERT INTO sessions (role, token, last_seen) VALUES (?, ?, ?)',
+            [role, token, now]
+        );
+        await connection.end();
+    } catch (e) {
+        console.error('Session DB save error:', e.message);
+    }
+
     res.json({ success: true, token, role });
 });
 
-app.post('/api/ping', (req, res) => {
+app.post('/api/ping', async (req, res) => {
     const { role, token } = req.body;
-    if (activeSessions[role] && activeSessions[role].token === token) {
-        activeSessions[role].lastSeen = Date.now();
-        return res.json({ success: true });
+    if (!role || !token) return res.json({ success: false, reason: 'missing_params' });
+
+    const now = Date.now();
+
+    // 1. ตรวจสอบใน Memory ก่อนเพื่อความรวดเร็ว
+    if (role === 'admin') {
+        if (adminSessions[token]) {
+            adminSessions[token].lastSeen = now;
+            return res.json({ success: true });
+        }
+    } else {
+        if (activeSessions[role]) {
+            if (activeSessions[role].token === token) {
+                activeSessions[role].lastSeen = now;
+                return res.json({ success: true });
+            } else {
+                return res.json({ success: false, reason: 'superseded' });
+            }
+        }
     }
-    res.json({ success: false });
+
+    // 2. ถ้าใน Memory ไม่มี (เช่น เซิร์ฟเวอร์เพิ่ง restart) ให้ตรวจสอบจาก MySQL
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+        const [rows] = await connection.execute(
+            'SELECT * FROM sessions WHERE role = ? AND token = ?',
+            [role, token]
+        );
+        await connection.end();
+
+        if (rows.length > 0) {
+            const sess = rows[0];
+            if (now - Number(sess.last_seen) < SESSION_TIMEOUT) {
+                if (role === 'admin') {
+                    adminSessions[token] = { lastSeen: now };
+                } else {
+                    activeSessions[role] = { token, lastSeen: now };
+                }
+                return res.json({ success: true });
+            }
+        }
+    } catch (e) {
+        console.error('Session DB ping check error:', e.message);
+    }
+
+    res.json({ success: false, reason: 'expired' });
 });
 
-app.post('/api/logout', (req, res) => {
+app.post('/api/logout', async (req, res) => {
     const { role, token } = req.body;
-    if (activeSessions[role] && activeSessions[role].token === token) delete activeSessions[role];
+    if (role === 'admin') {
+        delete adminSessions[token];
+    } else if (activeSessions[role] && activeSessions[role].token === token) {
+        delete activeSessions[role];
+    }
+
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+        await connection.execute('DELETE FROM sessions WHERE role = ? AND token = ?', [role, token]);
+        await connection.end();
+    } catch (e) {}
+
     res.json({ success: true });
 });
 
