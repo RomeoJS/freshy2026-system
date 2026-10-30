@@ -80,10 +80,12 @@ async function initDB() {
             await connection.execute('ALTER TABLE contestants ADD COLUMN image_data LONGBLOB NULL');
             console.log('✅ Added image_data LONGBLOB column.');
         } else if (colMap['image_data'] !== 'longblob') {
-            // คอลัมน์มีอยู่แต่ไม่ใช่ LONGBLOB (เช่น VARCHAR) ให้แก้ไขทันที
-            console.log(`⚠️ image_data is ${colMap['image_data']}, converting to LONGBLOB...`);
-            await connection.execute('ALTER TABLE contestants MODIFY COLUMN image_data LONGBLOB NULL');
-            console.log('✅ Converted image_data to LONGBLOB successfully.');
+            // คอลัมน์มีอยู่แต่ไม่ใช่ LONGBLOB (เช่น VARCHAR)
+            // ใช้วิธี DROP+ADD เพราะ MODIFY อาจล้มเหลวหากมีการเปลี่ยน charset
+            console.log(`⚠️ image_data is ${colMap['image_data']}, converting via DROP+ADD...`);
+            await connection.execute('ALTER TABLE contestants DROP COLUMN image_data');
+            await connection.execute('ALTER TABLE contestants ADD COLUMN image_data LONGBLOB NULL');
+            console.log('✅ Converted image_data to LONGBLOB via DROP+ADD.');
         }
 
         if (!colMap['image_type']) {
@@ -429,11 +431,14 @@ app.post('/api/admin/fix-image-schema', async (req, res) => {
         const results = [];
 
         if (!colMap['image_data']) {
+            // คอลัมน์ยังไม่มี เพิ่มใหม่เป็น LONGBLOB
             await connection.execute('ALTER TABLE contestants ADD COLUMN image_data LONGBLOB NULL');
             results.push('Added image_data LONGBLOB column');
         } else if (colMap['image_data'] !== 'longblob') {
-            await connection.execute('ALTER TABLE contestants MODIFY COLUMN image_data LONGBLOB NULL');
-            results.push(`Converted image_data from ${colMap['image_data']} to LONGBLOB`);
+            // คอลัมน์มีอยู่แต่ไม่ใช่ LONGBLOB → DROP แล้ว ADD ใหม่
+            await connection.execute('ALTER TABLE contestants DROP COLUMN image_data');
+            await connection.execute('ALTER TABLE contestants ADD COLUMN image_data LONGBLOB NULL');
+            results.push(`Dropped and re-added image_data as LONGBLOB (was ${colMap['image_data']})`);
         } else {
             results.push('image_data is already LONGBLOB — no change needed');
         }
