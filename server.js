@@ -410,6 +410,51 @@ app.post('/api/admin/migrate-scores', async (req, res) => {
 });
 
 // ==========================================
+// ⚙️ Fix image_data column type (one-time use)
+// ==========================================
+app.post('/api/admin/fix-image-schema', async (req, res) => {
+    const { secret } = req.body;
+    if (secret !== 'freshy2026-migrate') return res.status(403).json({ error: 'Forbidden' });
+    try {
+        const connection = await mysql.createConnection(dbConfig);
+
+        // Check current column type
+        const [cols] = await connection.execute(`
+            SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS 
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'contestants'
+        `);
+        const colMap = {};
+        cols.forEach(c => { colMap[c.COLUMN_NAME] = (c.DATA_TYPE || '').toLowerCase(); });
+
+        const results = [];
+
+        if (!colMap['image_data']) {
+            await connection.execute('ALTER TABLE contestants ADD COLUMN image_data LONGBLOB NULL');
+            results.push('Added image_data LONGBLOB column');
+        } else if (colMap['image_data'] !== 'longblob') {
+            await connection.execute('ALTER TABLE contestants MODIFY COLUMN image_data LONGBLOB NULL');
+            results.push(`Converted image_data from ${colMap['image_data']} to LONGBLOB`);
+        } else {
+            results.push('image_data is already LONGBLOB — no change needed');
+        }
+
+        if (!colMap['image_type']) {
+            await connection.execute("ALTER TABLE contestants ADD COLUMN image_type VARCHAR(50) DEFAULT 'image/jpeg'");
+            results.push('Added image_type column');
+        } else {
+            results.push('image_type already exists');
+        }
+
+        await connection.end();
+        console.log('✅ fix-image-schema results:', results);
+        res.json({ success: true, results });
+    } catch (error) {
+        console.error('❌ fix-image-schema error:', error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ==========================================
 // 3. API Contestants
 // ==========================================
 // ดึงข้อมูลผู้เข้าประกวด (ไม่ส่ง image_data binary ขนาดใหญ่ เพื่อความรวดเร็ว)
