@@ -46,11 +46,11 @@ const CATEGORIES = {
     jumbo: 'Miss Jumbo'
 };
 
-const ROUNDS_29 = ['intro', 'grand', 'speech', 'theme'];
+const ROUNDS_PRE = ['blackroom', 'grand'];
+const ROUNDS_ALL = ['blackroom', 'grand', 'speed', 'qa'];
 
 async function initDB() {
     try {
-        // สร้าง Database หากยังไม่มี
         const rootConn = await mysql.createConnection({
             host: dbConfig.host,
             user: dbConfig.user,
@@ -72,15 +72,14 @@ async function initDB() {
             )
         `);
 
-        // ตรวจสอบโครงสร้างตาราง scores — ใช้ DATABASE() เพื่อรองรับทุก environment
+        // ตรวจสอบโครงสร้างตาราง scores
         const [scoreCols] = await connection.execute(`
             SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
-            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'scores' AND COLUMN_NAME = 'round_id'
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'scores'
         `);
+        const colNames = scoreCols.map(c => c.COLUMN_NAME);
 
-        if (scoreCols.length === 0) {
-            console.log('⚠️ scores table missing round_id column — recreating...');
-            await connection.execute(`DROP TABLE IF EXISTS scores`);
+        if (colNames.length === 0) {
             await connection.execute(`
                 CREATE TABLE scores (
                     judge_id VARCHAR(20) NOT NULL,
@@ -89,20 +88,32 @@ async function initDB() {
                     score_c1 INT DEFAULT 0,
                     score_c2 INT DEFAULT 0,
                     score_c3 INT DEFAULT 0,
+                    score_c4 INT DEFAULT 0,
+                    score_c5 INT DEFAULT 0,
+                    score_c6 INT DEFAULT 0,
                     total_score INT DEFAULT 0,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                     PRIMARY KEY (judge_id, contestant_id, round_id)
                 )
             `);
-            console.log('✅ Created new scores table schema with round_id.');
+            console.log('✅ Created scores table with 6 criteria columns.');
         } else {
-            console.log('✅ scores table schema OK (round_id exists).');
+            if (!colNames.includes('round_id')) {
+                await connection.execute(`ALTER TABLE scores ADD COLUMN round_id VARCHAR(30) NOT NULL DEFAULT 'blackroom'`);
+            }
+            if (!colNames.includes('score_c4')) {
+                await connection.execute(`ALTER TABLE scores ADD COLUMN score_c4 INT DEFAULT 0`);
+            }
+            if (!colNames.includes('score_c5')) {
+                await connection.execute(`ALTER TABLE scores ADD COLUMN score_c5 INT DEFAULT 0`);
+            }
+            if (!colNames.includes('score_c6')) {
+                await connection.execute(`ALTER TABLE scores ADD COLUMN score_c6 INT DEFAULT 0`);
+            }
+            console.log('✅ scores table schema OK (all criteria columns exist).');
         }
 
-
-
-
-        // ตาราง 4: sessions (เก็บสถานะการล็อกอินข้ามการรีสตาร์ทเซิร์ฟเวอร์)
+        // ตาราง 3: sessions
         await connection.execute(`
             CREATE TABLE IF NOT EXISTS sessions (
                 role VARCHAR(50) NOT NULL,
@@ -112,15 +123,19 @@ async function initDB() {
                 PRIMARY KEY (role, token)
             )
         `);
+
+        // ตาราง 4: top5_finalists
         await connection.execute(`DROP TABLE IF EXISTS top5_finalists`);
         await connection.execute(`
             CREATE TABLE IF NOT EXISTS top5_finalists (
                 contestant_id VARCHAR(20) PRIMARY KEY,
                 category VARCHAR(50) NOT NULL,
-                round29_score INT DEFAULT 0,
+                pre_score INT DEFAULT 0,
+                speed_score INT DEFAULT 0,
                 qa_score INT DEFAULT 0,
-                total_score INT DEFAULT 0,
-                avg_score DECIMAL(6,2) DEFAULT 0.00
+                avg_score DECIMAL(6,2) DEFAULT 0.00,
+                final_rank INT DEFAULT 0,
+                award VARCHAR(100) DEFAULT ''
             )
         `);
 
@@ -161,11 +176,11 @@ async function initDB() {
                 ['C6', 'น.ส. จิดาภา กิตติคุณ (พั้นช์)', 'congeniality', 'default.jpg'],
 
                 // Miss Jumbo (5 คน)
-                ['J1', 'น.ส. ปิยะธิดา สุขสันต์ (ก้อย)', 'jumbo', 'default.jpg'],
-                ['J2', 'น.ส. สุธิดา พูนทรัพย์ (บิว)', 'jumbo', 'default.jpg'],
-                ['J3', 'น.ส. อังคณา มีชัย (ไอซ์)', 'jumbo', 'default.jpg'],
-                ['J4', 'น.ส. พิมพิกา อัครเดช (หมวย)', 'jumbo', 'default.jpg'],
-                ['J5', 'น.ส. วรัญญา สิริโภคา (น้ำหวาน)', 'jumbo', 'default.jpg']
+                ['J1', 'น.ส. ศิริพร บุญมี (กระปุก)', 'jumbo', 'default.jpg'],
+                ['J2', 'น.ส. ชลธิชา ทับทิม (โอปอ)', 'jumbo', 'default.jpg'],
+                ['J3', 'น.ส. พิมพิกา อุ่นใจ (ลูกตาล)', 'jumbo', 'default.jpg'],
+                ['J4', 'น.ส. นันทิดา โพธิ์ทอง (แก้ม)', 'jumbo', 'default.jpg'],
+                ['J5', 'น.ส. สุดารัตน์ มิ่งขวัญ (เนย)', 'jumbo', 'default.jpg']
             ];
 
             for (const c of seedContestants) {
@@ -174,12 +189,11 @@ async function initDB() {
                     c
                 );
             }
-            console.log('✅ Seeded 29 default contestants across 5 categories.');
+            console.log('✅ Seeded 29 default contestants.');
         }
 
         await connection.end();
-        console.log('✅ Database tables initialized (3 Tables).');
-        // Fire-and-forget Excel gen (ไม่ block startup บน cloud)
+        console.log('✅ Database tables initialized.');
         generateAndSaveExcel().catch(e => console.warn('⚠️ Excel init skip:', e.message));
     } catch (error) {
         console.error('❌ DB Init Error:', error.message);
@@ -323,10 +337,6 @@ app.post('/api/admin/migrate-scores', async (req, res) => {
     if (secret !== 'freshy2026-migrate') return res.status(403).json({ error: 'Forbidden' });
     try {
         const connection = await mysql.createConnection(dbConfig);
-        // ตรวจสอบ columns ปัจจุบัน
-        const [cols] = await connection.execute(`SHOW COLUMNS FROM scores`).catch(() => [[]]);
-        console.log('Current scores columns:', cols.map(c => c.Field));
-        
         await connection.execute(`DROP TABLE IF EXISTS scores`);
         await connection.execute(`
             CREATE TABLE scores (
@@ -336,6 +346,9 @@ app.post('/api/admin/migrate-scores', async (req, res) => {
                 score_c1 INT DEFAULT 0,
                 score_c2 INT DEFAULT 0,
                 score_c3 INT DEFAULT 0,
+                score_c4 INT DEFAULT 0,
+                score_c5 INT DEFAULT 0,
+                score_c6 INT DEFAULT 0,
                 total_score INT DEFAULT 0,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (judge_id, contestant_id, round_id)
@@ -343,7 +356,7 @@ app.post('/api/admin/migrate-scores', async (req, res) => {
         `);
         await connection.end();
         console.log('✅ scores table migrated successfully via API.');
-        res.json({ success: true, message: 'scores table recreated with round_id column' });
+        res.json({ success: true, message: 'scores table recreated with 6 criteria columns' });
     } catch (error) {
         console.error('❌ Migration error:', error.message);
         res.status(500).json({ success: false, error: error.message });
@@ -420,29 +433,28 @@ async function calculateSummary() {
         const list = catContestants.map(c => {
             const contestantScores = scores.filter(s => s.contestant_id === c.id);
             
-            // คะแนนรายรอบสำหรับกรรมการแต่ละท่าน
             const rounds = {};
-            let round29Total = 0;
+            let preTotal = 0; // รวมรอบ blackroom + grand ทั้ง 5 กรรมการ
 
-            ROUNDS_29.forEach(rId => {
+            ROUNDS_PRE.forEach(rId => {
                 rounds[rId] = { judges: {}, total: 0 };
                 judges.forEach(jId => {
                     const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === rId);
                     const score = rec ? rec.total_score : 0;
                     rounds[rId].judges[jId] = score;
                     rounds[rId].total += score;
-                    round29Total += score;
+                    preTotal += score;
                 });
             });
 
-            // คะแนนรายกรรมการรอบ 29 คน
-            const judgeTotals29 = {};
+            // คะแนนรายกรรมการ 2 รอบแรกรวม
+            const judgeTotalsPre = {};
             judges.forEach(jId => {
                 let jSum = 0;
-                ROUNDS_29.forEach(rId => {
+                ROUNDS_PRE.forEach(rId => {
                     jSum += (rounds[rId].judges[jId] || 0);
                 });
-                judgeTotals29[jId] = jSum;
+                judgeTotalsPre[jId] = jSum;
             });
 
             return {
@@ -452,32 +464,63 @@ async function calculateSummary() {
                 categoryName: catName,
                 image: c.image || 'default.jpg',
                 rounds,
-                judgeTotals29,
-                round29Total
+                judgeTotalsPre,
+                preTotal
             };
         });
 
-        // จัดอันดับในหมวดหมู่เพื่อหาผู้ผ่านเข้ารอบ TOP 5
-        list.sort((a, b) => b.round29Total - a.round29Total);
+        // จัดอันดับในหมวดหมู่
+        list.sort((a, b) => b.preTotal - a.preTotal);
         categoriesData[catKey] = list;
     }
 
-    // 🌟 ผู้ผ่านเข้ารอบ TOP 5: คัดจากผู้ที่มีคะแนนรอบ 29 คน สูงที่สุด 5 อันดับแรก (ไม่จำกัดหมวดหมู่)
+    // 🌟 คัดหา TOP 5 จาก 2 รอบแรก (คะแนน 2 รอบแรกรวมสูงสุด 5 อันดับแรก)
     const allCalculatedContestants = [];
     for (const [catKey, catList] of Object.entries(categoriesData)) {
         allCalculatedContestants.push(...catList);
     }
-    // เรียงคะแนนรอบ 29 คนจากมากไปน้อย
-    allCalculatedContestants.sort((a, b) => b.round29Total - a.round29Total);
+    allCalculatedContestants.sort((a, b) => b.preTotal - a.preTotal);
     
-    // เลือก 5 คนที่คะแนนเยอะที่สุด
+    // เลือก 5 คนที่คะแนน 2 รอบแรกเยอะที่สุด
     const top5Selected = allCalculatedContestants.slice(0, 5);
 
+    // คำนวณคะแนนรอบ Speed (เต็ม 50 คะแนนต่อกรรมการ รวม 250 คะแนน)
     const top5Finalists = [];
     for (const finalist of top5Selected) {
         const contestantScores = scores.filter(s => s.contestant_id === finalist.id);
-        
-        // คะแนนรอบตอบคำถาม
+        const speedJudges = {};
+        let speedTotal = 0;
+        judges.forEach(jId => {
+            const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'speed');
+            const score = rec ? rec.total_score : 0;
+            speedJudges[jId] = score;
+            speedTotal += score;
+        });
+
+        top5Finalists.push({
+            ...finalist,
+            speedJudges,
+            speedTotal
+        });
+    }
+
+    // เรียงอันดับในรอบ Top 5 Speed เพื่อคัด 3 คน
+    top5Finalists.sort((a, b) => {
+        if (b.speedTotal !== a.speedTotal) return b.speedTotal - a.speedTotal;
+        return b.preTotal - a.preTotal;
+    });
+
+    top5Finalists.forEach((f, idx) => {
+        f.speedRank = idx + 1;
+        f.isTop3 = idx < 3;
+    });
+
+    // 🌟 คัดหา TOP 3 เพื่อเข้าสู่รอบตอบคำถามตัดสิน (ล้างคะแนนเดิม)
+    const top3Selected = top5Finalists.slice(0, 3);
+    const top3Finalists = [];
+
+    for (const finalist of top3Selected) {
+        const contestantScores = scores.filter(s => s.contestant_id === finalist.id);
         const qaJudges = {};
         let qaTotal = 0;
         judges.forEach(jId => {
@@ -487,28 +530,51 @@ async function calculateSummary() {
             qaTotal += score;
         });
 
-        // สูตร: เอาคะแนนรอบ 29 คน มารวมกับรอบตอบคำถาม แล้วหารจำนวนกรรมการคือ 5 คน
-        const grandTotal = finalist.round29Total + qaTotal;
-        const avgScore = Number((grandTotal / 5).toFixed(2));
+        // คิดคะแนนตัดสินจากรอบตอบคำถามล้วนๆ (ล้างคะแนนรอบ 5 คนเดิม)
+        const avgScore = Number((qaTotal / 5).toFixed(2));
 
-        top5Finalists.push({
+        top3Finalists.push({
             ...finalist,
             qaJudges,
             qaTotal,
-            grandTotal,
             avgScore
         });
     }
 
-    // จัดอันดับ 1 - 5 ในรอบ Final
-    top5Finalists.sort((a, b) => b.avgScore - a.avgScore);
-    top5Finalists.forEach((f, idx) => {
-        f.rank = idx + 1;
+    // จัดอันดับ 1 - 3
+    top3Finalists.sort((a, b) => {
+        if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+        return b.speedTotal - a.speedTotal;
     });
+
+    const awardTitles = [
+        '👑 ชนะเลิศ THE WINNER FRESHY 2026',
+        '🥈 รองชนะเลิศอันดับ 1',
+        '🥉 รองชนะเลิศอันดับ 2'
+    ];
+
+    top3Finalists.forEach((f, idx) => {
+        f.finalRank = idx + 1;
+        f.award = awardTitles[idx];
+    });
+
+    // Final 5 ทั้งหมด (Top 3 + อีก 2 คนที่ไม่ผ่านเข้า Top 3)
+    const remainingTwo = top5Finalists.slice(3, 5);
+    remainingTwo.forEach((f, idx) => {
+        f.finalRank = idx + 4;
+        f.qaJudges = {};
+        f.qaTotal = 0;
+        f.avgScore = 0;
+        f.award = idx === 0 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4';
+    });
+
+    const finalRankings = [...top3Finalists, ...remainingTwo];
 
     return {
         categories: categoriesData,
-        top5: top5Finalists
+        top5: top5Finalists,
+        top3: top3Finalists,
+        finalRankings
     };
 }
 
@@ -516,7 +582,7 @@ async function calculateSummary() {
 // 5. บันทึกคะแนน
 // ==========================================
 app.post('/api/scores', async (req, res) => {
-    const { judge_id, contestant_id, round_id, score_c1, score_c2, score_c3 } = req.body;
+    const { judge_id, contestant_id, round_id, score_c1, score_c2, score_c3, score_c4, score_c5, score_c6 } = req.body;
     
     if (!judge_id || !contestant_id || !round_id) {
         return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
@@ -525,26 +591,29 @@ app.post('/api/scores', async (req, res) => {
     const c1 = Math.max(0, parseInt(score_c1) || 0);
     const c2 = Math.max(0, parseInt(score_c2) || 0);
     const c3 = Math.max(0, parseInt(score_c3) || 0);
-    const total = c1 + c2 + c3;
+    const c4 = Math.max(0, parseInt(score_c4) || 0);
+    const c5 = Math.max(0, parseInt(score_c5) || 0);
+    const c6 = Math.max(0, parseInt(score_c6) || 0);
+    const total = c1 + c2 + c3 + c4 + c5 + c6;
 
     try {
         const connection = await mysql.createConnection(dbConfig);
         const query = `
-            INSERT INTO scores (judge_id, contestant_id, round_id, score_c1, score_c2, score_c3, total_score) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO scores (judge_id, contestant_id, round_id, score_c1, score_c2, score_c3, score_c4, score_c5, score_c6, total_score) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
                 score_c1 = VALUES(score_c1),
                 score_c2 = VALUES(score_c2),
                 score_c3 = VALUES(score_c3),
+                score_c4 = VALUES(score_c4),
+                score_c5 = VALUES(score_c5),
+                score_c6 = VALUES(score_c6),
                 total_score = VALUES(total_score)
         `;
-        await connection.execute(query, [judge_id, contestant_id, round_id, c1, c2, c3, total]);
+        await connection.execute(query, [judge_id, contestant_id, round_id, c1, c2, c3, c4, c5, c6, total]);
         await connection.end();
         
-        // ✅ ตอบกลับทันทีหลังบันทึก DB สำเร็จ — ไม่รอ Excel (กัน timeout/filesystem error บน cloud)
         res.json({ success: true, message: 'บันทึกคะแนนสำเร็จ', total_score: total });
-
-        // 🔥 สร้าง Excel แบบ background (fire-and-forget) ไม่ block response
         generateAndSaveExcel().catch(e => console.error('⚠️ Excel gen error (non-critical):', e.message));
     } catch (error) {
         console.error('❌ Error saving score:', error.message, error.stack);
@@ -571,11 +640,11 @@ async function generateAndSaveExcel() {
         
         // อัปเดตตาราง top5_finalists
         await connection.execute('TRUNCATE TABLE top5_finalists');
-        for (const f of summary.top5) {
+        for (const f of (summary.finalRankings || [])) {
             await connection.execute(`
-                INSERT INTO top5_finalists (contestant_id, category, round29_score, qa_score, total_score, avg_score)
-                VALUES (?, ?, ?, ?, ?, ?)
-            `, [f.id, f.category, f.round29Total, f.qaTotal, f.grandTotal, f.avgScore]);
+                INSERT INTO top5_finalists (contestant_id, category, pre_score, speed_score, qa_score, avg_score, final_rank, award)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `, [f.id, f.category, f.preTotal || 0, f.speedTotal || 0, f.qaTotal || 0, f.avgScore || 0, f.finalRank || 0, f.award || '']);
         }
         await connection.end();
 
@@ -583,21 +652,20 @@ async function generateAndSaveExcel() {
         workbook.creator = 'RMUTK FRESHY 2026';
         workbook.created = new Date();
 
-        const top5Ids = new Set(summary.top5.map(f => f.id));
+        const top5Ids = new Set((summary.top5 || []).map(f => f.id));
+        const top3Ids = new Set((summary.top3 || []).map(f => f.id));
 
-        // 🌟 ชีตที่ 1 - 5: แต่ละหมวดหมู่การประกวด
+        // 🌟 ชีตที่ 1 - 5: แต่ละหมวดหมู่การประกวด (รอบคัดเลือก 2 รอบแรก)
         for (const [catKey, catName] of Object.entries(CATEGORIES)) {
             const worksheet = workbook.addWorksheet(catName);
             
             worksheet.columns = [
                 { header: 'รหัส', key: 'id', width: 8 },
                 { header: 'ชื่อ-นามสกุล', key: 'name', width: 28 },
-                { header: 'แนะนำตัว (รวม 5 ก.)', key: 'intro', width: 20 },
-                { header: 'Grand Opening (รวม 5 ก.)', key: 'grand', width: 22 },
-                { header: 'Speech 1 min (รวม 5 ก.)', key: 'speech', width: 20 },
-                { header: 'ชุดธีม (รวม 5 ก.)', key: 'theme', width: 18 },
-                { header: 'คะแนนรวมรอบ 29 คน', key: 'total29', width: 20 },
-                { header: 'สถานะ TOP 5', key: 'status', width: 25 }
+                { header: '1. ห้องดำ (รวม 5 ก. เต็ม 125)', key: 'blackroom', width: 26 },
+                { header: '2. Grand Opening (รวม 5 ก. เต็ม 250)', key: 'grand', width: 28 },
+                { header: 'คะแนนรวม 2 รอบแรก (เต็ม 375)', key: 'preTotal', width: 26 },
+                { header: 'สถานะ TOP 5', key: 'status', width: 28 }
             ];
 
             const headerRow = worksheet.getRow(1);
@@ -611,16 +679,14 @@ async function generateAndSaveExcel() {
 
             const contestantsList = summary.categories[catKey] || [];
             contestantsList.forEach((c) => {
-                const isTop5 = top5Ids.has(c.id) && c.round29Total > 0;
+                const isTop5 = top5Ids.has(c.id) && c.preTotal > 0;
                 const row = worksheet.addRow({
                     id: c.id,
                     name: c.name,
-                    intro: c.rounds.intro.total,
-                    grand: c.rounds.grand.total,
-                    speech: c.rounds.speech.total,
-                    theme: c.rounds.theme.total,
-                    total29: c.round29Total,
-                    status: isTop5 ? '⭐ ผ่านเข้ารอบ 5 คนสุดท้าย (Top 5 คะแนนสูงสุด)' : '-'
+                    blackroom: c.rounds.blackroom?.total || 0,
+                    grand: c.rounds.grand?.total || 0,
+                    preTotal: c.preTotal,
+                    status: isTop5 ? '⭐ ผ่านเข้ารอบ TOP 5 (Speed)' : '-'
                 });
 
                 if (isTop5) {
@@ -634,61 +700,104 @@ async function generateAndSaveExcel() {
             });
         }
 
-        // 🌟 ชีตที่ 6: สรุปผลรอบ TOP 5 (ตอบคำถาม และคะแนนสุทธิ)
-        const top5Sheet = workbook.addWorksheet('🏆 ผลการตัดสินรอบ TOP 5');
-        top5Sheet.columns = [
+        // 🌟 ชีตที่ 6: ผลรอบ TOP 5 (Speed)
+        const speedSheet = workbook.addWorksheet('⚡ ผลรอบ TOP 5 (Speed)');
+        speedSheet.columns = [
+            { header: 'อันดับ Speed', key: 'rank', width: 14 },
+            { header: 'รหัส', key: 'id', width: 10 },
+            { header: 'ชื่อ-นามสกุล', key: 'name', width: 28 },
+            { header: 'หมวดหมู่', key: 'category', width: 18 },
+            { header: 'คะแนน 2 รอบแรก (375)', key: 'pre', width: 22 },
+            { header: 'Speed ก.1 (50)', key: 's1', width: 14 },
+            { header: 'Speed ก.2 (50)', key: 's2', width: 14 },
+            { header: 'Speed ก.3 (50)', key: 's3', width: 14 },
+            { header: 'Speed ก.4 (50)', key: 's4', width: 14 },
+            { header: 'Speed ก.5 (50)', key: 's5', width: 14 },
+            { header: 'รวม Speed (250)', key: 'speed_total', width: 18 },
+            { header: 'สถานะ TOP 3', key: 'status', width: 28 }
+        ];
+
+        const sHeader = speedSheet.getRow(1);
+        sHeader.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        sHeader.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FF1E3A8A' }
+        };
+        sHeader.alignment = { vertical: 'middle', horizontal: 'center' };
+
+        (summary.top5 || []).forEach((f, idx) => {
+            const isTop3 = idx < 3 && f.speedTotal > 0;
+            const row = speedSheet.addRow({
+                rank: idx + 1,
+                id: f.id,
+                name: f.name,
+                category: f.categoryName,
+                pre: f.preTotal,
+                s1: f.speedJudges?.judge1 || 0,
+                s2: f.speedJudges?.judge2 || 0,
+                s3: f.speedJudges?.judge3 || 0,
+                s4: f.speedJudges?.judge4 || 0,
+                s5: f.speedJudges?.judge5 || 0,
+                speed_total: f.speedTotal,
+                status: isTop3 ? '👑 ผ่านเข้ารอบ TOP 3 ตัดสิน' : (idx === 3 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4')
+            });
+
+            if (isTop3) {
+                row.font = { bold: true };
+                row.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: { argb: 'FFE0E7FF' }
+                };
+            }
+        });
+
+        // 🌟 ชีตที่ 7: ผลการตัดสินชี้ขาดรอบชิงชนะเลิศ (Official Result)
+        const finalSheet = workbook.addWorksheet('🏆 ผลการตัดสินชี้ขาด (Official)');
+        finalSheet.columns = [
             { header: 'อันดับ', key: 'rank', width: 10 },
             { header: 'รหัส', key: 'id', width: 10 },
             { header: 'ชื่อ-นามสกุล', key: 'name', width: 28 },
             { header: 'หมวดหมู่', key: 'category', width: 18 },
-            { header: 'คะแนนรอบ 29 คน (รวม 5 ก.)', key: 'r29', width: 24 },
-            { header: 'ตอบคำถาม ก.1', key: 'j1', width: 14 },
-            { header: 'ตอบคำถาม ก.2', key: 'j2', width: 14 },
-            { header: 'ตอบคำถาม ก.3', key: 'j3', width: 14 },
-            { header: 'ตอบคำถาม ก.4', key: 'j4', width: 14 },
-            { header: 'ตอบคำถาม ก.5', key: 'j5', width: 14 },
-            { header: 'รวมตอบคำถาม', key: 'qa_total', width: 16 },
-            { header: 'คะแนนรวมสุทธิ', key: 'grand', width: 18 },
-            { header: 'คะแนนเฉลี่ยสุทธิ (หาร 5 กรรมการ)', key: 'avg', width: 28 },
-            { header: 'รางวัล', key: 'award', width: 25 }
+            { header: 'ตอบคำถาม ก.1 (100)', key: 'j1', width: 18 },
+            { header: 'ตอบคำถาม ก.2 (100)', key: 'j2', width: 18 },
+            { header: 'ตอบคำถาม ก.3 (100)', key: 'j3', width: 18 },
+            { header: 'ตอบคำถาม ก.4 (100)', key: 'j4', width: 18 },
+            { header: 'ตอบคำถาม ก.5 (100)', key: 'j5', width: 18 },
+            { header: 'รวมตอบคำถาม (500)', key: 'qa_total', width: 20 },
+            { header: 'คะแนนเฉลี่ยสุทธิ (100)', key: 'avg', width: 22 },
+            { header: 'รางวัลเกียรติยศ', key: 'award', width: 32 }
         ];
 
-        const tHeader = top5Sheet.getRow(1);
-        tHeader.font = { bold: true, color: { argb: 'FF111FA2' } };
-        tHeader.fill = {
+        const fHeader = finalSheet.getRow(1);
+        fHeader.font = { bold: true, color: { argb: 'FF111FA2' } };
+        fHeader.fill = {
             type: 'pattern',
             pattern: 'solid',
             fgColor: { argb: 'FFFFDE42' }
         };
-        tHeader.alignment = { vertical: 'middle', horizontal: 'center' };
+        fHeader.alignment = { vertical: 'middle', horizontal: 'center' };
 
-        const awardTitles = [
-            '👑 ชนะเลิศ THE WINNER FRESHY 2026',
-            '🥈 รองชนะเลิศอันดับ 1',
-            '🥉 รองชนะเลิศอันดับ 2',
-            'รองชนะเลิศอันดับ 3',
-            'รองชนะเลิศอันดับ 4'
-        ];
-
-        summary.top5.forEach((f, idx) => {
-            const row = top5Sheet.addRow({
-                rank: f.rank,
+        (summary.finalRankings || []).forEach((f, idx) => {
+            const isWinner = idx === 0;
+            const isTop3 = idx < 3;
+            const row = finalSheet.addRow({
+                rank: f.finalRank || (idx + 1),
                 id: f.id,
                 name: f.name,
                 category: f.categoryName,
-                r29: f.round29Total,
-                j1: f.qaJudges.judge1 || 0,
-                j2: f.qaJudges.judge2 || 0,
-                j3: f.qaJudges.judge3 || 0,
-                j4: f.qaJudges.judge4 || 0,
-                j5: f.qaJudges.judge5 || 0,
-                qa_total: f.qaTotal,
-                grand: f.grandTotal,
-                avg: f.avgScore,
-                award: awardTitles[idx] || '-'
+                j1: isTop3 ? (f.qaJudges?.judge1 || 0) : '-',
+                j2: isTop3 ? (f.qaJudges?.judge2 || 0) : '-',
+                j3: isTop3 ? (f.qaJudges?.judge3 || 0) : '-',
+                j4: isTop3 ? (f.qaJudges?.judge4 || 0) : '-',
+                j5: isTop3 ? (f.qaJudges?.judge5 || 0) : '-',
+                qa_total: isTop3 ? f.qaTotal : '-',
+                avg: isTop3 ? f.avgScore : '-',
+                award: f.award || '-'
             });
 
-            if (idx === 0) {
+            if (isWinner) {
                 row.font = { bold: true };
                 row.fill = {
                     type: 'pattern',

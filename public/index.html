@@ -367,23 +367,23 @@
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-[#FFDE42] animate-ping"></span>
               <h4 class="text-sm font-bold text-[#FFDE42] uppercase tracking-wider flex items-center gap-1.5">
-                <i class="fas fa-layer-group"></i> เลือกรอบการให้คะแนน (อย่างละ 100 คะแนน)
+                <i class="fas fa-layer-group"></i> เลือกรอบการตัดสิน (4 รอบการประกวด)
               </h4>
             </div>
             <div id="round-criteria-info" class="text-xs text-gray-300 bg-[#091054]/80 px-3 py-1.5 rounded-xl border border-[#5478FF]/30">
-              <span class="text-[#FFDE42] font-semibold">เกณฑ์ย่อย:</span> 1.บุคลิก ผิวพรรณ (40) | 2.ความมั่นใจและการแก้ปัญหา (30) | 3.ความเรียบร้อยการแต่งกาย (30)
+              <span class="text-[#FFDE42] font-semibold">เกณฑ์รอบห้องดำ (25 คะแนน):</span> First Impression (10) | บุคลิกภาพ/มั่นใจ (5) | เครื่องแต่งกาย (5) | เสน่ห์/มั่นใจ (5)
             </div>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <button
-              onclick="switchRound('intro')"
-              id="tab-round-intro"
-              class="round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group"
+              onclick="switchRound('blackroom')"
+              id="tab-round-blackroom"
+              class="round-nav-btn p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#FFDE42] text-[#111FA2] text-center transition-all duration-300 font-bold scale-105 shadow-[0_0_20px_rgba(255,222,66,0.5)] group"
             >
-              <i class="fas fa-microphone-alt text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
-              <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">1. แนะนำตัว</div>
-              <div class="text-[11px] text-gray-300">รอบ 29 คน (100 คะแนน)</div>
+              <i class="fas fa-user-secret text-xl mb-1 text-[#111FA2]"></i>
+              <div class="text-sm font-bold text-[#111FA2]">1. รอบห้องดำ</div>
+              <div class="text-[11px] text-blue-950 font-medium">รอบคัดเลือก (25 คะแนน)</div>
             </button>
 
             <button
@@ -393,44 +393,34 @@
             >
               <i class="fas fa-star text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
               <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">2. Grand Opening</div>
-              <div class="text-[11px] text-gray-300">รอบ 29 คน (100 คะแนน)</div>
+              <div class="text-[11px] text-gray-300">รอบแนะนำตัว (50 คะแนน)</div>
             </button>
 
             <button
-              onclick="switchRound('speech')"
-              id="tab-round-speech"
+              onclick="switchRound('speed')"
+              id="tab-round-speed"
               class="round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group"
             >
-              <i class="fas fa-comment-dots text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
-              <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">3. Speech 1 min</div>
-              <div class="text-[11px] text-gray-300">รอบ 29 คน (100 คะแนน)</div>
-            </button>
-
-            <button
-              onclick="switchRound('theme')"
-              id="tab-round-theme"
-              class="round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group"
-            >
-              <i class="fas fa-tshirt text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
-              <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">4. รอบชุดธีม</div>
-              <div class="text-[11px] text-gray-300">รอบ 29 คน (100 คะแนน)</div>
+              <i class="fas fa-bolt text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
+              <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">3. TOP 5 (Speed)</div>
+              <div class="text-[11px] text-amber-300">⚡ คัดเหลือ 3 คน (50 คะแนน)</div>
             </button>
 
             <button
               onclick="switchRound('qa')"
               id="tab-round-qa"
-              class="round-nav-btn col-span-2 sm:col-span-1 p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#111FA2]/80 text-center transition-all duration-300 shadow-[0_0_15px_rgba(255,222,66,0.3)] hover:scale-105 group"
+              class="round-nav-btn p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#111FA2]/80 text-center transition-all duration-300 shadow-[0_0_15px_rgba(255,222,66,0.3)] hover:scale-105 group"
             >
               <i class="fas fa-crown text-xl mb-1 text-[#FFDE42] gold-glow animate-bounce"></i>
-              <div class="text-sm font-bold text-[#FFDE42]">5. รอบตอบคำถาม</div>
-              <div class="text-[11px] text-amber-200">👑 TOP 5 ตัดสิน (100 คะแนน)</div>
+              <div class="text-sm font-bold text-[#FFDE42]">4. TOP 3 ตอบคำถาม</div>
+              <div class="text-[11px] text-amber-200">👑 ชิงชนะเลิศ (100 คะแนน)</div>
             </button>
           </div>
         </div>
 
-        <!-- 🌟 แถบกรองหมวดหมู่ (เมื่ออยู่ในรอบ 29 คน) -->
+        <!-- 🌟 แถบกรองหมวดหมู่ (สำหรับรอบคัดเลือก ห้องดำ & Grand Opening) -->
         <div id="category-filter-bar" class="flex flex-wrap justify-center gap-2 md:gap-3 mb-6">
-          <button onclick="switchCategory('all')" id="tab-cat-all" class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+          <button onclick="switchCategory('all')" id="tab-cat-all" class="cat-nav-btn px-5 py-2 rounded-full border-2 border-[#FFDE42] text-[#111FA2] font-bold bg-[#FFDE42] shadow-[0_0_15px_rgba(255,222,66,0.4)] text-sm transition">
             ทั้งหมด (29 คน)
           </button>
           <button onclick="switchCategory('mister')" id="tab-cat-mister" class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
@@ -450,14 +440,27 @@
           </button>
         </div>
 
-        <!-- แบนเนอร์พิเศษสำหรับรอบ TOP 5 ตอบคำถาม -->
-        <div id="top5-banner" class="hidden glass-panel p-4 rounded-2xl mb-6 border-2 border-[#FFDE42] bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/90 to-[#111FA2]/90 text-center shadow-[0_0_30px_rgba(255,222,66,0.3)]">
-          <h4 class="text-lg font-bold text-[#FFDE42] gold-glow flex items-center justify-center gap-2">
-            <i class="fas fa-crown text-xl"></i> รอบ 5 คนสุดท้าย (คัดจากผู้มีคะแนนรอบแรกสูงสุด 5 อันดับแรก)
+        <!-- แบนเนอร์พิเศษสำหรับรอบ Speed (Top 5) -->
+        <div id="speed-banner" class="hidden glass-panel p-4 rounded-2xl mb-6 border-2 border-amber-400 bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/90 to-[#111FA2]/90 text-center shadow-[0_0_25px_rgba(251,191,36,0.3)]">
+          <h4 class="text-lg font-bold text-amber-300 flex items-center justify-center gap-2">
+            <i class="fas fa-bolt text-xl text-[#FFDE42]"></i> รอบ 5 คนสุดท้าย (TOP 5 - Speed คัดเหลือ 3 คน)
           </h4>
           <p class="text-xs text-gray-300 mt-1">
-            เกณฑ์รอบนี้: 1.บุคลิกในการตอบคำถาม (40) | 2.ความเข้าใจคำถาม (30) | 3.ความมั่นใจในการตอบคำถาม (30)<br>
-            <span class="text-[#FFDE42] font-semibold">สูตรการคิดคะแนนสุทธิ:</span> (คะแนนสะสมรอบ 29 คน + คะแนนรอบตอบคำถาม) ÷ 5 กรรมการ
+            คัดจากผู้มีคะแนนรอบแรก (ห้องดำ + Grand Opening) สูงสุด 5 อันดับแรก | คะแนนเต็ม 50 คะแนนต่อกรรมการ<br>
+            <span class="text-[#FFDE42] font-semibold">เกณฑ์:</span> 1.ภาษากาย/บุคลิกภาพ (10) | 2.ปฏิภาณไหวพริบ/พูด/สื่อสาร (20) | 3.ความมั่นใจ/แก้ปัญหา (10) | 4.ชุดนักศึกษา (10)
+          </p>
+        </div>
+
+        <!-- แบนเนอร์พิเศษสำหรับรอบ TOP 3 ตอบคำถาม -->
+        <div id="top3-banner" class="hidden glass-panel p-4 rounded-2xl mb-6 border-2 border-[#FFDE42] bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/90 to-[#111FA2]/90 text-center shadow-[0_0_30px_rgba(255,222,66,0.35)]">
+          <h4 class="text-lg font-bold text-[#FFDE42] gold-glow flex items-center justify-center gap-2">
+            <i class="fas fa-crown text-xl"></i> รอบ 3 คนสุดท้าย ตัดสินชี้ขาด (TOP 3 ตอบคำถาม)
+          </h4>
+          <p class="text-xs text-amber-200 mt-1 font-semibold">
+            ✨ คะแนนรอบก่อนหน้าถูกล้างใหม่ทั้งหมด เพื่อตัดสินชี้ขาด The Winner Freshy 2026 จากรอบนี้เท่านั้น (เต็ม 100 คะแนน)
+          </p>
+          <p class="text-xs text-gray-300 mt-0.5">
+            <span class="text-[#FFDE42]">เกณฑ์:</span> 1.ภาษากาย(10) | 2.ไหวพริบ/สื่อสาร(20) | 3.มั่นใจ/แก้ปัญหา(20) | 4.เสน่ห์/ตัวแทนมหาลัย(20) | 5.ประทับใจรวม(10) | 6.ตรงคำถาม/ครบถ้วน(20)
           </p>
         </div>
 
@@ -472,41 +475,48 @@
           <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
             <div class="text-xs text-gray-300 mb-1">ผู้เข้าประกวดทั้งหมด</div>
             <div class="text-2xl font-bold text-[#FFDE42]" id="stat-contestants-count">29 คน</div>
-            <div class="text-[10px] text-gray-400">5 ประเภทการประกวด</div>
+            <div class="text-[10px] text-gray-400">5 หมวดหมู่การประกวด</div>
           </div>
           <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
             <div class="text-xs text-gray-300 mb-1">จำนวนกรรมการ</div>
             <div class="text-2xl font-bold text-blue-400">5 ท่าน</div>
-            <div class="text-[10px] text-gray-400">หาร 5 เพื่อเฉลี่ยคะแนนสุทธิ</div>
+            <div class="text-[10px] text-gray-400">ก.1 ถึง ก.5 ตัดสินทุกรอบ</div>
           </div>
           <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
-            <div class="text-xs text-gray-300 mb-1">รอบคัดเลือก 29 คน</div>
-            <div class="text-2xl font-bold text-emerald-400">4 รอบ (400 คะแนน)</div>
-            <div class="text-[10px] text-gray-400">แนะนำ / Grand / Speech / ธีม</div>
+            <div class="text-xs text-gray-300 mb-1">รอบคัดเลือก 2 รอบแรก</div>
+            <div class="text-2xl font-bold text-emerald-400">ห้องดำ + Grand</div>
+            <div class="text-[10px] text-gray-400">25 + 50 = 75 คะแนน (คัด TOP 5)</div>
           </div>
           <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
-            <div class="text-xs text-gray-300 mb-1">รอบตัดสินชี้ขาด</div>
-            <div class="text-2xl font-bold text-[#FFDE42]">TOP 5 ตอบคำถาม</div>
-            <div class="text-[10px] text-amber-200">5 อันดับแรกคะแนนสูงสุดรอบแรก</div>
+            <div class="text-xs text-gray-300 mb-1">รอบชิงชนะเลิศ</div>
+            <div class="text-2xl font-bold text-[#FFDE42]">Speed ➔ TOP 3</div>
+            <div class="text-[10px] text-amber-200">ล้างคะแนนรอบตอบคำถามชี้ขาด</div>
           </div>
         </div>
 
         <!-- แท็บสลับหน้ามุมมองของแอดมิน -->
         <div class="flex flex-wrap items-center justify-between gap-4 glass-panel p-4 rounded-2xl border border-[#5478FF]/30">
-          <div class="flex gap-2">
+          <div class="flex flex-wrap gap-2">
             <button
-              onclick="switchAdminView('top5')"
-              id="admin-tab-top5"
+              onclick="switchAdminView('top3')"
+              id="admin-tab-top3"
               class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_15px_rgba(255,222,66,0.4)]"
             >
-              <i class="fas fa-crown"></i> 🏆 ผลตัดสิน TOP 5 (Official)
+              <i class="fas fa-crown"></i> 🏆 ผลตัดสินรอบชิง (TOP 3 Official)
             </button>
             <button
-              onclick="switchAdminView('round29')"
-              id="admin-tab-round29"
+              onclick="switchAdminView('speed')"
+              id="admin-tab-speed"
               class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel"
             >
-              <i class="fas fa-users"></i> ตารางคะแนนรอบ 29 คน (4 รอบ)
+              <i class="fas fa-bolt text-yellow-300"></i> ⚡ ผลรอบ TOP 5 (Speed)
+            </button>
+            <button
+              onclick="switchAdminView('pre')"
+              id="admin-tab-pre"
+              class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel"
+            >
+              <i class="fas fa-users"></i> ตารางรอบคัดเลือก (2 รอบแรก)
             </button>
             <button
               onclick="switchAdminView('manage')"
@@ -539,62 +549,84 @@
           </div>
         </div>
 
-        <!-- วิว 1: 🏆 ผลการตัดสินรอบ TOP 5 (Official Leaderboard) -->
-        <div id="admin-view-top5" class="space-y-6">
+        <!-- วิว 1: 🏆 ผลการตัดสินชี้ขาด (TOP 3 ตอบคำถาม & รางวัลทั้งหมด) -->
+        <div id="admin-view-top3" class="space-y-6">
           <div class="glass-panel p-6 rounded-3xl border-2 border-[#FFDE42] shadow-[0_0_40px_rgba(255,222,66,0.2)] overflow-x-auto">
             <div class="text-center mb-6">
               <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow flex items-center justify-center gap-2">
-                <i class="fas fa-trophy text-3xl"></i> ผลการตัดสินอย่างเป็นทางการ: รอบ 5 คนสุดท้าย (TOP 5)
+                <i class="fas fa-trophy text-3xl"></i> ผลการตัดสินอย่างเป็นทางการ: รอบตอบคำถาม (TOP 3 ตัดสิน)
               </h3>
-              <p class="text-xs text-gray-300 mt-1">
-                สูตรคำนวณ: [ คะแนนรอบ 29 คน (รวม 5 ก.) + คะแนนรอบตอบคำถาม (รวม 5 ก.) ] ÷ 5 กรรมการ = คะแนนเฉลี่ยสุทธิ
+              <p class="text-xs text-amber-200 mt-1 font-semibold">
+                * คะแนนรอบ 5 คนถูกล้างทั้งหมดเพื่อเข้าสู่รอบ 3 คนสุดท้าย — ตัดสินชี้ขาดตำแหน่ง The Winner จากรอบตอบคำถามนี้ 100%
               </p>
             </div>
 
             <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
               <thead class="text-xs uppercase font-bold">
                 <tr class="bg-[#FFDE42] text-[#111FA2]">
-                  <th rowspan="2" class="px-3 py-3 rounded-tl-xl text-center align-middle">อันดับ</th>
-                  <th rowspan="2" class="px-3 py-3 text-center align-middle">รูปภาพ</th>
-                  <th rowspan="2" class="px-3 py-3 align-middle">รหัส / ชื่อ-นามสกุล</th>
-                  <th rowspan="2" class="px-3 py-3 text-center align-middle">หมวดหมู่</th>
-                  <th colspan="6" class="px-2 py-2.5 text-center bg-blue-900/70 text-blue-100 border-l border-blue-600">คะแนนรอบ 29 คน (รายกรรมการ 4 รอบรวม)</th>
-                  <th colspan="6" class="px-2 py-2.5 text-center bg-amber-700/70 text-amber-100 border-l border-amber-500">คะแนนรอบตอบคำถาม (รายกรรมการ)</th>
-                  <th rowspan="2" class="px-3 py-3 text-center align-middle bg-blue-600 text-white">รวมสุทธิ</th>
-                  <th rowspan="2" class="px-3 py-3 text-center align-middle bg-[#111FA2] text-[#FFDE42] rounded-tr-xl">คะแนนเฉลี่ย<br><span class="text-[9px] font-normal text-amber-200">(÷5 ก.)</span></th>
-                </tr>
-                <tr class="bg-[#091054] text-gray-300 border-b-2 border-[#5478FF]/40">
-                  <th class="px-2 py-2 text-center text-[10px] border-l border-blue-800/50 bg-blue-950/60">ก.1</th>
-                  <th class="px-2 py-2 text-center text-[10px] bg-blue-950/60">ก.2</th>
-                  <th class="px-2 py-2 text-center text-[10px] bg-blue-950/60">ก.3</th>
-                  <th class="px-2 py-2 text-center text-[10px] bg-blue-950/60">ก.4</th>
-                  <th class="px-2 py-2 text-center text-[10px] bg-blue-950/60">ก.5</th>
-                  <th class="px-2 py-2 text-center text-[10px] font-bold text-[#FFDE42] bg-blue-950/80 border-l border-[#FFDE42]/30">รวม<br><span class="text-[8px] text-gray-400">(เต็ม 2,000)</span></th>
-                  <th class="px-2 py-2 text-center text-[10px] border-l border-amber-600/50 bg-amber-950/40">ก.1</th>
-                  <th class="px-2 py-2 text-center text-[10px] bg-amber-950/40">ก.2</th>
-                  <th class="px-2 py-2 text-center text-[10px] bg-amber-950/40">ก.3</th>
-                  <th class="px-2 py-2 text-center text-[10px] bg-amber-950/40">ก.4</th>
-                  <th class="px-2 py-2 text-center text-[10px] bg-amber-950/40">ก.5</th>
-                  <th class="px-2 py-2 text-center text-[10px] font-bold text-[#FFDE42] bg-amber-950/60 border-l border-[#FFDE42]/30">รวม<br><span class="text-[8px] text-gray-400">(เต็ม 500)</span></th>
+                  <th class="px-3 py-3 rounded-tl-xl text-center">อันดับ</th>
+                  <th class="px-3 py-3 text-center">รูปภาพ</th>
+                  <th class="px-3 py-3">รหัส / ชื่อ-นามสกุล / รางวัลเกียรติยศ</th>
+                  <th class="px-3 py-3 text-center">หมวดหมู่</th>
+                  <th class="px-2 py-3 text-center bg-blue-900 text-white border-l border-blue-600">ก.1 (100)</th>
+                  <th class="px-2 py-3 text-center bg-blue-900 text-white">ก.2 (100)</th>
+                  <th class="px-2 py-3 text-center bg-blue-900 text-white">ก.3 (100)</th>
+                  <th class="px-2 py-3 text-center bg-blue-900 text-white">ก.4 (100)</th>
+                  <th class="px-2 py-3 text-center bg-blue-900 text-white">ก.5 (100)</th>
+                  <th class="px-3 py-3 text-center bg-blue-950 text-[#FFDE42] border-l border-[#FFDE42]/40">รวมตอบคำถาม<br><span class="text-[9px] font-normal text-gray-300">(เต็ม 500)</span></th>
+                  <th class="px-3 py-3 text-center bg-[#111FA2] text-[#FFDE42] rounded-tr-xl font-extrabold text-sm">คะแนนเฉลี่ยสุทธิ<br><span class="text-[9px] font-normal text-amber-200">(เต็ม 100)</span></th>
                 </tr>
               </thead>
-              <tbody id="top5-table-body"></tbody>
+              <tbody id="top3-table-body"></tbody>
             </table>
           </div>
         </div>
 
-        <!-- วิว 2: ตารางคะแนนรอบ 29 คน (แยกตามรอบ + เกณฑ์ย่อยรายกรรมการ) -->
-        <div id="admin-view-round29" class="hidden space-y-4">
-          <!-- Header, Round Tabs & Category Filter -->
+        <!-- วิว 2: ⚡ ผลคะแนนรอบ TOP 5 (Speed) -->
+        <div id="admin-view-speed" class="hidden space-y-6">
+          <div class="glass-panel p-6 rounded-3xl border border-amber-400 shadow-xl overflow-x-auto">
+            <div class="text-center mb-6">
+              <h3 class="text-xl font-bold text-amber-300 flex items-center justify-center gap-2">
+                <i class="fas fa-bolt text-2xl text-[#FFDE42]"></i> ผลการตัดสินรอบ 5 คนสุดท้าย (Speed)
+              </h3>
+              <p class="text-xs text-gray-300 mt-1">
+                เต็ม 50 คะแนนต่อกรรมการ (รวม 250 คะแนน) — คัดเลือก 3 อันดับแรกผ่านเข้าสู่รอบตอบคำถามตัดสิน (TOP 3)
+              </p>
+            </div>
+
+            <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
+              <thead class="text-xs uppercase font-bold">
+                <tr class="bg-amber-400 text-slate-900">
+                  <th class="px-3 py-3 rounded-tl-xl text-center">อันดับ Speed</th>
+                  <th class="px-3 py-3 text-center">รูปภาพ</th>
+                  <th class="px-3 py-3">รหัส / ชื่อ-นามสกุล</th>
+                  <th class="px-3 py-3 text-center">หมวดหมู่</th>
+                  <th class="px-3 py-3 text-center bg-amber-500/80 text-white">คะแนน 2 รอบแรก<br><span class="text-[9px] font-normal">(เต็ม 375)</span></th>
+                  <th class="px-2 py-3 text-center bg-amber-900 text-white border-l border-amber-700">ก.1 (50)</th>
+                  <th class="px-2 py-3 text-center bg-amber-900 text-white">ก.2 (50)</th>
+                  <th class="px-2 py-3 text-center bg-amber-900 text-white">ก.3 (50)</th>
+                  <th class="px-2 py-3 text-center bg-amber-900 text-white">ก.4 (50)</th>
+                  <th class="px-2 py-3 text-center bg-amber-900 text-white">ก.5 (50)</th>
+                  <th class="px-3 py-3 text-center bg-amber-950 text-[#FFDE42] border-l border-[#FFDE42]/40 font-bold">รวม Speed<br><span class="text-[9px] font-normal text-gray-300">(เต็ม 250)</span></th>
+                  <th class="px-3 py-3 text-center bg-[#111FA2] text-[#FFDE42] rounded-tr-xl font-bold">สถานะเข้ารอบ</th>
+                </tr>
+              </thead>
+              <tbody id="speed-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- วิว 3: ตารางคะแนนรอบคัดเลือก 2 รอบแรก (ห้องดำ 25 + Grand 50) -->
+        <div id="admin-view-pre" class="hidden space-y-4">
           <div class="glass-panel p-5 rounded-2xl border border-[#5478FF]/30">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
               <div>
                 <h3 class="text-xl font-bold text-[#FFDE42] flex items-center gap-2">
-                  <i class="fas fa-list-ol"></i> ตารางคะแนนรอบ 29 คน (4 รอบ)
+                  <i class="fas fa-list-ol"></i> ตารางคะแนนรอบคัดเลือก (2 รอบแรก)
                 </h3>
-                <p class="text-xs text-gray-300 mt-0.5">เลือกแท็บรอบเพื่อดูเกณฑ์ย่อยรายกรรมการ หรือแท็บ "สรุปรวม" เพื่อดูคะแนนรวมทุกรอบ</p>
+                <p class="text-xs text-gray-300 mt-0.5">รอบห้องดำ (25 คะแนน) และรอบ Grand Opening (50 คะแนน) รวม 75 คะแนนต่อกรรมการ เพื่อคัดหา TOP 5</p>
               </div>
-              <select id="admin-category-filter" onchange="renderAdminRound29Table()" class="input-dark p-2 rounded-xl text-xs font-semibold shrink-0">
+              <select id="admin-category-filter" onchange="renderAdminPreTable()" class="input-dark p-2 rounded-xl text-xs font-semibold shrink-0">
                 <option value="all">ทุกหมวดหมู่ (29 คน)</option>
                 <option value="mister">Mister</option>
                 <option value="miss">Miss</option>
@@ -605,39 +637,30 @@
             </div>
             <!-- Round Tabs -->
             <div class="flex flex-wrap gap-2">
-              <button onclick="switchAdminRound29('intro')" id="admin-r29-tab-intro"
-                class="r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]">
-                <i class="fas fa-microphone-alt"></i> 1. แนะนำตัว
+              <button onclick="switchAdminPreRound('blackroom')" id="admin-pre-tab-blackroom"
+                class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]">
+                <i class="fas fa-user-secret"></i> 1. รอบห้องดำ (25)
               </button>
-              <button onclick="switchAdminRound29('grand')" id="admin-r29-tab-grand"
-                class="r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
-                <i class="fas fa-star"></i> 2. Grand Opening
+              <button onclick="switchAdminPreRound('grand')" id="admin-pre-tab-grand"
+                class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
+                <i class="fas fa-star"></i> 2. Grand Opening (50)
               </button>
-              <button onclick="switchAdminRound29('speech')" id="admin-r29-tab-speech"
-                class="r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
-                <i class="fas fa-comment-dots"></i> 3. Speech 1 min
-              </button>
-              <button onclick="switchAdminRound29('theme')" id="admin-r29-tab-theme"
-                class="r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
-                <i class="fas fa-tshirt"></i> 4. ชุดธีม
-              </button>
-              <button onclick="switchAdminRound29('all')" id="admin-r29-tab-all"
-                class="r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white border border-[#5478FF]/40">
-                <i class="fas fa-table"></i> สรุปรวม 4 รอบ
+              <button onclick="switchAdminPreRound('all')" id="admin-pre-tab-all"
+                class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white border border-[#5478FF]/40">
+                <i class="fas fa-table"></i> สรุปรวม 2 รอบแรก (375) คัด TOP 5
               </button>
             </div>
           </div>
 
-          <!-- Table Area -->
           <div class="glass-panel p-4 rounded-3xl border border-[#5478FF]/30 overflow-x-auto">
             <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
-              <thead id="round29-thead"></thead>
-              <tbody id="round29-table-body"></tbody>
+              <thead id="pre-thead"></thead>
+              <tbody id="pre-table-body"></tbody>
             </table>
           </div>
         </div>
 
-        <!-- วิว 3: จัดการข้อมูลผู้เข้าประกวด -->
+        <!-- วิว 4: จัดการข้อมูลผู้เข้าประกวด -->
         <div id="admin-view-manage" class="hidden space-y-6">
           <div class="glass-panel p-6 rounded-3xl border border-[#5478FF]/30">
             <h3 class="text-lg font-bold text-[#FFDE42] mb-4 flex items-center gap-2">
@@ -673,9 +696,8 @@
           </div>
         </div>
       </div>
-    </main>
 
-    <!-- Modals: ยืนยันการบันทึกคะแนน -->
+      <!-- Modals: ยืนยันการบันทึกคะแนน -->
     <div id="custom-confirm-modal" class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
       <div class="modal-dialog glass-panel max-w-md w-full rounded-3xl p-6 md:p-8 border-2 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.35)] text-center relative">
         <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-[#111FA2] border-2 border-[#FFDE42] flex items-center justify-center shadow-[0_0_20px_rgba(255,222,66,0.5)]">
@@ -693,23 +715,11 @@
             <span class="text-gray-400">รหัสประจำตัว:</span>
             <span id="modal-cid" class="font-bold text-[#FFDE42]"></span>
           </div>
-          <div class="border-t border-[#5478FF]/20 pt-2 space-y-1 text-xs text-gray-300">
-            <div class="flex justify-between">
-              <span id="modal-lbl-c1">1. บุคลิก ผิวพรรณ:</span>
-              <span id="modal-val-c1" class="font-bold text-[#FFDE42]">0/40</span>
-            </div>
-            <div class="flex justify-between">
-              <span id="modal-lbl-c2">2. ความมั่นใจฯ:</span>
-              <span id="modal-val-c2" class="font-bold text-[#FFDE42]">0/30</span>
-            </div>
-            <div class="flex justify-between">
-              <span id="modal-lbl-c3">3. ความเรียบร้อยการแต่งกาย:</span>
-              <span id="modal-val-c3" class="font-bold text-[#FFDE42]">0/30</span>
-            </div>
+          <div id="modal-criteria-container" class="border-t border-[#5478FF]/20 pt-2 space-y-1 text-xs text-gray-300">
           </div>
           <div class="flex justify-between border-t border-[#5478FF]/20 pt-2">
             <span class="text-gray-200 font-semibold">คะแนนรวมรอบนี้:</span>
-            <span class="font-bold text-[#FFDE42] text-xl"><span id="modal-score">0</span> / 100</span>
+            <span class="font-bold text-[#FFDE42] text-xl"><span id="modal-score">0</span> / <span id="modal-max-score">100</span></span>
           </div>
         </div>
 
@@ -754,10 +764,10 @@
       let heartbeatInterval = null;
       let pollingInterval = null;
       
-      let currentRound = 'intro'; // 'intro', 'grand', 'speech', 'theme', 'qa'
+      let currentRound = 'blackroom'; // 'blackroom', 'grand', 'speed', 'qa'
       let currentCategory = 'all'; // 'all', 'mister', 'miss', 'queen', 'congeniality', 'jumbo'
-      let adminCurrentView = 'top5'; // 'top5', 'round29', 'manage'
-      let adminRound29View = 'intro'; // 'intro', 'grand', 'speech', 'theme', 'all'
+      let adminCurrentView = 'top3'; // 'top3', 'speed', 'pre', 'manage'
+      let adminPreRoundView = 'blackroom'; // 'blackroom', 'grand', 'all'
 
       let allScores = [];
       let allContestants = [];
@@ -765,24 +775,40 @@
       let pendingSubmitData = null;
 
       const ROUNDS = [
-        { id: 'intro', name: '1. แนะนำตัว', fullTitle: 'รอบแนะนำตัว (รอบแรก 29 คน)', max: 100 },
-        { id: 'grand', name: '2. Grand Opening', fullTitle: 'รอบ Grand Opening (รอบแรก 29 คน)', max: 100 },
-        { id: 'speech', name: '3. Speech 1 min', fullTitle: 'รอบ Speech 1 min (รอบแรก 29 คน)', max: 100 },
-        { id: 'theme', name: '4. รอบชุดธีม', fullTitle: 'รอบชุดธีม (รอบแรก 29 คน)', max: 100 },
-        { id: 'qa', name: '5. ตอบคำถาม', fullTitle: 'รอบตอบคำถาม 5 คนสุดท้าย (TOP 5)', max: 100 }
+        { id: 'blackroom', name: '1. รอบห้องดำ', fullTitle: 'รอบห้องดำ (รอบคัดเลือก 29 คน)', max: 25 },
+        { id: 'grand', name: '2. Grand Opening', fullTitle: 'รอบ Grand Opening รอบแนะนำตัว (29 คน)', max: 50 },
+        { id: 'speed', name: '3. TOP 5 (Speed)', fullTitle: 'รอบ 5 คนสุดท้าย (Speed คัดเหลือ 3 คน)', max: 50 },
+        { id: 'qa', name: '4. TOP 3 ตอบคำถาม', fullTitle: 'รอบ 3 คนสุดท้าย ตัดสินชี้ขาด (ล้างคะแนนเดิม)', max: 100 }
       ];
 
-      const CRITERIA_ROUND29 = [
-        { id: 'c1', name: '1. บุคลิก ผิวพรรณ', max: 40 },
-        { id: 'c2', name: '2. ความมั่นใจและการแก้ไขปัญหา', max: 30 },
-        { id: 'c3', name: '3. ความเรียบร้อยของการแต่งกาย', max: 30 }
-      ];
-
-      const CRITERIA_TOP5 = [
-        { id: 'c1', name: '1. บุคลิกในการตอบคำถาม', max: 40 },
-        { id: 'c2', name: '2. ความเข้าใจคำถาม', max: 30 },
-        { id: 'c3', name: '3. ความมั่นใจในการตอบคำถาม', max: 30 }
-      ];
+      const CRITERIA_MAP = {
+        blackroom: [
+          { id: 'c1', name: '1. First Impression', max: 10, short: 'First Imp.' },
+          { id: 'c2', name: '2. บุคลิกภาพ / ความมั่นใจ', max: 5, short: 'บุคลิกฯ' },
+          { id: 'c3', name: '3. ความสวยงามของเครื่องแต่งกาย (ชุดรอบแต่งตัว)', max: 5, short: 'เครื่องแต่งกาย' },
+          { id: 'c4', name: '4. เสน่ห์และความมั่นใจ', max: 5, short: 'เสน่ห์ฯ' }
+        ],
+        grand: [
+          { id: 'c1', name: '1. หน้าตา / ผิวพรรณ / รูปร่าง / สัดส่วน', max: 20, short: 'หน้าตา/ผิวพรรณ' },
+          { id: 'c2', name: '2. บุคลิกภาพ / ความมั่นใจ', max: 10, short: 'บุคลิกฯ' },
+          { id: 'c3', name: '3. ความสวยงามของเครื่องแต่งกาย', max: 10, short: 'เครื่องแต่งกาย' },
+          { id: 'c4', name: '4. การแนะนำตัว / ภาษากาย / บุคลิกภาพ', max: 10, short: 'แนะนำตัว' }
+        ],
+        speed: [
+          { id: 'c1', name: '1. ภาษากาย / บุคลิกภาพ', max: 10, short: 'ภาษากาย' },
+          { id: 'c2', name: '2. ปฏิภาณไหวพริบ / การพูด / การสื่อสาร', max: 20, short: 'ไหวพริบ/พูด' },
+          { id: 'c3', name: '3. ความมั่นใจ การแก้ไขปัญหาเฉพาะหน้า', max: 10, short: 'มั่นใจ/แก้ปัญหา' },
+          { id: 'c4', name: '4. ความสวยงามของเครื่องแต่งกาย (รอบชุดนักศึกษา)', max: 10, short: 'ชุดนักศึกษา' }
+        ],
+        qa: [
+          { id: 'c1', name: '1. ภาษากาย / บุคลิกภาพ', max: 10, short: 'ภาษากาย' },
+          { id: 'c2', name: '2. ปฏิภาณไหวพริบ / การพูด / การสื่อสาร', max: 20, short: 'ไหวพริบ/พูด' },
+          { id: 'c3', name: '3. ความมั่นใจ การแก้ไขปัญหาเฉพาะหน้า', max: 20, short: 'มั่นใจ/แก้ปัญหา' },
+          { id: 'c4', name: '4. เสน่ห์ความประทับใจ และความเหมาะสมในการเป็นตัวแทนมหาวิทยาลัย', max: 20, short: 'เสน่ห์/ตัวแทนมหาลัย' },
+          { id: 'c5', name: '5. ความประทับใจโดยรวม', max: 10, short: 'ประทับใจรวม' },
+          { id: 'c6', name: '6. ตอบตรงคำถามและเนื้อหาครบถ้วน', max: 20, short: 'ตรงคำถาม/ครบถ้วน' }
+        ]
+      };
 
       const CATEGORIES = {
         mister: 'Mister',
@@ -826,7 +852,6 @@
         toggleRoleDropdown(true);
       }
 
-      // Close dropdown when clicking outside
       document.addEventListener('click', (e) => {
         const btn = document.getElementById('dropdown-btn');
         const menu = document.getElementById('role-dropdown-menu');
@@ -878,7 +903,7 @@
           adminSec.classList.remove('view-animated');
           void adminSec.offsetWidth;
           adminSec.classList.add('view-animated');
-          switchAdminView('top5');
+          switchAdminView('top3');
           if (!pollingInterval) pollingInterval = setInterval(fetchScores, 5000);
         } else {
           const judgeSec = document.getElementById('judge-section');
@@ -886,7 +911,7 @@
           judgeSec.classList.remove('view-animated');
           void judgeSec.offsetWidth;
           judgeSec.classList.add('view-animated');
-          switchRound('intro');
+          switchRound('blackroom');
         }
       }
 
@@ -941,12 +966,10 @@
             if (res.ok) {
               const data = await res.json();
               if (data.success === false) {
-                // หลุดเฉพาะกรณีมีการเข้าสู่ระบบจากเครื่องอื่น หรือเซสชันหมดอายุ
                 forceLogout(data.reason);
               }
             }
           } catch (e) {
-            // ไม่ forceLogout ถ้าเป็นปัญหาการเชื่อมต่อชั่วคราว
           } finally {
             isHeartbeatPinging = false;
           }
@@ -993,7 +1016,6 @@
         }
       }
 
-      // กู้คืนเซสชันเดิมอัตโนมัติเมื่อเปิดหรือรีเฟรชหน้าเว็บ
       async function initSessionOnLoad() {
         try {
           const savedUser = localStorage.getItem('freshy_user');
@@ -1021,7 +1043,6 @@
 
       window.addEventListener('DOMContentLoaded', initSessionOnLoad);
 
-      // เมื่อผู้ใช้สลับกลับมาหน้าเว็บ (จอเปิดใหม่ หรือสลับแท็บกลับมา)
       document.addEventListener('visibilitychange', async () => {
         if (document.visibilityState === 'visible' && currentUser && sessionToken) {
           try {
@@ -1090,39 +1111,64 @@
           if (r.id === rId) {
             btn.className = "round-nav-btn p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#FFDE42] text-[#111FA2] text-center transition-all duration-300 scale-105 shadow-[0_0_22px_rgba(255,222,66,0.55)] font-bold active:scale-95";
             const icon = btn.querySelector('i');
-            if (icon) icon.className = icon.className.replace('text-[#5478FF]', 'text-[#111FA2]').replace('text-[#FFDE42]', 'text-[#111FA2]');
+            if (icon) icon.className = icon.className.replace('text-[#5478FF]', 'text-[#111FA2]').replace('text-[#FFDE42]', 'text-[#111FA2]').replace('text-yellow-300', 'text-[#111FA2]');
             const texts = btn.querySelectorAll('div');
             if (texts[0]) texts[0].className = "text-sm font-bold text-[#111FA2]";
             if (texts[1]) texts[1].className = "text-[11px] text-blue-950 font-medium";
           } else {
-            const isQa = r.id === 'qa';
-            btn.className = isQa 
-              ? "round-nav-btn col-span-2 sm:col-span-1 p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#111FA2]/80 text-center transition-all duration-300 shadow-[0_0_15px_rgba(255,222,66,0.3)] hover:scale-105 hover:shadow-[0_0_20px_rgba(255,222,66,0.5)] active:scale-95 group"
+            const isSpecial = r.id === 'qa' || r.id === 'speed';
+            btn.className = isSpecial 
+              ? "round-nav-btn p-3 rounded-2xl border-2 border-[#FFDE42]/70 bg-[#111FA2]/80 text-center transition-all duration-300 shadow-[0_0_15px_rgba(255,222,66,0.25)] hover:scale-105 hover:border-[#FFDE42] active:scale-95 group"
               : "round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] hover:-translate-y-0.5 active:scale-95 group";
             const icon = btn.querySelector('i');
-            if (icon) icon.className = isQa ? "fas fa-crown text-xl mb-1 text-[#FFDE42] gold-glow" : icon.className.replace('text-[#111FA2]', 'text-[#5478FF]');
+            if (icon) {
+              if (r.id === 'qa') icon.className = "fas fa-crown text-xl mb-1 text-[#FFDE42] gold-glow";
+              else if (r.id === 'speed') icon.className = "fas fa-bolt text-xl mb-1 text-yellow-300";
+              else icon.className = icon.className.replace('text-[#111FA2]', 'text-[#5478FF]');
+            }
             const texts = btn.querySelectorAll('div');
-            if (texts[0]) texts[0].className = isQa ? "text-sm font-bold text-[#FFDE42]" : "text-sm font-bold text-white group-hover:text-[#FFDE42]";
-            if (texts[1]) texts[1].className = isQa ? "text-[11px] text-amber-200" : "text-[11px] text-gray-300";
+            if (texts[0]) texts[0].className = isSpecial ? "text-sm font-bold text-[#FFDE42]" : "text-sm font-bold text-white group-hover:text-[#FFDE42]";
+            if (texts[1]) texts[1].className = isSpecial ? "text-[11px] text-amber-200" : "text-[11px] text-gray-300";
           }
         });
 
         const catBar = document.getElementById('category-filter-bar');
-        const top5Banner = document.getElementById('top5-banner');
+        const speedBanner = document.getElementById('speed-banner');
+        const top3Banner = document.getElementById('top3-banner');
         const hintEl = document.getElementById('round-criteria-info');
 
-        if (rId === 'qa') {
-          catBar.classList.add('hidden');
-          top5Banner.classList.remove('hidden');
-          top5Banner.classList.remove('view-animated');
-          void top5Banner.offsetWidth;
-          top5Banner.classList.add('view-animated');
-          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5:</span> 1.บุคลิกตอบคำถาม (40) | 2.ความเข้าใจคำถาม (30) | 3.ความมั่นใจตอบคำถาม (30)';
-        } else {
+        if (rId === 'blackroom') {
           catBar.classList.remove('hidden');
-          top5Banner.classList.add('hidden');
-          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์ย่อย:</span> 1.บุคลิก ผิวพรรณ (40) | 2.ความมั่นใจและการแก้ปัญหา (30) | 3.ความเรียบร้อยการแต่งกาย (30)';
+          if (speedBanner) speedBanner.classList.add('hidden');
+          if (top3Banner) top3Banner.classList.add('hidden');
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบห้องดำ (25 คะแนน):</span> First Impression (10) | บุคลิกภาพ/มั่นใจ (5) | เครื่องแต่งกาย (5) | เสน่ห์/มั่นใจ (5)';
           switchCategory(currentCategory || 'all');
+        } else if (rId === 'grand') {
+          catBar.classList.remove('hidden');
+          if (speedBanner) speedBanner.classList.add('hidden');
+          if (top3Banner) top3Banner.classList.add('hidden');
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ Grand Opening (50 คะแนน):</span> หน้าตา/ผิวพรรณ/รูปร่าง (20) | บุคลิกภาพ/มั่นใจ (10) | เครื่องแต่งกาย (10) | แนะนำตัว/ภาษากาย (10)';
+          switchCategory(currentCategory || 'all');
+        } else if (rId === 'speed') {
+          catBar.classList.add('hidden');
+          if (speedBanner) {
+            speedBanner.classList.remove('hidden');
+            speedBanner.classList.remove('view-animated');
+            void speedBanner.offsetWidth;
+            speedBanner.classList.add('view-animated');
+          }
+          if (top3Banner) top3Banner.classList.add('hidden');
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5 Speed (50 คะแนน):</span> ภาษากาย (10) | ไหวพริบ/พูด (20) | มั่นใจ/แก้ปัญหา (10) | ชุดนักศึกษา (10)';
+        } else if (rId === 'qa') {
+          catBar.classList.add('hidden');
+          if (speedBanner) speedBanner.classList.add('hidden');
+          if (top3Banner) {
+            top3Banner.classList.remove('hidden');
+            top3Banner.classList.remove('view-animated');
+            void top3Banner.offsetWidth;
+            top3Banner.classList.add('view-animated');
+          }
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 3 ตัดสิน (100 คะแนน):</span> ภาษากาย(10) | ไหวพริบ(20) | มั่นใจ(20) | เสน่ห์ตัวแทนมหาลัย(20) | ประทับใจรวม(10) | ตรงคำถาม/ครบถ้วน(20)';
         }
 
         renderJudgeCards();
@@ -1146,6 +1192,38 @@
         renderJudgeCards();
       }
 
+      function getAutoTop5Local() {
+        let allWithScores = allContestants.map(c => {
+          let sum = 0;
+          for (let i = 1; i <= 5; i++) {
+            ['blackroom', 'grand'].forEach(rId => {
+              const rec = (allScores || []).find(s => s.judge_id === `judge${i}` && s.contestant_id === c.id && s.round_id === rId);
+              if (rec) sum += (rec.total_score || 0);
+            });
+          }
+          return { ...c, categoryName: CATEGORIES[c.category] || c.category, preTotal: sum };
+        });
+        allWithScores.sort((a, b) => b.preTotal - a.preTotal);
+        return allWithScores.slice(0, 5);
+      }
+
+      function getAutoTop3Local() {
+        const top5 = (summaryData && summaryData.top5 && summaryData.top5.length > 0) ? summaryData.top5 : getAutoTop5Local();
+        let withSpeed = top5.map(c => {
+          let sum = 0;
+          for (let i = 1; i <= 5; i++) {
+            const rec = (allScores || []).find(s => s.judge_id === `judge${i}` && s.contestant_id === c.id && s.round_id === 'speed');
+            if (rec) sum += (rec.total_score || 0);
+          }
+          return { ...c, speedTotal: sum };
+        });
+        withSpeed.sort((a, b) => {
+          if (b.speedTotal !== a.speedTotal) return b.speedTotal - a.speedTotal;
+          return (b.preTotal || 0) - (a.preTotal || 0);
+        });
+        return withSpeed.slice(0, 3);
+      }
+
       // ==========================================
       // Render Judge Contestant Cards
       // ==========================================
@@ -1156,16 +1234,21 @@
 
         let targetList = [];
         const isQa = currentRound === 'qa';
+        const isSpeed = currentRound === 'speed';
 
         if (isQa) {
-          // ดึงผู้ผ่านเข้ารอบ TOP 5 (อันดับ 1 ของแต่ละหมวดจากรอบ 29 คน)
-          if (summaryData && summaryData.top5) {
+          if (summaryData && summaryData.top3 && summaryData.top3.length > 0) {
+            targetList = summaryData.top3;
+          } else {
+            targetList = getAutoTop3Local();
+          }
+        } else if (isSpeed) {
+          if (summaryData && summaryData.top5 && summaryData.top5.length > 0) {
             targetList = summaryData.top5;
           } else {
             targetList = getAutoTop5Local();
           }
         } else {
-          // รอบ 29 คน
           if (currentCategory === 'all') {
             targetList = allContestants;
           } else {
@@ -1174,11 +1257,17 @@
         }
 
         if (targetList.length === 0) {
-          container.innerHTML = `<div class="col-span-2 text-center text-gray-300 py-12 glass-panel rounded-3xl view-animated">ยังไม่มีข้อมูลในหมวดหมู่นี้ หรือยังไม่มีคะแนนสำหรับคัดเลือก TOP 5</div>`;
+          const emptyMsg = isQa 
+            ? 'ยังไม่มีข้อมูลสำหรับรอบ TOP 3 (กรุณารอการบันทึกคะแนนรอบ Speed เพื่อคัดเลือก 3 คนสุดท้าย)'
+            : (isSpeed ? 'ยังไม่มีข้อมูลสำหรับรอบ TOP 5 (กรุณารอการบันทึกคะแนนรอบห้องดำและ Grand Opening เพื่อคัดเลือก 5 คนสุดท้าย)' : 'ยังไม่มีข้อมูลในหมวดหมู่นี้');
+          container.innerHTML = `<div class="col-span-2 text-center text-gray-300 py-12 glass-panel rounded-3xl view-animated">${emptyMsg}</div>`;
           return;
         }
 
-        const criteriaList = isQa ? CRITERIA_TOP5 : CRITERIA_ROUND29;
+        const criteriaList = CRITERIA_MAP[currentRound] || [];
+        const roundObj = ROUNDS.find(r => r.id === currentRound);
+        const maxScore = roundObj ? roundObj.max : 100;
+        const roundName = roundObj ? roundObj.name : currentRound;
 
         targetList.forEach((contestant, cIndex) => {
           const cId = contestant.id;
@@ -1186,23 +1275,20 @@
           const cCat = contestant.category;
           const catTitle = CATEGORIES[cCat] || cCat;
 
-          // ค้นหาคะแนนเดิมของกรรมการท่านนี้ในรอบนี้
           const record = (allScores || []).find(
             s => s.judge_id === currentUser && s.contestant_id === cId && s.round_id === currentRound
           );
           const hasVoted = !!record;
 
-          const val1 = record ? record.score_c1 : 0;
-          const val2 = record ? record.score_c2 : 0;
-          const val3 = record ? record.score_c3 : 0;
-          const totalScore = val1 + val2 + val3;
+          let totalScore = 0;
+          criteriaList.forEach(crit => {
+            totalScore += (record ? (record[`score_${crit.id}`] || 0) : 0);
+          });
 
           const imagePath = contestant.image && contestant.image !== 'default.jpg'
             ? `/images/contestants/${contestant.image}`
             : `https://placehold.co/400x500/111FA2/FFDE42?text=${cId}`;
 
-          const roundObj = ROUNDS.find(r => r.id === currentRound);
-          const roundName = roundObj ? roundObj.name : currentRound;
           const animDelay = Math.min(cIndex * 0.04, 0.4);
 
           let cardHtml = `
@@ -1224,14 +1310,18 @@
                   
                   ${isQa ? `
                     <div class="mt-1 px-3 py-1 bg-yellow-500/20 rounded-lg text-amber-300 text-xs border border-yellow-500/30 font-medium">
-                      ⭐ ผู้ผ่านเข้ารอบ TOP 5 (คะแนนสะสมรอบแรก: <strong>${contestant.round29Total || 0}</strong> คะแนน)
+                      👑 ผู้ผ่านเข้ารอบ TOP 3 ตัดสิน (ล้างคะแนนเดิม)
                     </div>
-                  ` : ''}
+                  ` : (isSpeed ? `
+                    <div class="mt-1 px-3 py-1 bg-yellow-500/20 rounded-lg text-amber-300 text-xs border border-yellow-500/30 font-medium">
+                      ⚡ ผู้ผ่านเข้ารอบ TOP 5 (คะแนนสะสมรอบแรก: <strong>${contestant.preTotal || 0}</strong>)
+                    </div>
+                  ` : '')}
 
                   <div class="mt-2.5 px-4 py-1.5 bg-[#111FA2]/80 rounded-full text-[#FFDE42] font-bold text-sm border border-[#5478FF]/40 shadow-inner flex items-center justify-center gap-1.5">
                     <span>รอบนี้</span>
                     <span id="total-${cId}" class="text-xl font-extrabold transition-all duration-200">${totalScore}</span>
-                    <span class="text-gray-300 font-normal">/ 100</span>
+                    <span class="text-gray-300 font-normal">/ ${maxScore}</span>
                   </div>
                 </div>
 
@@ -1241,24 +1331,24 @@
                 </button>
               </div>
 
-              <!-- ฝั่งขวา: ช่องกรอกเกณฑ์ย่อย 3 ข้อ -->
+              <!-- ฝั่งขวา: ช่องกรอกเกณฑ์ย่อย -->
               <div class="w-full md:w-7/12 flex flex-col justify-between bg-[#091054]/60 p-4 md:p-5 rounded-2xl border border-[#5478FF]/20 space-y-4">
                 <div class="border-b border-[#5478FF]/20 pb-2">
                   <div class="text-xs uppercase font-bold text-[#FFDE42] flex items-center justify-between">
                     <span>เกณฑ์การให้คะแนน: ${roundName}</span>
-                    <span class="text-gray-300 text-[11px] font-normal">รวม 100 คะแนน</span>
+                    <span class="text-gray-300 text-[11px] font-normal">รวม ${maxScore} คะแนน</span>
                   </div>
                 </div>
 
-                <div class="space-y-4 my-auto">
+                <div class="space-y-3 my-auto">
           `;
 
-          criteriaList.forEach((crit, critIdx) => {
-            let val = critIdx === 0 ? val1 : (critIdx === 1 ? val2 : val3);
-            let pct = crit.max > 0 ? (val / crit.max) * 100 : 0;
+          criteriaList.forEach((crit) => {
+            const val = record ? (record[`score_${crit.id}`] || 0) : 0;
+            const pct = crit.max > 0 ? (val / crit.max) * 100 : 0;
             cardHtml += `
-              <div class="p-3.5 rounded-2xl bg-[#050a30]/60 border border-[#5478FF]/30 hover:border-[#FFDE42]/60 transition-all duration-200">
-                <div class="flex justify-between items-center mb-2">
+              <div class="p-3 rounded-2xl bg-[#050a30]/60 border border-[#5478FF]/30 hover:border-[#FFDE42]/60 transition-all duration-200">
+                <div class="flex justify-between items-center mb-1.5">
                   <span class="text-sm font-semibold text-gray-200">${crit.name}</span>
                   <span class="text-xs font-bold text-[#FFDE42] bg-[#FFDE42]/10 px-2.5 py-0.5 rounded-full border border-[#FFDE42]/20">เต็ม ${crit.max}</span>
                 </div>
@@ -1279,7 +1369,7 @@
                     max="${crit.max}"
                     value="${val}"
                     id="input-${crit.id}-${cId}"
-                    class="w-16 h-10 input-dark rounded-xl text-center font-bold text-lg text-[#FFDE42] border border-[#5478FF]/40 focus:scale-105 transition-transform"
+                    class="w-16 h-9 input-dark rounded-xl text-center font-bold text-base text-[#FFDE42] border border-[#5478FF]/40 focus:scale-105 transition-transform"
                     oninput="onScoreInputChange('${cId}', '${crit.id}', ${crit.max}, this.value)"
                   >
                 </div>
@@ -1316,9 +1406,7 @@
       }
 
       function recalculateCardTotal(cId) {
-        const isQa = currentRound === 'qa';
-        const criteriaList = isQa ? CRITERIA_TOP5 : CRITERIA_ROUND29;
-
+        const criteriaList = CRITERIA_MAP[currentRound] || [];
         let total = 0;
         criteriaList.forEach(crit => {
           const input = document.getElementById(`input-${crit.id}-${cId}`);
@@ -1334,58 +1422,44 @@
         }
       }
 
-      function getAutoTop5Local() {
-        let allWithScores = allContestants.map(c => {
-          let sum = 0;
-          for (let i = 1; i <= 5; i++) {
-            ['intro', 'grand', 'speech', 'theme'].forEach(rId => {
-              const rec = (allScores || []).find(s => s.judge_id === `judge${i}` && s.contestant_id === c.id && s.round_id === rId);
-              if (rec) sum += rec.total_score;
-            });
-          }
-          return { ...c, categoryName: CATEGORIES[c.category] || c.category, round29Total: sum };
-        });
-        allWithScores.sort((a, b) => b.round29Total - a.round29Total);
-        return allWithScores.slice(0, 5);
-      }
-
       // ==========================================
       // Score Submission & Modal
       // ==========================================
       function openSubmitModal(cId, cName) {
-        const isQa = currentRound === 'qa';
-        const criteriaList = isQa ? CRITERIA_TOP5 : CRITERIA_ROUND29;
+        const criteriaList = CRITERIA_MAP[currentRound] || [];
+        const roundObj = ROUNDS.find(r => r.id === currentRound);
+        const maxScore = roundObj ? roundObj.max : 100;
 
-        const val1 = parseInt(document.getElementById(`input-c1-${cId}`)?.value) || 0;
-        const val2 = parseInt(document.getElementById(`input-c2-${cId}`)?.value) || 0;
-        const val3 = parseInt(document.getElementById(`input-c3-${cId}`)?.value) || 0;
-        const total = val1 + val2 + val3;
+        let total = 0;
+        const scores = {};
+        let criteriaHtml = '';
+
+        criteriaList.forEach(crit => {
+          const val = parseInt(document.getElementById(`input-${crit.id}-${cId}`)?.value) || 0;
+          scores[crit.id] = val;
+          total += val;
+          criteriaHtml += `
+            <div class="flex justify-between items-center py-0.5">
+              <span class="text-gray-300">${crit.name}:</span>
+              <span class="font-bold text-[#FFDE42]">${val} / ${crit.max}</span>
+            </div>
+          `;
+        });
 
         pendingSubmitData = {
           cId,
           cName,
           roundId: currentRound,
-          score_c1: val1,
-          score_c2: val2,
-          score_c3: val3,
+          scores,
           total
         };
 
-        const roundObj = ROUNDS.find(r => r.id === currentRound);
         document.getElementById('modal-round-title').innerText = roundObj ? roundObj.fullTitle : currentRound;
         document.getElementById('modal-cid').innerText = cId;
         document.getElementById('modal-cname').innerText = cName;
-        
-        document.getElementById('modal-lbl-c1').innerText = criteriaList[0].name + ':';
-        document.getElementById('modal-val-c1').innerText = `${val1} / ${criteriaList[0].max}`;
-        
-        document.getElementById('modal-lbl-c2').innerText = criteriaList[1].name + ':';
-        document.getElementById('modal-val-c2').innerText = `${val2} / ${criteriaList[1].max}`;
-        
-        document.getElementById('modal-lbl-c3').innerText = criteriaList[2].name + ':';
-        document.getElementById('modal-val-c3').innerText = `${val3} / ${criteriaList[2].max}`;
-        
+        document.getElementById('modal-criteria-container').innerHTML = criteriaHtml;
         document.getElementById('modal-score').innerText = total;
+        document.getElementById('modal-max-score').innerText = maxScore;
 
         const modal = document.getElementById('custom-confirm-modal');
         modal.classList.remove('hidden');
@@ -1420,9 +1494,12 @@
               judge_id: currentUser,
               contestant_id: data.cId,
               round_id: data.roundId,
-              score_c1: data.score_c1,
-              score_c2: data.score_c2,
-              score_c3: data.score_c3
+              score_c1: data.scores.c1 || 0,
+              score_c2: data.scores.c2 || 0,
+              score_c3: data.scores.c3 || 0,
+              score_c4: data.scores.c4 || 0,
+              score_c5: data.scores.c5 || 0,
+              score_c6: data.scores.c6 || 0
             })
           });
           const result = await res.json();
@@ -1471,7 +1548,7 @@
       // ==========================================
       function switchAdminView(view) {
         adminCurrentView = view;
-        const views = ['top5', 'round29', 'manage'];
+        const views = ['top3', 'speed', 'pre', 'manage'];
         
         views.forEach(v => {
           const btn = document.getElementById(`admin-tab-${v}`);
@@ -1495,19 +1572,20 @@
       }
 
       function renderAdminViews() {
-        renderAdminTop5Table();
-        renderAdminRound29Table();
+        renderAdminTop3Table();
+        renderAdminSpeedTable();
+        renderAdminPreTable();
       }
 
-      // ตารางผลตัดสินรอบ TOP 5 (แสดงรายกรรมการทั้งรอบ 29 + QA)
-      function renderAdminTop5Table() {
-        const tbody = document.getElementById('top5-table-body');
-        if (!tbody || !summaryData || !summaryData.top5) return;
+      // วิว 1: 🏆 ผลการตัดสินชี้ขาดรอบชิง (TOP 3 & รางวัลทั้งหมด)
+      function renderAdminTop3Table() {
+        const tbody = document.getElementById('top3-table-body');
+        if (!tbody || !summaryData) return;
         tbody.innerHTML = '';
 
-        const top5 = summaryData.top5;
-        if (top5.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="18" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลการตัดสินรอบ TOP 5</td></tr>';
+        const list = summaryData.finalRankings || [];
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="11" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลการตัดสินรอบ TOP 3 (ต้องบันทึกคะแนนรอบ Speed ก่อน)</td></tr>';
           return;
         }
 
@@ -1521,30 +1599,27 @@
 
         const judges = ['judge1','judge2','judge3','judge4','judge5'];
 
-        top5.forEach((f, idx) => {
+        list.forEach((f, idx) => {
           const isWinner = idx === 0;
+          const isTop3 = idx < 3;
           const imagePath = f.image && f.image !== 'default.jpg'
             ? `/images/contestants/${f.image}`
             : `https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}`;
 
-          // คะแนนรอบ 29 รายกรรมการ (รวม 4 รอบ)
-          let r29JudgeCells = '';
-          judges.forEach(jId => {
-            const jScore = f.judgeTotals29 ? (f.judgeTotals29[jId] || 0) : 0;
-            r29JudgeCells += `<td class="px-2 py-3 text-center font-medium bg-blue-950/40 ${jScore > 0 ? 'text-blue-200' : 'text-gray-600'}">${jScore}</td>`;
-          });
-
-          // คะแนน QA รายกรรมการ
           let qaJudgeCells = '';
           judges.forEach(jId => {
-            const qScore = f.qaJudges ? (f.qaJudges[jId] || 0) : 0;
-            qaJudgeCells += `<td class="px-2 py-3 text-center font-medium bg-amber-950/30 ${qScore > 0 ? 'text-amber-200' : 'text-gray-600'}">${qScore}</td>`;
+            if (isTop3) {
+              const qScore = f.qaJudges ? (f.qaJudges[jId] || 0) : 0;
+              qaJudgeCells += `<td class="px-2 py-3 text-center font-medium bg-blue-950/40 ${qScore > 0 ? 'text-blue-200 font-bold' : 'text-gray-600'}">${qScore}</td>`;
+            } else {
+              qaJudgeCells += `<td class="px-2 py-3 text-center font-medium bg-gray-900/40 text-gray-500 text-xs">-</td>`;
+            }
           });
 
           let row = `
             <tr class="border-b border-[#5478FF]/20 ${isWinner ? 'bg-gradient-to-r from-yellow-500/20 via-amber-500/10 to-yellow-500/20' : 'hover:bg-[#5478FF]/10'} transition-colors">
               <td class="px-3 py-3 text-center font-extrabold text-lg ${isWinner ? 'text-[#FFDE42]' : 'text-gray-300'}">
-                ${idx === 0 ? '👑 1' : (idx + 1)}
+                ${f.finalRank === 1 ? '👑 1' : f.finalRank}
               </td>
               <td class="px-3 py-3 text-center">
                 <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-11 h-11 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto">
@@ -1555,12 +1630,64 @@
                 <div class="mt-1">${awardBadges[idx] || ''}</div>
               </td>
               <td class="px-3 py-3 text-center text-xs font-semibold text-gray-200">${f.categoryName}</td>
-              ${r29JudgeCells}
-              <td class="px-2 py-3 text-center font-bold text-[#FFDE42] bg-blue-950/60 border-l border-[#FFDE42]/30 text-base">${f.round29Total}</td>
               ${qaJudgeCells}
-              <td class="px-2 py-3 text-center font-bold text-[#FFDE42] bg-amber-950/50 border-l border-[#FFDE42]/30 text-base">${f.qaTotal}</td>
-              <td class="px-3 py-3 text-center font-bold text-blue-300 bg-blue-950/40">${f.grandTotal}</td>
-              <td class="px-3 py-3 text-center font-extrabold text-xl text-[#FFDE42] bg-[#111FA2]/80">${f.avgScore.toFixed(2)}</td>
+              <td class="px-3 py-3 text-center font-bold text-[#FFDE42] bg-blue-950/60 border-l border-[#FFDE42]/30 text-base">
+                ${isTop3 ? f.qaTotal : '<span class="text-xs text-gray-400 font-normal">(จบที่ Speed)</span>'}
+              </td>
+              <td class="px-3 py-3 text-center font-extrabold text-xl text-[#FFDE42] bg-[#111FA2]/80">
+                ${isTop3 ? f.avgScore.toFixed(2) : '-'}
+              </td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        });
+      }
+
+      // วิว 2: ⚡ ผลคะแนนรอบ TOP 5 (Speed)
+      function renderAdminSpeedTable() {
+        const tbody = document.getElementById('speed-table-body');
+        if (!tbody || !summaryData) return;
+        tbody.innerHTML = '';
+
+        const top5 = summaryData.top5 || [];
+        if (top5.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="12" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลรอบ TOP 5 (ต้องมีคะแนน 2 รอบแรกก่อน)</td></tr>';
+          return;
+        }
+
+        const judges = ['judge1','judge2','judge3','judge4','judge5'];
+
+        top5.forEach((f, idx) => {
+          const isTop3 = idx < 3;
+          const imagePath = f.image && f.image !== 'default.jpg'
+            ? `/images/contestants/${f.image}`
+            : `https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}`;
+
+          let speedCells = '';
+          judges.forEach(jId => {
+            const score = f.speedJudges ? (f.speedJudges[jId] || 0) : 0;
+            speedCells += `<td class="px-2 py-3 text-center font-medium bg-amber-950/30 ${score > 0 ? 'text-amber-200 font-bold' : 'text-gray-600'}">${score}</td>`;
+          });
+
+          let row = `
+            <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop3 ? 'bg-amber-500/10' : ''}">
+              <td class="px-3 py-3 text-center font-extrabold text-base ${isTop3 ? 'text-amber-300' : 'text-gray-400'}">${idx + 1}</td>
+              <td class="px-3 py-3 text-center">
+                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto">
+              </td>
+              <td class="px-3 py-3">
+                <div class="font-bold text-white text-sm">${f.name}</div>
+                <div class="text-xs text-[#FFDE42]">${f.id} • ${f.categoryName}</div>
+              </td>
+              <td class="px-3 py-3 text-center text-xs font-semibold text-gray-200">${f.categoryName}</td>
+              <td class="px-3 py-3 text-center font-bold text-blue-200 bg-blue-950/30">${f.preTotal || 0}</td>
+              ${speedCells}
+              <td class="px-3 py-3 text-center font-bold text-[#FFDE42] bg-amber-950/60 border-l border-[#FFDE42]/30 text-base">${f.speedTotal || 0}</td>
+              <td class="px-3 py-3 text-center">
+                ${isTop3 
+                  ? '<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-1"></i> ผ่านเข้า TOP 3</span>' 
+                  : `<span class="px-2 py-0.5 rounded-full bg-blue-900/60 text-gray-300 text-xs font-semibold whitespace-nowrap">${idx === 3 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4'}</span>`}
+              </td>
             </tr>
           `;
           tbody.innerHTML += row;
@@ -1568,35 +1695,33 @@
       }
 
       // ==================================================
-      // สลับ Tab รอบใน Admin Round29 View
+      // สลับ Tab รอบใน Admin Pre View (ห้องดำ, Grand, สรุป 2 รอบ)
       // ==================================================
-      function switchAdminRound29(roundId) {
-        adminRound29View = roundId;
-        const roundIds = ['intro', 'grand', 'speech', 'theme', 'all'];
+      function switchAdminPreRound(roundId) {
+        adminPreRoundView = roundId;
+        const roundIds = ['blackroom', 'grand', 'all'];
         roundIds.forEach(r => {
-          const btn = document.getElementById(`admin-r29-tab-${r}`);
+          const btn = document.getElementById(`admin-pre-tab-${r}`);
           if (!btn) return;
           if (r === roundId) {
-            btn.className = 'r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)] scale-105 active:scale-95';
+            btn.className = 'pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)] scale-105 active:scale-95';
           } else {
-            btn.className = 'r29-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white active:scale-95';
+            btn.className = 'pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white active:scale-95';
           }
         });
-        const tbody = document.getElementById('round29-table-body');
+        const tbody = document.getElementById('pre-table-body');
         if (tbody) {
           tbody.classList.remove('view-animated');
           void tbody.offsetWidth;
           tbody.classList.add('view-animated');
         }
-        renderAdminRound29Table();
+        renderAdminPreTable();
       }
 
-      // ==================================================
-      // ตารางคะแนนรอบ 29 คน (แยกตามรอบ + เกณฑ์ย่อยรายกรรมการ)
-      // ==================================================
-      function renderAdminRound29Table() {
-        const tbody = document.getElementById('round29-table-body');
-        const thead = document.getElementById('round29-thead');
+      // วิว 3: ตารางรอบคัดเลือก 2 รอบแรก
+      function renderAdminPreTable() {
+        const tbody = document.getElementById('pre-table-body');
+        const thead = document.getElementById('pre-thead');
         if (!tbody || !thead || !summaryData || !summaryData.categories) return;
 
         const selectedCat = document.getElementById('admin-category-filter')?.value || 'all';
@@ -1614,11 +1739,6 @@
         }
 
         const judges = ['judge1','judge2','judge3','judge4','judge5'];
-        const criteriaLabels = [
-          { name: 'บุคลิก ผิวพรรณ', max: 40, short: 'บุคลิกฯ' },
-          { name: 'ความมั่นใจฯ', max: 30, short: 'มั่นใจฯ' },
-          { name: 'ความเรียบร้อย', max: 30, short: 'แต่งกาย' }
-        ];
         const judgeColors = [
           'bg-blue-950/60', 'bg-purple-950/50', 'bg-indigo-950/50', 'bg-cyan-950/50', 'bg-teal-950/50'
         ];
@@ -1626,28 +1746,26 @@
           'bg-blue-900/70', 'bg-purple-900/60', 'bg-indigo-900/60', 'bg-cyan-900/60', 'bg-teal-900/60'
         ];
 
-        const topBadge = '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-0.5"></i> TOP 5</span>';
+        const topBadge = '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-0.5"></i> ผ่านเข้ารอบ TOP 5</span>';
         const noBadge = '<span class="text-[10px] text-gray-500">-</span>';
 
-        if (adminRound29View === 'all') {
-          // ===== มุมมองสรุปรวม 4 รอบ =====
+        if (adminPreRoundView === 'all') {
+          // สรุปรวม 2 รอบแรก
           thead.innerHTML = `
           <tr class="bg-[#111FA2] text-[#FFDE42] text-xs uppercase">
             <th class="px-3 py-3 text-center">รหัส</th>
             <th class="px-3 py-3 text-center">รูป</th>
             <th class="px-3 py-3">ชื่อ-นามสกุล</th>
             <th class="px-3 py-3 text-center">หมวด</th>
-            <th class="px-3 py-3 text-center">1. แนะนำตัว<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 500)</span></th>
-            <th class="px-3 py-3 text-center">2. Grand Opening<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 500)</span></th>
-            <th class="px-3 py-3 text-center">3. Speech 1 min<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 500)</span></th>
-            <th class="px-3 py-3 text-center">4. ชุดธีม<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 500)</span></th>
-            <th class="px-3 py-3 text-center bg-blue-900/60 text-white">รวมทั้งหมด<br><span class="text-amber-200 text-[9px] font-normal normal-case">(เต็ม 2,000)</span></th>
-            <th class="px-3 py-3 text-center">สถานะ</th>
+            <th class="px-3 py-3 text-center">1. รอบห้องดำ<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 125)</span></th>
+            <th class="px-3 py-3 text-center">2. Grand Opening<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 250)</span></th>
+            <th class="px-3 py-3 text-center bg-blue-900/60 text-white font-bold">รวม 2 รอบแรก<br><span class="text-amber-200 text-[9px] font-normal normal-case">(เต็ม 375)</span></th>
+            <th class="px-3 py-3 text-center">สถานะ TOP 5</th>
           </tr>`;
 
           tbody.innerHTML = '';
           list.forEach(c => {
-            const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.round29Total > 0;
+            const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
             const img = c.image && c.image !== 'default.jpg' ? `/images/contestants/${c.image}` : `https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}`;
             tbody.innerHTML += `
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
@@ -1655,31 +1773,30 @@
               <td class="px-3 py-3 text-center"><img src="${img}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto"></td>
               <td class="px-3 py-3 font-semibold text-white text-sm whitespace-nowrap">${c.name}</td>
               <td class="px-3 py-3 text-center text-[11px] text-gray-300">${c.categoryName}</td>
-              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.intro.total}</td>
-              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.grand.total}</td>
-              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.speech.total}</td>
-              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.theme.total}</td>
-              <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/50">${c.round29Total}</td>
+              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.blackroom?.total || 0}</td>
+              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.grand?.total || 0}</td>
+              <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/50">${c.preTotal || 0}</td>
               <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
             </tr>`;
           });
 
         } else {
-          // ===== มุมมองรายรอบ: แสดงเกณฑ์ย่อยรายกรรมการ =====
-          const roundNames = { intro: '1. แนะนำตัว', grand: '2. Grand Opening', speech: '3. Speech 1 min', theme: '4. ชุดธีม' };
-          const roundName = roundNames[adminRound29View];
+          // มุมมองเกณฑ์ย่อยรายรอบ (blackroom หรือ grand)
+          const roundId = adminPreRoundView;
+          const criteriaList = CRITERIA_MAP[roundId] || [];
+          const roundObj = ROUNDS.find(r => r.id === roundId);
+          const maxPerJudge = roundObj ? roundObj.max : 25;
+          const maxAllJudges = maxPerJudge * 5;
 
-          // Build thead row 1: judge group headers
           let judgeGroupHeaders = judges.map((j, i) =>
-            `<th colspan="4" class="px-2 py-2.5 text-center text-[11px] font-bold border-l border-[#5478FF]/30 ${judgeHeaderColors[i]}">กรรมการ ${i+1}</th>`
+            `<th colspan="${criteriaList.length + 1}" class="px-2 py-2.5 text-center text-[11px] font-bold border-l border-[#5478FF]/30 ${judgeHeaderColors[i]}">กรรมการ ${i+1}</th>`
           ).join('');
 
-          // Build thead row 2: criteria sub-headers per judge
           let criteriaSubHeaders = judges.map((j, i) =>
-            criteriaLabels.map(crit =>
+            criteriaList.map(crit =>
               `<th class="px-2 py-2 text-center text-[9px] font-semibold whitespace-nowrap ${judgeColors[i]} border-l border-[#5478FF]/20 text-gray-300">${crit.short}<br><span class="text-[#FFDE42]">(${crit.max})</span></th>`
             ).join('') +
-            `<th class="px-2 py-2 text-center text-[9px] font-bold ${judgeColors[i]} border-l-2 border-[#FFDE42]/40 text-[#FFDE42] whitespace-nowrap">รวม<br>(100)</th>`
+            `<th class="px-2 py-2 text-center text-[9px] font-bold ${judgeColors[i]} border-l-2 border-[#FFDE42]/40 text-[#FFDE42] whitespace-nowrap">รวม<br>(${maxPerJudge})</th>`
           ).join('');
 
           thead.innerHTML = `
@@ -1689,7 +1806,7 @@
             <th rowspan="2" class="px-3 py-3 align-middle">ชื่อ-นามสกุล</th>
             <th rowspan="2" class="px-3 py-3 text-center align-middle">หมวด</th>
             ${judgeGroupHeaders}
-            <th rowspan="2" class="px-3 py-3 text-center align-middle bg-[#FFDE42]/10 text-[#FFDE42] border-l-2 border-[#FFDE42]/50 whitespace-nowrap">รวมรอบ<br><span class="text-[9px] text-amber-200 font-normal normal-case">(เต็ม 500)</span></th>
+            <th rowspan="2" class="px-3 py-3 text-center align-middle bg-[#FFDE42]/10 text-[#FFDE42] border-l-2 border-[#FFDE42]/50 whitespace-nowrap">รวมรอบ<br><span class="text-[9px] text-amber-200 font-normal normal-case">(เต็ม ${maxAllJudges})</span></th>
             <th rowspan="2" class="px-3 py-3 text-center align-middle">สถานะ</th>
           </tr>
           <tr class="bg-[#091054] border-b-2 border-[#5478FF]/40">
@@ -1698,25 +1815,24 @@
 
           tbody.innerHTML = '';
           list.forEach(c => {
-            const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.round29Total > 0;
+            const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
             const img = c.image && c.image !== 'default.jpg' ? `/images/contestants/${c.image}` : `https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}`;
 
             let judeCells = '';
             let roundTotal = 0;
             judges.forEach((jId, jIdx) => {
-              const rec = (allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === adminRound29View);
-              const s1 = rec ? (rec.score_c1 || 0) : null;
-              const s2 = rec ? (rec.score_c2 || 0) : null;
-              const s3 = rec ? (rec.score_c3 || 0) : null;
+              const rec = (allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === roundId);
               const tot = rec ? (rec.total_score || 0) : null;
               if (tot !== null) roundTotal += tot;
               const bg = judgeColors[jIdx];
               const na = '<span class="text-gray-600 text-xs">-</span>';
-              judeCells += `
-                <td class="px-2 py-2.5 text-center text-sm ${bg} border-l border-[#5478FF]/20">${s1 !== null ? `<span class="font-medium text-blue-200">${s1}</span>` : na}</td>
-                <td class="px-2 py-2.5 text-center text-sm ${bg}">${s2 !== null ? `<span class="font-medium text-purple-200">${s2}</span>` : na}</td>
-                <td class="px-2 py-2.5 text-center text-sm ${bg}">${s3 !== null ? `<span class="font-medium text-green-200">${s3}</span>` : na}</td>
-                <td class="px-2 py-2.5 text-center font-bold ${bg} border-l-2 border-[#FFDE42]/30">${tot !== null ? `<span class="text-[#FFDE42] text-base">${tot}</span>` : na}</td>`;
+
+              criteriaList.forEach(crit => {
+                const s = rec ? (rec[`score_${crit.id}`] || 0) : null;
+                judeCells += `<td class="px-2 py-2 text-center text-xs ${bg} border-l border-[#5478FF]/20">${s !== null ? `<span class="font-medium text-blue-200">${s}</span>` : na}</td>`;
+              });
+
+              judeCells += `<td class="px-2 py-2 text-center font-bold ${bg} border-l-2 border-[#FFDE42]/30">${tot !== null ? `<span class="text-[#FFDE42] text-sm">${tot}</span>` : na}</td>`;
             });
 
             tbody.innerHTML += `
@@ -1726,7 +1842,7 @@
               <td class="px-3 py-3 font-semibold text-white text-sm whitespace-nowrap">${c.name}</td>
               <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}</td>
               ${judeCells}
-              <td class="px-3 py-3 text-center font-bold text-lg text-[#FFDE42] bg-[#111FA2]/60 border-l-2 border-[#FFDE42]/30">${roundTotal || '-'}</td>
+              <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/60 border-l-2 border-[#FFDE42]/30">${roundTotal || '-'}</td>
               <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
             </tr>`;
           });
@@ -1772,13 +1888,13 @@
       // Print Official Score Sheet
       // ==========================================
       function printScoreSheet() {
-        if (!summaryData || !summaryData.top5) {
+        if (!summaryData || !summaryData.finalRankings) {
           alert('ยังไม่มีข้อมูลคะแนนสำหรับพิมพ์');
           return;
         }
 
         const printWindow = window.open('', '_blank', 'width=1100,height=750');
-        const top5 = summaryData.top5;
+        const list = summaryData.finalRankings;
 
         let html = `
         <!DOCTYPE html>
@@ -1803,46 +1919,48 @@
         </head>
         <body>
           <h2>ผลการตัดสินการประกวด RMUTK FRESHY 2026</h2>
-          <h3>สรุปผลรอบ 5 คนสุดท้าย (TOP 5 Finalists คัดจากผู้มีคะแนนรอบแรกสูงสุด 5 อันดับแรก)</h3>
-          <p class="sub">สูตรการคิดคะแนน: (คะแนนรอบ 29 คน + คะแนนรอบตอบคำถาม) ÷ 5 กรรมการ | พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</p>
+          <h3>รายงานผลการตัดสินชี้ขาดอย่างเป็นทางการ (Official Final Decision)</h3>
+          <p class="sub">สูตรการคิดคะแนนรอบตัดสิน 3 คนสุดท้าย: คะแนนรอบตอบคำถาม (ล้างคะแนนเดิม) ÷ 5 กรรมการ | พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</p>
           
           <table>
             <thead>
               <tr>
-                <th width="5%">อันดับ</th>
+                <th width="6%">อันดับ</th>
                 <th width="8%">รหัส</th>
                 <th width="20%" class="text-left">ชื่อ-นามสกุล</th>
                 <th width="12%">หมวดหมู่ตัวแทน</th>
-                <th width="12%">คะแนนรอบ 29 คน<br>(รวม 5 กรรมการ)</th>
-                <th width="5%">ก.1</th>
-                <th width="5%">ก.2</th>
-                <th width="5%">ก.3</th>
-                <th width="5%">ก.4</th>
-                <th width="5%">ก.5</th>
-                <th width="9%">รวมตอบคำถาม</th>
-                <th width="10%">คะแนนรวมสุทธิ</th>
-                <th width="12%" class="bg-highlight">คะแนนเฉลี่ยสุทธิ<br>(หาร 5 กรรมการ)</th>
+                <th width="10%">รอบ Speed<br>(เต็ม 250)</th>
+                <th width="6%">ก.1 (100)</th>
+                <th width="6%">ก.2 (100)</th>
+                <th width="6%">ก.3 (100)</th>
+                <th width="6%">ก.4 (100)</th>
+                <th width="6%">ก.5 (100)</th>
+                <th width="8%">รวมตอบคำถาม<br>(เต็ม 500)</th>
+                <th width="10%" class="bg-highlight">คะแนนเฉลี่ยสุทธิ<br>(เต็ม 100)</th>
+                <th width="18%">รางวัลเกียรติยศ</th>
               </tr>
             </thead>
             <tbody>
         `;
 
-        top5.forEach((f, idx) => {
+        list.forEach((f, idx) => {
+          const isWinner = idx === 0;
+          const isTop3 = idx < 3;
           html += `
-            <tr ${idx === 0 ? 'style="font-weight:bold; background-color:#fef9e7;"' : ''}>
-              <td>${idx + 1}</td>
+            <tr ${isWinner ? 'style="font-weight:bold; background-color:#fef9e7;"' : ''}>
+              <td>${f.finalRank}</td>
               <td>${f.id}</td>
               <td class="text-left">${f.name}</td>
               <td>${f.categoryName}</td>
-              <td>${f.round29Total}</td>
-              <td>${f.qaJudges.judge1 || 0}</td>
-              <td>${f.qaJudges.judge2 || 0}</td>
-              <td>${f.qaJudges.judge3 || 0}</td>
-              <td>${f.qaJudges.judge4 || 0}</td>
-              <td>${f.qaJudges.judge5 || 0}</td>
-              <td>${f.qaTotal}</td>
-              <td>${f.grandTotal}</td>
-              <td class="bg-highlight" style="font-size:12px;">${f.avgScore.toFixed(2)}</td>
+              <td>${f.speedTotal || 0}</td>
+              <td>${isTop3 ? (f.qaJudges?.judge1 || 0) : '-'}</td>
+              <td>${isTop3 ? (f.qaJudges?.judge2 || 0) : '-'}</td>
+              <td>${isTop3 ? (f.qaJudges?.judge3 || 0) : '-'}</td>
+              <td>${isTop3 ? (f.qaJudges?.judge4 || 0) : '-'}</td>
+              <td>${isTop3 ? (f.qaJudges?.judge5 || 0) : '-'}</td>
+              <td>${isTop3 ? f.qaTotal : '-'}</td>
+              <td class="bg-highlight" style="font-size:12px;">${isTop3 ? f.avgScore.toFixed(2) : '-'}</td>
+              <td><strong>${f.award || '-'}</strong></td>
             </tr>
           `;
         });
@@ -1865,7 +1983,7 @@
           </div>
           <script>
             window.onload = function() { window.print(); };
-          <\/script>
+          </script>
         </body>
         </html>
         `;
