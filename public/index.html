@@ -1324,9 +1324,7 @@
             totalScore += (record ? (record[`score_${crit.id}`] || 0) : 0);
           });
 
-          const imagePath = contestant.image && contestant.image !== 'default.jpg'
-            ? `/images/contestants/${contestant.image}`
-            : `https://placehold.co/400x500/111FA2/FFDE42?text=${cId}`;
+          const imagePath = `/api/contestants/${encodeURIComponent(cId)}/image`;
 
           const animDelay = Math.min(cIndex * 0.04, 0.4);
 
@@ -1641,9 +1639,7 @@
         list.forEach((f, idx) => {
           const isWinner = idx === 0;
           const isTop3 = idx < 3;
-          const imagePath = f.image && f.image !== 'default.jpg'
-            ? `/images/contestants/${f.image}`
-            : `https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}`;
+          const imagePath = `/api/contestants/${encodeURIComponent(f.id)}/image`;
 
           let qaJudgeCells = '';
           judges.forEach(jId => {
@@ -1698,9 +1694,7 @@
 
         top5.forEach((f, idx) => {
           const isTop3 = idx < 3;
-          const imagePath = f.image && f.image !== 'default.jpg'
-            ? `/images/contestants/${f.image}`
-            : `https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}`;
+          const imagePath = `/api/contestants/${encodeURIComponent(f.id)}/image`;
 
           let speedCells = '';
           judges.forEach(jId => {
@@ -1805,7 +1799,7 @@
           tbody.innerHTML = '';
           list.forEach(c => {
             const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
-            const img = c.image && c.image !== 'default.jpg' ? `/images/contestants/${c.image}` : `https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}`;
+            const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
             tbody.innerHTML += `
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
@@ -1855,7 +1849,7 @@
           tbody.innerHTML = '';
           list.forEach(c => {
             const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
-            const img = c.image && c.image !== 'default.jpg' ? `/images/contestants/${c.image}` : `https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}`;
+            const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
 
             let judeCells = '';
             let roundTotal = 0;

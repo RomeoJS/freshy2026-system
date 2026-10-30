@@ -13,18 +13,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ตั้งค่า Multer สำหรับอัปโหลดรูปภาพ
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, 'public/images/contestants');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        cb(null, req.body.id + path.extname(file.originalname));
-    }
+// ตั้งค่า Multer สำหรับอัปโหลดรูปภาพ (เก็บใน Memory เพื่อบันทึกลง MySQL Database โดยตรง)
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 25 * 1024 * 1024 } // รองรับรูปภาพขนาดสูงสุด 25MB
 });
-const upload = multer({ storage: storage });
 
 // ==========================================
 // 1. ตั้งค่าฐานข้อมูล MySQL
@@ -68,9 +61,51 @@ async function initDB() {
                 id VARCHAR(20) PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
                 category VARCHAR(50) NOT NULL,
-                image VARCHAR(255) DEFAULT 'default.jpg'
+                image VARCHAR(255) DEFAULT 'default.jpg',
+                image_data LONGBLOB NULL,
+                image_type VARCHAR(50) DEFAULT 'image/jpeg'
             )
         `);
+
+        // ตรวจสอบคอลัมน์ image_data และ image_type เผื่อกรณีสร้างตารางไว้ก่อนหน้า
+        const [contestantCols] = await connection.execute(`
+            SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'contestants'
+        `);
+        const cColNames = contestantCols.map(c => c.COLUMN_NAME);
+        if (!cColNames.includes('image_data')) {
+            await connection.execute('ALTER TABLE contestants ADD COLUMN image_data LONGBLOB NULL');
+        }
+        if (!cColNames.includes('image_type')) {
+            await connection.execute("ALTER TABLE contestants ADD COLUMN image_type VARCHAR(50) DEFAULT 'image/jpeg'");
+        }
+
+        // ตรวจสอบและซิงค์รูปภาพจากโฟลเดอร์ public/images/contestants ลง MySQL หากยังไม่มีใน DB
+        try {
+            const [needImgRows] = await connection.execute('SELECT id, image FROM contestants WHERE image_data IS NULL');
+            const contestantsImgDir = path.join(__dirname, 'public/images/contestants');
+            if (fs.existsSync(contestantsImgDir) && needImgRows.length > 0) {
+                for (const row of needImgRows) {
+                    const checkFiles = [row.image, `${row.id}.jpg`, `${row.id}.jpeg`, `${row.id}.png`, `${row.id}.webp`].filter(Boolean);
+                    for (const f of checkFiles) {
+                        const fp = path.join(contestantsImgDir, f);
+                        if (fs.existsSync(fp)) {
+                            const buf = fs.readFileSync(fp);
+                            const ext = path.extname(f).toLowerCase();
+                            const mime = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+                            await connection.execute(
+                                'UPDATE contestants SET image_data = ?, image_type = ?, image = ? WHERE id = ?',
+                                [buf, mime, f, row.id]
+                            );
+                            console.log(`✅ Synced image from disk to DB: ${row.id} (${f})`);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ Auto-sync images notice:', e.message);
+        }
 
         // ตรวจสอบโครงสร้างตาราง scores
         const [scoreCols] = await connection.execute(`
@@ -366,10 +401,13 @@ app.post('/api/admin/migrate-scores', async (req, res) => {
 // ==========================================
 // 3. API Contestants
 // ==========================================
+// ดึงข้อมูลผู้เข้าประกวด (ไม่ส่ง image_data binary ขนาดใหญ่ เพื่อความรวดเร็ว)
 app.get('/api/contestants', async (req, res) => {
     try {
         const connection = await mysql.createConnection(dbConfig);
-        const [rows] = await connection.execute('SELECT * FROM contestants ORDER BY id ASC');
+        const [rows] = await connection.execute(
+            'SELECT id, name, category, image, IF(image_data IS NOT NULL, 1, 0) AS has_image FROM contestants ORDER BY id ASC'
+        );
         await connection.end();
         res.json(rows);
     } catch (error) {
@@ -377,16 +415,70 @@ app.get('/api/contestants', async (req, res) => {
     }
 });
 
-// Admin เพิ่มข้อมูลและอัปโหลดรูป
+// ดึงรูปภาพของผู้เข้าประกวดจาก Database โดยตรง
+app.get('/api/contestants/:id/image', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const connection = await mysql.createConnection(dbConfig);
+        const [rows] = await connection.execute(
+            'SELECT image_data, image_type, image FROM contestants WHERE id = ?', 
+            [id]
+        );
+        await connection.end();
+
+        if (rows.length > 0 && rows[0].image_data) {
+            res.setHeader('Content-Type', rows[0].image_type || 'image/jpeg');
+            res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+            return res.send(rows[0].image_data);
+        }
+
+        // หากไม่มีใน DB ตรวจสอบในโฟลเดอร์ public/images/contestants สำรอง
+        if (rows.length > 0 && rows[0].image && rows[0].image !== 'default.jpg') {
+            const localFile = path.join(__dirname, 'public/images/contestants', rows[0].image);
+            if (fs.existsSync(localFile)) {
+                return res.sendFile(localFile);
+            }
+        }
+
+        // กรณีไม่มีรูป ให้ redirect ไปยัง placeholder
+        res.redirect(`https://placehold.co/400x500/111FA2/FFDE42?text=${encodeURIComponent(id)}`);
+    } catch (e) {
+        res.redirect(`https://placehold.co/400x500/111FA2/FFDE42?text=${encodeURIComponent(req.params.id || 'RMUTK')}`);
+    }
+});
+
+// Admin เพิ่มข้อมูลและอัปโหลดรูป (บันทึกรูปลงฐานข้อมูล MySQL โดยตรง)
 app.post('/api/contestants', upload.single('image'), async (req, res) => {
     const { id, name, category } = req.body;
-    const image = req.file ? req.file.filename : 'default.jpg';
+    const hasFile = req.file && req.file.buffer;
+    const filename = hasFile ? (id + path.extname(req.file.originalname || '.jpg')) : 'default.jpg';
+    const imageData = hasFile ? req.file.buffer : null;
+    const imageType = hasFile ? (req.file.mimetype || 'image/jpeg') : 'image/jpeg';
+
     try {
         const connection = await mysql.createConnection(dbConfig);
-        await connection.execute(
-            'INSERT INTO contestants (id, name, category, image) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=?, category=?, image=IF(?!="default.jpg", ?, image)', 
-            [id, name, category, image, name, category, image, image]
-        );
+        if (hasFile) {
+            await connection.execute(
+                `INSERT INTO contestants (id, name, category, image, image_data, image_type) 
+                 VALUES (?, ?, ?, ?, ?, ?) 
+                 ON DUPLICATE KEY UPDATE 
+                    name = VALUES(name), 
+                    category = VALUES(category), 
+                    image = VALUES(image), 
+                    image_data = VALUES(image_data), 
+                    image_type = VALUES(image_type)`,
+                [id, name, category, filename, imageData, imageType]
+            );
+        } else {
+            await connection.execute(
+                `INSERT INTO contestants (id, name, category, image) 
+                 VALUES (?, ?, ?, ?) 
+                 ON DUPLICATE KEY UPDATE 
+                    name = VALUES(name), 
+                    category = VALUES(category)`,
+                [id, name, category, 'default.jpg']
+            );
+        }
         await connection.end();
         await generateAndSaveExcel();
         res.json({ success: true });
@@ -421,7 +513,7 @@ app.get('/api/summary', async (req, res) => {
 
 async function calculateSummary() {
     const connection = await mysql.createConnection(dbConfig);
-    const [contestants] = await connection.execute('SELECT * FROM contestants');
+    const [contestants] = await connection.execute('SELECT id, name, category, image FROM contestants');
     const [scores] = await connection.execute('SELECT * FROM scores');
     await connection.end();
 
