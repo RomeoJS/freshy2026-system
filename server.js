@@ -67,17 +67,28 @@ async function initDB() {
             )
         `);
 
-        // ตรวจสอบคอลัมน์ image_data และ image_type เผื่อกรณีสร้างตารางไว้ก่อนหน้า
+        // ตรวจสอบและแก้ไขโครงสร้างคอลัมน์ image_data และ image_type
         const [contestantCols] = await connection.execute(`
-            SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+            SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS 
             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'contestants'
         `);
-        const cColNames = contestantCols.map(c => c.COLUMN_NAME);
-        if (!cColNames.includes('image_data')) {
+        const colMap = {};
+        contestantCols.forEach(c => { colMap[c.COLUMN_NAME] = (c.DATA_TYPE || '').toLowerCase(); });
+
+        if (!colMap['image_data']) {
+            // คอลัมน์ยังไม่มี ให้เพิ่มใหม่เป็น LONGBLOB
             await connection.execute('ALTER TABLE contestants ADD COLUMN image_data LONGBLOB NULL');
+            console.log('✅ Added image_data LONGBLOB column.');
+        } else if (colMap['image_data'] !== 'longblob') {
+            // คอลัมน์มีอยู่แต่ไม่ใช่ LONGBLOB (เช่น VARCHAR) ให้แก้ไขทันที
+            console.log(`⚠️ image_data is ${colMap['image_data']}, converting to LONGBLOB...`);
+            await connection.execute('ALTER TABLE contestants MODIFY COLUMN image_data LONGBLOB NULL');
+            console.log('✅ Converted image_data to LONGBLOB successfully.');
         }
-        if (!cColNames.includes('image_type')) {
+
+        if (!colMap['image_type']) {
             await connection.execute("ALTER TABLE contestants ADD COLUMN image_type VARCHAR(50) DEFAULT 'image/jpeg'");
+            console.log('✅ Added image_type column.');
         }
 
         // ตรวจสอบและซิงค์รูปภาพจากโฟลเดอร์ public/images/contestants ลง MySQL หากยังไม่มีใน DB
