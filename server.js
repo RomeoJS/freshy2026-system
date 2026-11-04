@@ -12,6 +12,8 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'public/images/logo.png')));
 
 // ตั้งค่า Multer สำหรับอัปโหลดรูปภาพ (เก็บใน Memory เพื่อบันทึกลง MySQL Database โดยตรง)
 const upload = multer({
