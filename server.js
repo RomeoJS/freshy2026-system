@@ -462,6 +462,20 @@ app.post('/api/admin/fix-image-schema', async (req, res) => {
             results.push('image_type already exists');
         }
 
+        if (!colMap['faculty']) {
+            await connection.execute("ALTER TABLE contestants ADD COLUMN faculty VARCHAR(150) DEFAULT ''");
+            results.push('Added faculty column');
+        } else {
+            results.push('faculty already exists');
+        }
+
+        if (!colMap['nickname']) {
+            await connection.execute("ALTER TABLE contestants ADD COLUMN nickname VARCHAR(50) DEFAULT ''");
+            results.push('Added nickname column');
+        } else {
+            results.push('nickname already exists');
+        }
+
         await connection.end();
         console.log('✅ fix-image-schema results:', results);
         res.json({ success: true, results });
