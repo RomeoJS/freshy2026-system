@@ -60,6 +60,7 @@ async function initDB() {
             CREATE TABLE IF NOT EXISTS contestants (
                 id VARCHAR(20) PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
+                nickname VARCHAR(50) DEFAULT '',
                 category VARCHAR(50) NOT NULL,
                 faculty VARCHAR(150) DEFAULT '',
                 image VARCHAR(255) DEFAULT 'default.jpg',
@@ -97,6 +98,11 @@ async function initDB() {
         if (!colMap['faculty']) {
             await connection.execute("ALTER TABLE contestants ADD COLUMN faculty VARCHAR(150) DEFAULT ''");
             console.log('✅ Added faculty column.');
+        }
+
+        if (!colMap['nickname']) {
+            await connection.execute("ALTER TABLE contestants ADD COLUMN nickname VARCHAR(50) DEFAULT ''");
+            console.log('✅ Added nickname column.');
         }
 
         // ตรวจสอบและซิงค์รูปภาพจากโฟลเดอร์ public/images/contestants ลง MySQL หากยังไม่มีใน DB
@@ -473,7 +479,7 @@ app.get('/api/contestants', async (req, res) => {
     try {
         const connection = await mysql.createConnection(dbConfig);
         const [rows] = await connection.execute(
-            'SELECT id, name, category, faculty, image, IF(image_data IS NOT NULL, 1, 0) AS has_image FROM contestants ORDER BY id ASC'
+            'SELECT id, name, nickname, category, faculty, image, IF(image_data IS NOT NULL, 1, 0) AS has_image FROM contestants ORDER BY id ASC'
         );
         await connection.end();
         res.json(rows);
@@ -516,8 +522,9 @@ app.get('/api/contestants/:id/image', async (req, res) => {
 
 // Admin เพิ่มข้อมูลและอัปโหลดรูป (บันทึกรูปลงฐานข้อมูล MySQL โดยตรง)
 app.post('/api/contestants', upload.single('image'), async (req, res) => {
-    const { id, name, category, faculty } = req.body;
+    const { id, name, category, faculty, nickname } = req.body;
     const facultyVal = faculty || '';
+    const nicknameVal = nickname || '';
     const hasFile = req.file && req.file.buffer;
     const filename = hasFile ? (id + path.extname(req.file.originalname || '.jpg')) : 'default.jpg';
     const imageData = hasFile ? req.file.buffer : null;
@@ -527,26 +534,28 @@ app.post('/api/contestants', upload.single('image'), async (req, res) => {
         const connection = await mysql.createConnection(dbConfig);
         if (hasFile) {
             await connection.execute(
-                `INSERT INTO contestants (id, name, category, faculty, image, image_data, image_type) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?) 
+                `INSERT INTO contestants (id, name, nickname, category, faculty, image, image_data, image_type) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
                  ON DUPLICATE KEY UPDATE 
                     name = VALUES(name), 
+                    nickname = VALUES(nickname),
                     category = VALUES(category), 
                     faculty = VALUES(faculty),
                     image = VALUES(image), 
                     image_data = VALUES(image_data), 
                     image_type = VALUES(image_type)`,
-                [id, name, category, facultyVal, filename, imageData, imageType]
+                [id, name, nicknameVal, category, facultyVal, filename, imageData, imageType]
             );
         } else {
             await connection.execute(
-                `INSERT INTO contestants (id, name, category, faculty, image) 
-                 VALUES (?, ?, ?, ?, ?) 
+                `INSERT INTO contestants (id, name, nickname, category, faculty, image) 
+                 VALUES (?, ?, ?, ?, ?, ?) 
                  ON DUPLICATE KEY UPDATE 
                     name = VALUES(name), 
+                    nickname = VALUES(nickname),
                     category = VALUES(category),
                     faculty = VALUES(faculty)`,
-                [id, name, category, facultyVal, 'default.jpg']
+                [id, name, nicknameVal, category, facultyVal, 'default.jpg']
             );
         }
         await connection.end();

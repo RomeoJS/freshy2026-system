@@ -702,7 +702,13 @@
               <label class="block text-xs mb-1 text-gray-300">ชื่อ-นามสกุล</label>
               <input type="text" id="add-name" required
                 class="input-dark p-2.5 rounded-xl w-60 text-white font-semibold"
-                placeholder="ชื่อ-นามสกุล (ชื่อเล่น)" />
+                placeholder="ชื่อ-นามสกุล" />
+            </div>
+            <div>
+              <label class="block text-xs mb-1 text-gray-300">ชื่อเล่น</label>
+              <input type="text" id="add-nickname"
+                class="input-dark p-2.5 rounded-xl w-28 text-white font-semibold"
+                placeholder="เช่น มาร์ค" />
             </div>
             <div>
               <label class="block text-xs mb-1 text-gray-300">คณะ / สาขา</label>
@@ -1350,6 +1356,7 @@
                   </div>
                   
                   <h4 class="text-base font-bold text-white tracking-wide mt-1">${cName}</h4>
+                  ${contestant.nickname ? `<div class="text-sm text-[#FFDE42] font-bold mt-0.5">"${contestant.nickname}"</div>` : ''}
                   ${contestant.faculty ? `<div class="text-xs text-blue-300 mt-0.5 font-medium"><i class="fas fa-graduation-cap mr-1 opacity-70"></i>${contestant.faculty}</div>` : ''}
                   
                   ${isQa ? `
@@ -1900,6 +1907,7 @@
         const formData = new FormData();
         formData.append('id', document.getElementById('add-id').value);
         formData.append('name', document.getElementById('add-name').value);
+        formData.append('nickname', document.getElementById('add-nickname').value || '');
         formData.append('category', document.getElementById('add-category').value);
         formData.append('faculty', document.getElementById('add-faculty').value || '');
 
