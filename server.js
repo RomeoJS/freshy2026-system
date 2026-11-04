@@ -540,6 +540,15 @@ app.post('/api/contestants', upload.single('image'), async (req, res) => {
     const facultyVal = faculty || '';
     const nicknameVal = nickname || '';
     const hasFile = req.file && req.file.buffer;
+
+    // ตรวจสอบขนาดไฟล์เพื่อป้องกันข้อจำกัด 6MB (Raft entry limit) ของ TiDB Cloud
+    if (hasFile && req.file.buffer.length > 5.5 * 1024 * 1024) {
+        return res.status(400).json({ 
+            success: false, 
+            error: 'ไฟล์รูปภาพมีขนาดใหญ่เกินไป (ต้องไม่เกิน 5.5MB) กรุณาใช้รูปภาพที่ผ่านการบีบอัดแล้ว' 
+        });
+    }
+
     const filename = hasFile ? (id + path.extname(req.file.originalname || '.jpg')) : 'default.jpg';
     const imageData = hasFile ? req.file.buffer : null;
     const imageType = hasFile ? (req.file.mimetype || 'image/jpeg') : 'image/jpeg';
