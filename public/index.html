@@ -788,6 +788,50 @@
       </div>
     </div>
 
+    <!-- Modal: ดูรูปภาพขนาดใหญ่ของผู้เข้าประกวด -->
+    <div id="image-preview-modal"
+      class="modal-backdrop fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden"
+      onclick="closeImageModal()">
+      <div
+        class="modal-dialog glass-panel max-w-xl w-full rounded-3xl p-4 md:p-6 border-2 border-[#FFDE42] shadow-[0_0_60px_rgba(255,222,66,0.35)] relative flex flex-col items-center"
+        onclick="event.stopPropagation()">
+        
+        <!-- Close Button -->
+        <button onclick="closeImageModal()"
+          class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-[#FFDE42] text-white hover:text-[#111FA2] flex items-center justify-center transition-all duration-200 z-10 shadow-lg"
+          title="ปิดหน้าต่าง (Esc)">
+          <i class="fas fa-times text-base"></i>
+        </button>
+
+        <!-- Header Info -->
+        <div class="w-full text-center pb-3 border-b border-[#5478FF]/30 pr-8 pl-8">
+          <div class="inline-block bg-[#111FA2] border border-[#FFDE42] text-[#FFDE42] font-bold px-3 py-0.5 rounded-lg text-xs mb-1 shadow-sm">
+            <span id="preview-badge"></span>
+          </div>
+          <h3 id="preview-name" class="text-xl font-bold text-white tracking-wide"></h3>
+          <div id="preview-nickname" class="text-sm text-[#FFDE42] font-bold"></div>
+          <div id="preview-faculty" class="text-xs text-blue-300 font-medium mt-0.5"></div>
+        </div>
+
+        <!-- Image Display Area -->
+        <div class="w-full my-4 flex items-center justify-center overflow-hidden rounded-2xl bg-[#091054]/90 border border-[#5478FF]/40 max-h-[65vh]">
+          <img id="preview-img" src="" alt="Contestant Preview"
+            class="max-h-[65vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition-all duration-300">
+        </div>
+
+        <!-- Hint Footer -->
+        <div class="w-full flex items-center justify-between text-xs text-gray-400 pt-1">
+          <span class="flex items-center gap-1.5 text-[11px] text-amber-200">
+            <i class="fas fa-info-circle text-[#FFDE42]"></i> ภาพความละเอียดสูงจากฐานข้อมูล
+          </span>
+          <button onclick="closeImageModal()"
+            class="px-4 py-1.5 rounded-xl bg-gray-700/60 hover:bg-gray-600 text-gray-200 text-xs font-semibold transition active:scale-95">
+            ปิดหน้าต่าง (Esc)
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast"
       class="toast-hide fixed bottom-6 right-6 z-50 glass-panel border border-[#FFDE42]/70 bg-[#091054]/95 text-white font-semibold px-5 py-4 rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.7),0_0_20px_rgba(255,222,66,0.35)] flex items-center gap-3.5 backdrop-blur-xl overflow-hidden">
@@ -1345,14 +1389,26 @@
               <!-- ฝั่งซ้าย: รูปภาพและข้อมูล -->
               <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-5 md:pb-0 md:pr-5">
                 <div class="w-full flex flex-col items-center">
-                  <div class="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden border-2 ${hasVoted ? 'border-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'border-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.25)]'} bg-[#111FA2] group mb-2">
+                  <div class="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden border-2 ${hasVoted ? 'border-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'border-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.25)]'} bg-[#111FA2] group mb-2 cursor-pointer transition-all duration-300 hover:border-[#FFDE42]" onclick="openImageModal('${cId}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
                     <img src="${imagePath}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/111FA2/FFDE42?text=${cId}';" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
                     
-                    <div class="absolute top-2 left-2 bg-[#111FA2]/90 border border-[#FFDE42] text-[#FFDE42] font-bold px-3 py-1 rounded-lg text-xs shadow-md">
+                    <div class="absolute top-2 left-2 bg-[#111FA2]/90 border border-[#FFDE42] text-[#FFDE42] font-bold px-3 py-1 rounded-lg text-xs shadow-md z-10 pointer-events-none">
                       ${cId} • ${catTitle}
                     </div>
 
-                    ${hasVoted ? '<div class="absolute top-2 right-2 bg-emerald-600 border border-emerald-300 text-white font-bold text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1"><i class="fas fa-check-circle"></i> บันทึกแล้ว</div>' : ''}
+                    ${hasVoted ? '<div class="absolute top-2 right-2 bg-emerald-600 border border-emerald-300 text-white font-bold text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1 z-10 pointer-events-none"><i class="fas fa-check-circle"></i> บันทึกแล้ว</div>' : ''}
+
+                    <!-- Hover Overlay & Tooltip Hint -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3 pointer-events-none z-10">
+                      <div class="self-end ${hasVoted ? 'mt-8' : ''}">
+                        <span class="w-8 h-8 rounded-full bg-[#111FA2]/90 border border-[#FFDE42] text-[#FFDE42] flex items-center justify-center shadow-lg transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                          <i class="fas fa-search-plus text-xs"></i>
+                        </span>
+                      </div>
+                      <div class="self-center bg-[#091054]/95 border border-[#FFDE42] text-[#FFDE42] text-[11px] font-bold py-1 px-3.5 rounded-full shadow-[0_4px_15px_rgba(0,0,0,0.6)] flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300 backdrop-blur-md">
+                        <i class="fas fa-expand text-[10px]"></i> คลิกเพื่อดูรูปภาพขนาดใหญ่
+                      </div>
+                    </div>
                   </div>
                   
                   <h4 class="text-base font-bold text-white tracking-wide mt-1">${cName}</h4>
@@ -1532,6 +1588,71 @@
         }
       }
 
+      // ==========================================
+      // Modal แสดงรูปภาพขนาดใหญ่ของผู้เข้าประกวด
+      // ==========================================
+      function openImageModal(cId) {
+        const modal = document.getElementById('image-preview-modal');
+        if (!modal) return;
+
+        const c = (allContestants || []).find(x => x.id === cId) ||
+                  (summaryData?.top5 || []).find(x => x.id === cId) ||
+                  (summaryData?.top3 || []).find(x => x.id === cId) ||
+                  (summaryData?.finalRankings || []).find(x => x.id === cId) || {};
+
+        const cName = c.name || cId;
+        const cNickname = c.nickname || '';
+        const cFaculty = c.faculty || '';
+        const catTitle = CATEGORIES[c.category] || c.category || '';
+        const imagePath = `/api/contestants/${encodeURIComponent(cId)}/image`;
+
+        const imgEl = document.getElementById('preview-img');
+        const badgeEl = document.getElementById('preview-badge');
+        const nameEl = document.getElementById('preview-name');
+        const nickEl = document.getElementById('preview-nickname');
+        const facEl = document.getElementById('preview-faculty');
+
+        if (imgEl) {
+          imgEl.src = imagePath;
+          imgEl.alt = cName;
+          imgEl.onerror = function () {
+            this.onerror = null;
+            this.src = `https://placehold.co/400x500/111FA2/FFDE42?text=${encodeURIComponent(cId)}`;
+          };
+        }
+        if (badgeEl) badgeEl.textContent = `${cId} • ${catTitle}`;
+        if (nameEl) nameEl.textContent = cName;
+        if (nickEl) nickEl.textContent = cNickname ? `"${cNickname}"` : '';
+        if (facEl) facEl.innerHTML = cFaculty ? `<i class="fas fa-graduation-cap mr-1 opacity-80"></i>${cFaculty}` : '';
+
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          modal.classList.add('open');
+        });
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeImageModal() {
+        const modal = document.getElementById('image-preview-modal');
+        if (modal) {
+          modal.classList.remove('open');
+          setTimeout(() => {
+            modal.classList.add('hidden');
+            const imgEl = document.getElementById('preview-img');
+            if (imgEl) imgEl.src = '';
+          }, 250);
+        }
+        document.body.style.overflow = '';
+      }
+
+      // ปิด modal เมื่อกดปุ่ม Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeImageModal();
+          closeModal();
+        }
+      });
+
       async function confirmSubmitScore() {
         if (!pendingSubmitData) return;
         const data = pendingSubmitData;
@@ -1671,7 +1792,7 @@
                 ${f.finalRank === 1 ? '👑 1' : f.finalRank}
               </td>
               <td class="px-3 py-3 text-center">
-                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-11 h-11 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto">
+                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-11 h-11 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
               </td>
               <td class="px-3 py-3">
                 <div class="font-bold text-white text-sm">${f.name}</div>
@@ -1720,7 +1841,7 @@
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop3 ? 'bg-amber-500/10' : ''}">
               <td class="px-3 py-3 text-center font-extrabold text-base ${isTop3 ? 'text-amber-300' : 'text-gray-400'}">${idx + 1}</td>
               <td class="px-3 py-3 text-center">
-                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto">
+                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
               </td>
               <td class="px-3 py-3">
                 <div class="font-bold text-white text-sm">${f.name}</div>
@@ -1817,7 +1938,7 @@
             tbody.innerHTML += `
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
-              <td class="px-3 py-3 text-center"><img src="${img}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto"></td>
+              <td class="px-3 py-3 text-center"><img src="${img}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 font-semibold text-white text-sm whitespace-nowrap">${c.name}</td>
               <td class="px-3 py-3 text-center text-[11px] text-gray-300">${c.categoryName}</td>
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.blackroom?.total || 0}</td>
@@ -1885,7 +2006,7 @@
             tbody.innerHTML += `
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] whitespace-nowrap">${c.id}</td>
-              <td class="px-3 py-3 text-center"><img src="${img}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto"></td>
+              <td class="px-3 py-3 text-center"><img src="${img}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 font-semibold text-white text-sm whitespace-nowrap">${c.name}</td>
               <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}</td>
               ${judeCells}
