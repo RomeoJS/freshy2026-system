@@ -61,13 +61,14 @@ async function initDB() {
                 id VARCHAR(20) PRIMARY KEY,
                 name VARCHAR(100) NOT NULL,
                 category VARCHAR(50) NOT NULL,
+                faculty VARCHAR(150) DEFAULT '',
                 image VARCHAR(255) DEFAULT 'default.jpg',
                 image_data LONGBLOB NULL,
                 image_type VARCHAR(50) DEFAULT 'image/jpeg'
             )
         `);
 
-        // ตรวจสอบและแก้ไขโครงสร้างคอลัมน์ image_data และ image_type
+        // ตรวจสอบและแก้ไขโครงสร้างคอลัมน์ image_data, image_type และ faculty
         const [contestantCols] = await connection.execute(`
             SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS 
             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'contestants'
@@ -91,6 +92,11 @@ async function initDB() {
         if (!colMap['image_type']) {
             await connection.execute("ALTER TABLE contestants ADD COLUMN image_type VARCHAR(50) DEFAULT 'image/jpeg'");
             console.log('✅ Added image_type column.');
+        }
+
+        if (!colMap['faculty']) {
+            await connection.execute("ALTER TABLE contestants ADD COLUMN faculty VARCHAR(150) DEFAULT ''");
+            console.log('✅ Added faculty column.');
         }
 
         // ตรวจสอบและซิงค์รูปภาพจากโฟลเดอร์ public/images/contestants ลง MySQL หากยังไม่มีใน DB
@@ -467,7 +473,7 @@ app.get('/api/contestants', async (req, res) => {
     try {
         const connection = await mysql.createConnection(dbConfig);
         const [rows] = await connection.execute(
-            'SELECT id, name, category, image, IF(image_data IS NOT NULL, 1, 0) AS has_image FROM contestants ORDER BY id ASC'
+            'SELECT id, name, category, faculty, image, IF(image_data IS NOT NULL, 1, 0) AS has_image FROM contestants ORDER BY id ASC'
         );
         await connection.end();
         res.json(rows);
@@ -510,7 +516,8 @@ app.get('/api/contestants/:id/image', async (req, res) => {
 
 // Admin เพิ่มข้อมูลและอัปโหลดรูป (บันทึกรูปลงฐานข้อมูล MySQL โดยตรง)
 app.post('/api/contestants', upload.single('image'), async (req, res) => {
-    const { id, name, category } = req.body;
+    const { id, name, category, faculty } = req.body;
+    const facultyVal = faculty || '';
     const hasFile = req.file && req.file.buffer;
     const filename = hasFile ? (id + path.extname(req.file.originalname || '.jpg')) : 'default.jpg';
     const imageData = hasFile ? req.file.buffer : null;
@@ -520,24 +527,26 @@ app.post('/api/contestants', upload.single('image'), async (req, res) => {
         const connection = await mysql.createConnection(dbConfig);
         if (hasFile) {
             await connection.execute(
-                `INSERT INTO contestants (id, name, category, image, image_data, image_type) 
-                 VALUES (?, ?, ?, ?, ?, ?) 
+                `INSERT INTO contestants (id, name, category, faculty, image, image_data, image_type) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?) 
                  ON DUPLICATE KEY UPDATE 
                     name = VALUES(name), 
                     category = VALUES(category), 
+                    faculty = VALUES(faculty),
                     image = VALUES(image), 
                     image_data = VALUES(image_data), 
                     image_type = VALUES(image_type)`,
-                [id, name, category, filename, imageData, imageType]
+                [id, name, category, facultyVal, filename, imageData, imageType]
             );
         } else {
             await connection.execute(
-                `INSERT INTO contestants (id, name, category, image) 
-                 VALUES (?, ?, ?, ?) 
+                `INSERT INTO contestants (id, name, category, faculty, image) 
+                 VALUES (?, ?, ?, ?, ?) 
                  ON DUPLICATE KEY UPDATE 
                     name = VALUES(name), 
-                    category = VALUES(category)`,
-                [id, name, category, 'default.jpg']
+                    category = VALUES(category),
+                    faculty = VALUES(faculty)`,
+                [id, name, category, facultyVal, 'default.jpg']
             );
         }
         await connection.end();

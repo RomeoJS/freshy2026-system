@@ -705,6 +705,12 @@
                 placeholder="ชื่อ-นามสกุล (ชื่อเล่น)" />
             </div>
             <div>
+              <label class="block text-xs mb-1 text-gray-300">คณะ / สาขา</label>
+              <input type="text" id="add-faculty"
+                class="input-dark p-2.5 rounded-xl w-52 text-white font-semibold"
+                placeholder="เช่น วิศวกรรมศาสตร์" />
+            </div>
+            <div>
               <label class="block text-xs mb-1 text-gray-300">หมวดหมู่การประกวด</label>
               <select id="add-category" class="input-dark p-2.5 rounded-xl text-white font-semibold">
                 <option value="mister">Mister</option>
@@ -1344,6 +1350,7 @@
                   </div>
                   
                   <h4 class="text-base font-bold text-white tracking-wide mt-1">${cName}</h4>
+                  ${contestant.faculty ? `<div class="text-xs text-blue-300 mt-0.5 font-medium"><i class="fas fa-graduation-cap mr-1 opacity-70"></i>${contestant.faculty}</div>` : ''}
                   
                   ${isQa ? `
                     <div class="mt-1 px-3 py-1 bg-yellow-500/20 rounded-lg text-amber-300 text-xs border border-yellow-500/30 font-medium">
@@ -1894,6 +1901,7 @@
         formData.append('id', document.getElementById('add-id').value);
         formData.append('name', document.getElementById('add-name').value);
         formData.append('category', document.getElementById('add-category').value);
+        formData.append('faculty', document.getElementById('add-faculty').value || '');
 
         const imageFile = document.getElementById('add-image').files[0];
         if (imageFile) formData.append('image', imageFile);
