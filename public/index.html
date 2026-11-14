@@ -864,6 +864,10 @@
         const adminJudgeBar = document.getElementById('admin-judge-selector-bar');
         const admin2Switcher = document.getElementById('admin2-nav-switcher');
 
+        await loadContestants();
+        await fetchScores(true);
+        startHeartbeat();
+
         if (role === 'admin') {
           if (adminJudgeBar) adminJudgeBar.classList.add('hidden');
           if (admin2Switcher) admin2Switcher.classList.add('hidden');
@@ -1076,7 +1080,8 @@
           const res = await fetch('/api/contestants');
           const data = await res.json();
           allContestants = sortContestants(Array.isArray(data) ? data : []);
-          document.getElementById('stat-contestants-count').innerText = `${allContestants.length} คน`;
+          const countEl = document.getElementById('stat-contestants-count');
+          if (countEl) countEl.innerText = `${allContestants.length} คน`;
         } catch (e) {
           console.error('Failed to load contestants');
         }
@@ -1280,9 +1285,12 @@
         }
 
         if (targetList.length === 0) {
+          if (allContestants.length === 0 && !isQa && !isSpeed) {
+            loadContestants().then(() => renderJudgeCards());
+          }
           const emptyMsg = isQa
             ? 'ยังไม่มีข้อมูลสำหรับรอบ TOP 3 (กรุณารอการบันทึกคะแนนรอบ Speed เพื่อคัดเลือก 3 คนสุดท้าย)'
-            : (isSpeed ? 'ยังไม่มีข้อมูลสำหรับรอบ TOP 5 (กรุณารอการบันทึกคะแนนรอบห้องดำและ Grand Opening เพื่อคัดเลือก 5 คนสุดท้าย)' : 'ยังไม่มีข้อมูลในหมวดหมู่นี้');
+            : (isSpeed ? 'ยังไม่มีข้อมูลสำหรับรอบ TOP 5 (กรุณารอการบันทึกคะแนนรอบห้องดำและ Grand Opening เพื่อคัดเลือก 5 คนสุดท้าย)' : (allContestants.length === 0 ? 'กำลังโหลดข้อมูลผู้เข้าประกวด...' : 'ยังไม่มีข้อมูลในหมวดหมู่นี้'));
           container.innerHTML = `<div class="col-span-2 text-center text-gray-300 py-12 glass-panel rounded-3xl view-animated">${emptyMsg}</div>`;
           return;
         }
