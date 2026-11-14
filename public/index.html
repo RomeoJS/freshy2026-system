@@ -597,6 +597,25 @@
       let heartbeatInterval = null;
       let pollingInterval = null;
 
+      const POLLING_INTERVAL_MS = 30000; // 30 วินาที (ปรับจาก 10 วิ เพื่อลดความถี่รีเควส ป้องกันเว็บกระตุก)
+      const HEARTBEAT_INTERVAL_MS = 60000; // 60 วินาที (ลดภาระ ping)
+      let isFetchingScores = false;
+      let lastScoresHash = '';
+      let lastSummaryHash = '';
+
+      function getPlaceholderSvgUri(text) {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="100%" height="100%" fill="#111FA2"/><circle cx="100" cy="80" r="30" fill="#5478FF" opacity="0.3"/><circle cx="100" cy="72" r="16" fill="#FFDE42" opacity="0.85"/><path d="M70 120 Q100 95 130 120" fill="none" stroke="#FFDE42" stroke-width="4" stroke-linecap="round" opacity="0.85"/><text x="50%" y="160" dominant-baseline="middle" text-anchor="middle" fill="#FFDE42" font-family="sans-serif" font-weight="bold" font-size="20">${text}</text></svg>`;
+        return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+      }
+
+      function startAdminPolling() {
+        if (pollingInterval) clearInterval(pollingInterval);
+        pollingInterval = setInterval(() => {
+          if (document.hidden) return; // ไม่ยิง request เมื่อแท็บถูกย่อหรือไม่ได้แสดงผล
+          fetchScores();
+        }, POLLING_INTERVAL_MS);
+      }
+
       let currentRound = 'blackroom'; // 'blackroom', 'grand', 'speed', 'qa'
       let currentCategory = 'all'; // 'all', 'mister', 'miss', 'queen', 'congeniality', 'jumbo'
       let adminCurrentView = 'top3'; // 'top3', 'speed', 'pre', 'manage'
@@ -727,7 +746,7 @@
         document.getElementById('current-role-display').innerText = role.toUpperCase();
 
         await loadContestants();
-        await fetchScores();
+        await fetchScores(true);
         startHeartbeat();
 
         if (role === 'admin') {
@@ -737,7 +756,7 @@
           void adminSec.offsetWidth;
           adminSec.classList.add('view-animated');
           switchAdminView('top3');
-          if (!pollingInterval) pollingInterval = setInterval(fetchScores, 5000);
+          startAdminPolling();
         } else {
           const judgeSec = document.getElementById('judge-section');
           judgeSec.classList.remove('hidden');
@@ -789,6 +808,7 @@
         if (heartbeatInterval) clearInterval(heartbeatInterval);
         heartbeatInterval = setInterval(async () => {
           if (!currentUser || !sessionToken || isHeartbeatPinging) return;
+          if (document.hidden) return; // ไม่ส่ง request เมื่อแท็บไม่ได้ active
           isHeartbeatPinging = true;
           try {
             const res = await fetch('/api/ping', {
@@ -806,7 +826,7 @@
           } finally {
             isHeartbeatPinging = false;
           }
-        }, 10000);
+        }, HEARTBEAT_INTERVAL_MS);
       }
 
       async function logout() {
@@ -912,14 +932,30 @@
         }
       }
 
-      async function fetchScores() {
+      async function fetchScores(forceRender = false) {
+        if (isFetchingScores) return;
+        isFetchingScores = true;
         try {
           const [resScores, resSummary] = await Promise.all([
             fetch('/api/scores'),
             fetch('/api/summary')
           ]);
-          allScores = await resScores.json();
-          summaryData = await resSummary.json();
+          const newScores = await resScores.json();
+          const newSummary = await resSummary.json();
+
+          const scoresStr = JSON.stringify(newScores);
+          const summaryStr = JSON.stringify(newSummary);
+          const hasChanged = (scoresStr !== lastScoresHash || summaryStr !== lastSummaryHash);
+
+          allScores = newScores;
+          summaryData = newSummary;
+          lastScoresHash = scoresStr;
+          lastSummaryHash = summaryStr;
+
+          // หากข้อมูลคะแนนไม่ได้เปลี่ยนและไม่ได้บังคับ render ไม่ต้องวาด DOM ใหม่ เพื่อลดอาการกระตุก
+          if (!hasChanged && !forceRender) {
+            return;
+          }
 
           if (currentUser === 'admin') {
             renderAdminViews();
@@ -928,6 +964,8 @@
           }
         } catch (error) {
           console.error('Error fetching scores:', error);
+        } finally {
+          isFetchingScores = false;
         }
       }
 
@@ -1063,7 +1101,6 @@
       function renderJudgeCards() {
         const container = document.getElementById('contestants-container');
         if (!container) return;
-        container.innerHTML = '';
 
         let targetList = [];
         const isQa = currentRound === 'qa';
@@ -1102,6 +1139,7 @@
         const maxScore = roundObj ? roundObj.max : 100;
         const roundName = roundObj ? roundObj.name : currentRound;
 
+        const cardsHtml = [];
         targetList.forEach((contestant, cIndex) => {
           const cId = contestant.id;
           const cName = contestant.name;
@@ -1128,7 +1166,7 @@
               <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-5 md:pb-0 md:pr-5">
                 <div class="w-full flex flex-col items-center">
                   <div class="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden border-2 ${hasVoted ? 'border-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'border-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.25)]'} bg-[#111FA2] group mb-2 cursor-pointer transition-all duration-300 hover:border-[#FFDE42]" onclick="openImageModal('${cId}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
-                    <img src="${imagePath}" onerror="this.onerror=null; this.src='https://placehold.co/400x500/111FA2/FFDE42?text=${cId}';" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
+                    <img src="${imagePath}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${cId}');" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
                     
                     <!-- ป้ายรหัสและหมวดหมู่ (จัดแนวตั้ง ไม่บังรูปผู้เข้าประกวด) -->
                     <div class="absolute top-2 left-2 bg-[#111FA2]/95 backdrop-blur-sm border border-[#FFDE42] text-[#FFDE42] rounded-xl px-2.5 py-1.5 shadow-md z-10 pointer-events-none flex flex-col items-center text-center">
@@ -1229,8 +1267,9 @@
               </div>
             </div>
           `;
-          container.innerHTML += cardHtml;
+          cardsHtml.push(cardHtml);
         });
+        container.innerHTML = cardsHtml.join('');
       }
 
       function onScoreSliderChange(cId, critId, max, val) {
@@ -1357,7 +1396,7 @@
           imgEl.alt = cName;
           imgEl.onerror = function () {
             this.onerror = null;
-            this.src = `https://placehold.co/400x500/111FA2/FFDE42?text=${encodeURIComponent(cId)}`;
+            this.src = getPlaceholderSvgUri(cId);
           };
         }
         if (badgeEl) badgeEl.textContent = `${cId} • ${catTitle}`;
@@ -1418,7 +1457,7 @@
 
           if (result.success) {
             showToast(`บันทึกคะแนน ${data.cId} (${data.cName}) เรียบร้อย (รวม ${data.total} คะแนน)`);
-            await fetchScores();
+            await fetchScores(true);
           } else {
             alert('เกิดข้อผิดพลาด: ' + (result.error || result.message));
           }
@@ -1511,6 +1550,7 @@
 
         const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
 
+        const rows = [];
         list.forEach((f, idx) => {
           const isWinner = idx === 0;
           const isTop3 = idx < 3;
@@ -1532,7 +1572,7 @@
                 ${f.finalRank === 1 ? '👑 1' : f.finalRank}
               </td>
               <td class="px-3 py-3 text-center">
-                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-11 h-11 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
+                <img src="${imagePath}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-11 h-11 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
               </td>
               <td class="px-3 py-3">
                 <div class="font-bold text-white text-sm">${f.name}</div>
@@ -1549,8 +1589,9 @@
               </td>
             </tr>
           `;
-          tbody.innerHTML += row;
+          rows.push(row);
         });
+        tbody.innerHTML = rows.join('');
       }
 
       // วิว 2: ⚡ ผลคะแนนรอบ TOP 5 (Speed)
@@ -1567,6 +1608,7 @@
 
         const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
 
+        const rows = [];
         top5.forEach((f, idx) => {
           const isTop3 = idx < 3;
           const imagePath = `/api/contestants/${encodeURIComponent(f.id)}/image`;
@@ -1581,7 +1623,7 @@
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop3 ? 'bg-amber-500/10' : ''}">
               <td class="px-3 py-3 text-center font-extrabold text-base ${isTop3 ? 'text-amber-300' : 'text-gray-400'}">${idx + 1}</td>
               <td class="px-3 py-3 text-center">
-                <img src="${imagePath}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${f.id}'" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
+                <img src="${imagePath}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
               </td>
               <td class="px-3 py-3">
                 <div class="font-bold text-white text-sm">${f.name}</div>
@@ -1598,8 +1640,9 @@
               </td>
             </tr>
           `;
-          tbody.innerHTML += row;
+          rows.push(row);
         });
+        tbody.innerHTML = rows.join('');
       }
 
       // ==================================================
@@ -1671,22 +1714,23 @@
             <th class="px-3 py-3 text-center">สถานะ TOP 5</th>
           </tr>`;
 
-          tbody.innerHTML = '';
+          const rows = [];
           list.forEach(c => {
             const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
             const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
-            tbody.innerHTML += `
+            rows.push(`
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
-              <td class="px-3 py-3 text-center"><img src="${img}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
+              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 font-semibold text-white text-sm whitespace-nowrap">${c.name}</td>
               <td class="px-3 py-3 text-center text-[11px] text-gray-300">${c.categoryName}</td>
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.blackroom?.total || 0}</td>
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.grand?.total || 0}</td>
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/50">${c.preTotal || 0}</td>
               <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
-            </tr>`;
+            </tr>`);
           });
+          tbody.innerHTML = rows.join('');
 
         } else {
           // มุมมองเกณฑ์ย่อยรายรอบ (blackroom หรือ grand)
@@ -1721,7 +1765,7 @@
             ${criteriaSubHeaders}
           </tr>`;
 
-          tbody.innerHTML = '';
+          const rows = [];
           list.forEach(c => {
             const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
             const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
@@ -1743,23 +1787,24 @@
               judeCells += `<td class="px-2 py-2 text-center font-bold ${bg} border-l-2 border-[#FFDE42]/30">${tot !== null ? `<span class="text-[#FFDE42] text-sm">${tot}</span>` : na}</td>`;
             });
 
-            tbody.innerHTML += `
+            rows.push(`
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] whitespace-nowrap">${c.id}</td>
-              <td class="px-3 py-3 text-center"><img src="${img}" onerror="this.src='https://placehold.co/100x100/111FA2/FFDE42?text=${c.id}'" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
+              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 font-semibold text-white text-sm whitespace-nowrap">${c.name}</td>
               <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}</td>
               ${judeCells}
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/60 border-l-2 border-[#FFDE42]/30">${roundTotal || '-'}</td>
               <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
-            </tr>`;
+            </tr>`);
           });
+          tbody.innerHTML = rows.join('');
         }
       }
 
       async function refreshAdminData() {
         await loadContestants();
-        await fetchScores();
+        await fetchScores(true);
         showToast('อัปเดตข้อมูลคะแนนและสรุปผลล่าสุดเรียบร้อย');
       }
 
