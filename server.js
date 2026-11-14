@@ -37,8 +37,8 @@ const pool = mysql.createPool({
 });
 
 const CATEGORIES = {
-    mister: 'Mister',
     miss: 'Miss',
+    mister: 'Mister',
     queen: 'Miss Queen',
     congeniality: 'Miss Congeniality',
     jumbo: 'Miss Jumbo'
@@ -252,7 +252,9 @@ app.get('/api/contestants', async (req, res) => {
             return res.json(contestantsCache.data);
         }
         const [rows] = await pool.execute(
-            'SELECT id, name, nickname, category, faculty, image, IF(image_data IS NOT NULL, 1, 0) AS has_image FROM contestants ORDER BY id ASC'
+            `SELECT id, name, nickname, category, faculty, image, IF(image_data IS NOT NULL, 1, 0) AS has_image 
+             FROM contestants 
+             ORDER BY FIELD(category, 'miss', 'mister', 'queen', 'congeniality', 'jumbo'), CAST(SUBSTRING(id, 2) AS UNSIGNED), id ASC`
         );
         contestantsCache = { data: rows, timestamp: now };
         res.json(rows);

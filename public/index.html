@@ -228,13 +228,13 @@
           class="cat-nav-btn px-5 py-2 rounded-full border-2 border-[#FFDE42] text-[#111FA2] font-bold bg-[#FFDE42] shadow-[0_0_15px_rgba(255,222,66,0.4)] text-sm transition">
           ทั้งหมด (29 คน)
         </button>
-        <button onclick="switchCategory('mister')" id="tab-cat-mister"
-          class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
-          Mister
-        </button>
         <button onclick="switchCategory('miss')" id="tab-cat-miss"
           class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
           Miss
+        </button>
+        <button onclick="switchCategory('mister')" id="tab-cat-mister"
+          class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+          Mister
         </button>
         <button onclick="switchCategory('queen')" id="tab-cat-queen"
           class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
@@ -434,8 +434,8 @@
             <select id="admin-category-filter" onchange="renderAdminPreTable()"
               class="input-dark p-2 rounded-xl text-xs font-semibold shrink-0">
               <option value="all">ทุกหมวดหมู่ (29 คน)</option>
-              <option value="mister">Mister</option>
               <option value="miss">Miss</option>
+              <option value="mister">Mister</option>
               <option value="queen">Miss Queen</option>
               <option value="congeniality">Miss Congeniality</option>
               <option value="jumbo">Miss Jumbo</option>
@@ -499,8 +499,8 @@
             <div>
               <label class="block text-xs mb-1 text-gray-300">หมวดหมู่การประกวด</label>
               <select id="add-category" class="input-dark p-2.5 rounded-xl text-white font-semibold">
-                <option value="mister">Mister</option>
                 <option value="miss">Miss</option>
+                <option value="mister">Mister</option>
                 <option value="queen">Miss Queen</option>
                 <option value="congeniality">Miss Congeniality</option>
                 <option value="jumbo">Miss Jumbo</option>
@@ -735,7 +735,7 @@
       }
 
       let currentRound = 'blackroom'; // 'blackroom', 'grand', 'speed', 'qa'
-      let currentCategory = 'all'; // 'all', 'mister', 'miss', 'queen', 'congeniality', 'jumbo'
+      let currentCategory = 'all'; // 'all', 'miss', 'mister', 'queen', 'congeniality', 'jumbo'
       let adminCurrentView = 'top3'; // 'top3', 'speed', 'pre', 'manage'
       let adminPreRoundView = 'blackroom'; // 'blackroom', 'grand', 'all'
 
@@ -781,8 +781,8 @@
       };
 
       const CATEGORIES = {
-        mister: 'Mister',
         miss: 'Miss',
+        mister: 'Mister',
         queen: 'Miss Queen',
         congeniality: 'Miss Congeniality',
         jumbo: 'Miss Jumbo'
@@ -1058,11 +1058,24 @@
       // ==========================================
       // Data Loaders
       // ==========================================
+      const categoryOrder = { miss: 1, mister: 2, queen: 3, congeniality: 4, jumbo: 5 };
+      function sortContestants(list) {
+        return (list || []).slice().sort((a, b) => {
+          const ordA = categoryOrder[a.category] || 99;
+          const ordB = categoryOrder[b.category] || 99;
+          if (ordA !== ordB) return ordA - ordB;
+          const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+          const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+          if (numA !== numB) return numA - numB;
+          return (a.id || '').localeCompare(b.id || '');
+        });
+      }
+
       async function loadContestants() {
         try {
           const res = await fetch('/api/contestants');
           const data = await res.json();
-          allContestants = Array.isArray(data) ? data : [];
+          allContestants = sortContestants(Array.isArray(data) ? data : []);
           document.getElementById('stat-contestants-count').innerText = `${allContestants.length} คน`;
         } catch (e) {
           console.error('Failed to load contestants');
@@ -1187,7 +1200,7 @@
 
       function switchCategory(cat) {
         currentCategory = cat;
-        const allCats = ['all', 'mister', 'miss', 'queen', 'congeniality', 'jumbo'];
+        const allCats = ['all', 'miss', 'mister', 'queen', 'congeniality', 'jumbo'];
 
         allCats.forEach(c => {
           const btn = document.getElementById(`tab-cat-${c}`);
