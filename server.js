@@ -151,7 +151,15 @@ async function initDB() {
 }
 initDB();
 
-const USERS = { 'admin': 'admin2026', 'judge1': '1111', 'judge2': '2222', 'judge3': '3333', 'judge4': '4444', 'judge5': '5555' };
+const USERS = { 
+    'admin': 'admin2026', 
+    'admin2': 'admin2026', 
+    'judge1': '1111', 
+    'judge2': '2222', 
+    'judge3': '3333', 
+    'judge4': '4444', 
+    'judge5': '5555' 
+};
 const SESSION_TIMEOUT = 24 * 60 * 60 * 1000;
 const activeSessions = {};
 const adminSessions = {};
@@ -171,18 +179,20 @@ setInterval(async () => {
 
 app.post('/api/login', async (req, res) => {
     const { role, password } = req.body;
-    if (!USERS[role] || USERS[role] !== password) {
+    const isValid = USERS[role] && (USERS[role] === password || (role === 'admin2' && password === 'admin2'));
+    if (!isValid) {
         return res.json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
     }
 
     const token = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
     const now = Date.now();
+    const isAdmin = (role === 'admin' || role === 'admin2');
 
-    if (role === 'admin') adminSessions[token] = { lastSeen: now };
+    if (isAdmin) adminSessions[token] = { lastSeen: now, role };
     else activeSessions[role] = { token, lastSeen: now };
 
     try {
-        if (role !== 'admin') await pool.execute('DELETE FROM sessions WHERE role = ?', [role]);
+        if (!isAdmin) await pool.execute('DELETE FROM sessions WHERE role = ?', [role]);
         await pool.execute('INSERT INTO sessions (role, token, last_seen) VALUES (?, ?, ?)', [role, token, now]);
     } catch (e) {}
     res.json({ success: true, token, role });
@@ -193,7 +203,8 @@ app.post('/api/ping', async (req, res) => {
     if (!role || !token) return res.json({ success: false, reason: 'missing_params' });
 
     const now = Date.now();
-    if (role === 'admin') {
+    const isAdmin = (role === 'admin' || role === 'admin2');
+    if (isAdmin) {
         if (adminSessions[token]) {
             adminSessions[token].lastSeen = now;
             return res.json({ success: true });
@@ -211,7 +222,7 @@ app.post('/api/ping', async (req, res) => {
         const [rows] = await pool.execute('SELECT * FROM sessions WHERE role = ? AND token = ?', [role, token]);
         if (rows.length > 0) {
             if (now - Number(rows[0].last_seen) < SESSION_TIMEOUT) {
-                if (role === 'admin') adminSessions[token] = { lastSeen: now };
+                if (isAdmin) adminSessions[token] = { lastSeen: now, role };
                 else activeSessions[role] = { token, lastSeen: now };
                 return res.json({ success: true });
             }
@@ -222,7 +233,8 @@ app.post('/api/ping', async (req, res) => {
 
 app.post('/api/logout', async (req, res) => {
     const { role, token } = req.body;
-    if (role === 'admin') delete adminSessions[token];
+    const isAdmin = (role === 'admin' || role === 'admin2');
+    if (isAdmin) delete adminSessions[token];
     else if (activeSessions[role] && activeSessions[role].token === token) delete activeSessions[role];
     try {
         await pool.execute('DELETE FROM sessions WHERE role = ? AND token = ?', [role, token]);

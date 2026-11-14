@@ -23,7 +23,17 @@
         class="relative mx-auto h-20 md:h-28 object-contain drop-shadow-[0_0_20px_rgba(255,222,66,0.4)] hover:scale-105 transition-transform duration-300" />
     </div>
 
-    <div id="user-info" class="mt-2 text-sm text-gray-300 hidden flex items-center justify-center gap-3">
+    <div id="user-info" class="mt-2 text-sm text-gray-300 hidden flex flex-wrap items-center justify-center gap-3">
+      <!-- สวิตช์สลับโหมดสำหรับ Admin แก้ไขคะแนน -->
+      <div id="admin2-nav-switcher" class="hidden flex items-center gap-1.5 bg-[#091054]/90 p-1 rounded-2xl border border-[#FFDE42]/50 shadow-md">
+        <button type="button" id="admin2-tab-scoring" onclick="switchAdmin2Mode('scoring')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]">
+          <i class="fas fa-edit"></i> โหมดแก้ไขคะแนน
+        </button>
+        <button type="button" id="admin2-tab-dashboard" onclick="switchAdmin2Mode('dashboard')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-gray-300 hover:text-white glass-panel">
+          <i class="fas fa-chart-bar"></i> ผลคะแนนรวม (Dashboard)
+        </button>
+      </div>
+
       <span class="bg-[#111FA2]/80 px-4 py-1.5 rounded-full border border-[#5478FF]/40 text-xs">
         <i class="fas fa-user-circle text-[#FFDE42] mr-1.5"></i> ผู้ใช้งาน:
         <span id="current-role-display" class="font-bold text-[#FFDE42]"></span>
@@ -66,11 +76,17 @@
             <input type="hidden" id="login-role" value="admin" />
             <div id="role-dropdown-menu"
               class="dropdown-menu hidden absolute top-full left-0 right-0 mt-2 bg-[#091054]/95 backdrop-blur-2xl border border-[#5478FF]/60 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] overflow-hidden z-50 divide-y divide-[#5478FF]/15">
-              <div onclick="selectRole('admin', 'ผู้ดูแลระบบ (Admin)', 'fa-user-shield')"
+              <div onclick="selectRole('admin', 'ผู้ดูแลระบบ (Admin Dashboard)', 'fa-user-shield')"
                 class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-white">
                 <span class="flex items-center gap-2.5"><i class="fas fa-user-shield text-[#FFDE42]"></i> ผู้ดูแลระบบ
                   (Admin)</span>
                 <i class="fas fa-check text-[#FFDE42] check-icon" id="check-admin"></i>
+              </div>
+              <div onclick="selectRole('admin2', 'ผู้ดูแลระบบ - แก้ไขคะแนน (Admin Score Editor)', 'fa-user-edit')"
+                class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-amber-300">
+                <span class="flex items-center gap-2.5"><i class="fas fa-user-edit text-[#FFDE42]"></i> ผู้ดูแลระบบ
+                  (แก้ไขคะแนน)</span>
+                <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-admin2"></i>
               </div>
               <div onclick="selectRole('judge1', 'กรรมการท่านที่ 1', 'fa-gavel')"
                 class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-gray-200">
@@ -132,6 +148,33 @@
 
     <!-- 2. JUDGE DASHBOARD -->
     <div id="judge-section" class="max-w-7xl w-full hidden my-2">
+      <!-- 🌟 แถบเลือกกรรมการสำหรับ Admin แก้ไขคะแนน (Admin Score Editor) -->
+      <div id="admin-judge-selector-bar" class="hidden glass-panel p-4 md:p-5 rounded-3xl mb-6 border-2 border-[#FFDE42] shadow-[0_0_30px_rgba(255,222,66,0.3)] bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/95 to-[#111FA2]/90">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-2xl bg-[#FFDE42] text-[#111FA2] flex items-center justify-center font-black text-xl shadow-md">
+              <i class="fas fa-user-edit"></i>
+            </div>
+            <div>
+              <div class="text-sm font-black text-[#FFDE42] uppercase tracking-wide flex items-center gap-2">
+                <span>โหมดแก้ไขคะแนนโดยผู้ดูแลระบบ (Admin Score Editor)</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[11px] font-bold">แก้ไขได้ทุกกรรมการ</span>
+              </div>
+              <div class="text-xs text-gray-200 mt-0.5">กำลังตรวจดู / แก้ไขคะแนนในนาม: <span id="admin-editing-judge-label" class="text-[#FFDE42] font-bold">กรรมการท่านที่ 1 (Judge 1)</span></div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs text-gray-300 font-medium mr-1 hidden sm:inline">เลือกกรรมการ:</span>
+            <button type="button" onclick="selectAdminEditingJudge('judge1')" id="btn-admin-judge-1" class="admin-judge-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_15px_rgba(255,222,66,0.5)] scale-105 active:scale-95">กรรมการ 1</button>
+            <button type="button" onclick="selectAdminEditingJudge('judge2')" id="btn-admin-judge-2" class="admin-judge-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 glass-panel border border-[#5478FF]/40 text-gray-200 hover:border-[#FFDE42] hover:text-white active:scale-95">กรรมการ 2</button>
+            <button type="button" onclick="selectAdminEditingJudge('judge3')" id="btn-admin-judge-3" class="admin-judge-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 glass-panel border border-[#5478FF]/40 text-gray-200 hover:border-[#FFDE42] hover:text-white active:scale-95">กรรมการ 3</button>
+            <button type="button" onclick="selectAdminEditingJudge('judge4')" id="btn-admin-judge-4" class="admin-judge-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 glass-panel border border-[#5478FF]/40 text-gray-200 hover:border-[#FFDE42] hover:text-white active:scale-95">กรรมการ 4</button>
+            <button type="button" onclick="selectAdminEditingJudge('judge5')" id="btn-admin-judge-5" class="admin-judge-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 glass-panel border border-[#5478FF]/40 text-gray-200 hover:border-[#FFDE42] hover:text-white active:scale-95">กรรมการ 5</button>
+          </div>
+        </div>
+      </div>
+
       <!-- 🌟 แถบเลือกรอบการตัดสิน (Rounds Navigation) -->
       <div class="glass-panel p-4 md:p-5 rounded-3xl mb-6 border border-[#5478FF]/40 shadow-xl">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
@@ -499,6 +542,10 @@
             <span class="text-gray-400">รหัสประจำตัว:</span>
             <span id="modal-cid" class="font-bold text-[#FFDE42]"></span>
           </div>
+          <div id="modal-judge-row" class="flex justify-between hidden">
+            <span class="text-gray-400">บันทึกในนาม:</span>
+            <span id="modal-judge-name" class="font-bold text-amber-300"></span>
+          </div>
           <div id="modal-criteria-container" class="border-t border-[#5478FF]/20 pt-2 space-y-1 text-xs text-gray-300">
           </div>
           <div class="flex justify-between border-t border-[#5478FF]/20 pt-2">
@@ -614,6 +661,77 @@
           if (document.hidden) return; // ไม่ยิง request เมื่อแท็บถูกย่อหรือไม่ได้แสดงผล
           fetchScores();
         }, POLLING_INTERVAL_MS);
+      }
+
+      let adminSelectedJudge = 'judge1';
+      let admin2ActiveMode = 'scoring'; // 'scoring' หรือ 'dashboard'
+
+      function selectAdminEditingJudge(jId) {
+        adminSelectedJudge = jId;
+        const judgeNum = jId.replace('judge', '');
+        const lbl = document.getElementById('admin-editing-judge-label');
+        if (lbl) lbl.textContent = `กรรมการท่านที่ ${judgeNum} (${jId.toUpperCase()})`;
+
+        for (let i = 1; i <= 5; i++) {
+          const btn = document.getElementById(`btn-admin-judge-${i}`);
+          if (!btn) continue;
+          if (`judge${i}` === jId) {
+            btn.className = 'admin-judge-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_15px_rgba(255,222,66,0.5)] scale-105 active:scale-95';
+          } else {
+            btn.className = 'admin-judge-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 glass-panel border border-[#5478FF]/40 text-gray-200 hover:border-[#FFDE42] hover:text-white active:scale-95';
+          }
+        }
+        renderJudgeCards();
+      }
+
+      function switchAdmin2Mode(mode) {
+        admin2ActiveMode = mode;
+        const judgeSec = document.getElementById('judge-section');
+        const adminSec = document.getElementById('admin-section');
+        const tabScoring = document.getElementById('admin2-tab-scoring');
+        const tabDashboard = document.getElementById('admin2-tab-dashboard');
+
+        if (mode === 'scoring') {
+          judgeSec.classList.remove('hidden');
+          adminSec.classList.add('hidden');
+          if (tabScoring) {
+            tabScoring.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]';
+          }
+          if (tabDashboard) {
+            tabDashboard.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-gray-300 hover:text-white glass-panel';
+          }
+          renderJudgeCards();
+        } else {
+          judgeSec.classList.add('hidden');
+          adminSec.classList.remove('hidden');
+          if (tabDashboard) {
+            tabDashboard.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]';
+          }
+          if (tabScoring) {
+            tabScoring.className = 'px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-gray-300 hover:text-white glass-panel';
+          }
+          renderAdminViews();
+        }
+      }
+
+      function adminQuickEditContestant(cId, roundId, judgeId) {
+        if (currentUser !== 'admin2') return;
+        switchAdmin2Mode('scoring');
+        if (roundId) switchRound(roundId);
+        if (judgeId) selectAdminEditingJudge(judgeId);
+        setTimeout(() => {
+          const el = document.getElementById(`total-${cId}`);
+          if (el) {
+            const card = el.closest('.contestant-card');
+            if (card) {
+              card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              card.classList.add('border-yellow-400', 'shadow-[0_0_35px_rgba(255,222,66,0.7)]');
+              setTimeout(() => {
+                card.classList.remove('shadow-[0_0_35px_rgba(255,222,66,0.7)]');
+              }, 2500);
+            }
+          }
+        }, 200);
       }
 
       let currentRound = 'blackroom'; // 'blackroom', 'grand', 'speed', 'qa'
@@ -743,13 +861,14 @@
         userInfo.classList.remove('view-animated');
         void userInfo.offsetWidth;
         userInfo.classList.add('view-animated');
-        document.getElementById('current-role-display').innerText = role.toUpperCase();
-
-        await loadContestants();
-        await fetchScores(true);
-        startHeartbeat();
+        const adminJudgeBar = document.getElementById('admin-judge-selector-bar');
+        const admin2Switcher = document.getElementById('admin2-nav-switcher');
 
         if (role === 'admin') {
+          if (adminJudgeBar) adminJudgeBar.classList.add('hidden');
+          if (admin2Switcher) admin2Switcher.classList.add('hidden');
+          document.getElementById('current-role-display').innerText = 'ADMIN';
+
           const adminSec = document.getElementById('admin-section');
           adminSec.classList.remove('hidden');
           adminSec.classList.remove('view-animated');
@@ -757,7 +876,20 @@
           adminSec.classList.add('view-animated');
           switchAdminView('top3');
           startAdminPolling();
+        } else if (role === 'admin2') {
+          if (adminJudgeBar) adminJudgeBar.classList.remove('hidden');
+          if (admin2Switcher) admin2Switcher.classList.remove('hidden');
+          document.getElementById('current-role-display').innerText = 'ADMIN (แก้ไขคะแนน)';
+
+          switchAdmin2Mode('scoring');
+          selectAdminEditingJudge('judge1');
+          switchRound('blackroom');
+          startAdminPolling();
         } else {
+          if (adminJudgeBar) adminJudgeBar.classList.add('hidden');
+          if (admin2Switcher) admin2Switcher.classList.add('hidden');
+          document.getElementById('current-role-display').innerText = role.toUpperCase();
+
           const judgeSec = document.getElementById('judge-section');
           judgeSec.classList.remove('hidden');
           judgeSec.classList.remove('view-animated');
@@ -864,6 +996,11 @@
         document.getElementById('admin-section').classList.add('hidden');
         document.getElementById('user-info').classList.add('hidden');
 
+        const adminJudgeBar = document.getElementById('admin-judge-selector-bar');
+        if (adminJudgeBar) adminJudgeBar.classList.add('hidden');
+        const admin2Switcher = document.getElementById('admin2-nav-switcher');
+        if (admin2Switcher) admin2Switcher.classList.add('hidden');
+
         if (reason === 'superseded') {
           showToast('บัญชีนี้ถูกเข้าสู่ระบบจากอุปกรณ์อื่น');
         }
@@ -907,7 +1044,7 @@
             if (res.ok) {
               const data = await res.json();
               if (data.success) {
-                if (currentUser === 'admin') {
+                if (currentUser === 'admin' || currentUser === 'admin2') {
                   fetchScores();
                 }
               } else {
@@ -958,6 +1095,9 @@
           }
 
           if (currentUser === 'admin') {
+            renderAdminViews();
+          } else if (currentUser === 'admin2') {
+            renderJudgeCards();
             renderAdminViews();
           } else if (currentUser && currentUser.startsWith('judge')) {
             renderJudgeCards();
@@ -1146,8 +1286,9 @@
           const cCat = contestant.category;
           const catTitle = CATEGORIES[cCat] || cCat;
 
+          const effectiveJudge = (currentUser === 'admin2') ? adminSelectedJudge : currentUser;
           const record = (allScores || []).find(
-            s => s.judge_id === currentUser && s.contestant_id === cId && s.round_id === currentRound
+            s => s.judge_id === effectiveJudge && s.contestant_id === cId && s.round_id === currentRound
           );
           const hasVoted = !!record;
 
@@ -1160,7 +1301,9 @@
 
           const animDelay = Math.min(cIndex * 0.04, 0.4);
 
-          let cardHtml = `
+                const judgeTitle = (currentUser === 'admin2') ? ` (ในนาม ก.${adminSelectedJudge.replace('judge', '')})` : '';
+
+                let cardHtml = `
             <div class="contestant-card glass-panel p-5 md:p-6 rounded-3xl border-t-2 ${hasVoted ? 'border-emerald-400' : 'border-[#FFDE42]'} relative transition-all duration-300 hover:shadow-[0_20px_45px_rgba(84,120,255,0.35)] flex flex-col md:flex-row gap-5 items-stretch" style="animation-delay: ${animDelay}s;">
               <!-- ฝั่งซ้าย: รูปภาพและข้อมูล -->
               <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-5 md:pb-0 md:pr-5">
@@ -1212,7 +1355,7 @@
 
                 <button onclick="openSubmitModal('${cId}', '${cName}')" class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 active:scale-95 ${hasVoted ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white hover:shadow-[0_0_20px_rgba(52,211,153,0.5)]' : 'bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] hover:shadow-[0_0_25px_rgba(255,222,66,0.65)] hover:scale-[1.02]'}">
                   <i class="fas ${hasVoted ? 'fa-check' : 'fa-gavel'}"></i>
-                  <span>${hasVoted ? 'แก้ไขคะแนนรอบนี้' : 'บันทึกคะแนนรอบนี้'}</span>
+                  <span>${hasVoted ? 'แก้ไขคะแนนรอบนี้' : 'บันทึกคะแนนรอบนี้'}${judgeTitle}</span>
                 </button>
               </div>
 
@@ -1347,6 +1490,15 @@
         document.getElementById('modal-score').innerText = total;
         document.getElementById('modal-max-score').innerText = maxScore;
 
+        const judgeRow = document.getElementById('modal-judge-row');
+        const judgeNameEl = document.getElementById('modal-judge-name');
+        if (currentUser === 'admin2') {
+          if (judgeRow) judgeRow.classList.remove('hidden');
+          if (judgeNameEl) judgeNameEl.innerText = `กรรมการท่านที่ ${adminSelectedJudge.replace('judge', '')} (${adminSelectedJudge.toUpperCase()})`;
+        } else {
+          if (judgeRow) judgeRow.classList.add('hidden');
+        }
+
         const modal = document.getElementById('custom-confirm-modal');
         modal.classList.remove('hidden');
         requestAnimationFrame(() => {
@@ -1437,12 +1589,14 @@
         const data = pendingSubmitData;
         closeModal();
 
+        const judgeToSubmit = (currentUser === 'admin2') ? adminSelectedJudge : currentUser;
+
         try {
           const res = await fetch('/api/scores', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              judge_id: currentUser,
+              judge_id: judgeToSubmit,
               contestant_id: data.cId,
               round_id: data.roundId,
               score_c1: data.scores.c1 || 0,
@@ -1456,7 +1610,8 @@
           const result = await res.json();
 
           if (result.success) {
-            showToast(`บันทึกคะแนน ${data.cId} (${data.cName}) เรียบร้อย (รวม ${data.total} คะแนน)`);
+            const judgeTxt = (currentUser === 'admin2') ? ` (ในนามกรรมการท่านที่ ${adminSelectedJudge.replace('judge', '')})` : '';
+            showToast(`บันทึกคะแนน ${data.cId} (${data.cName})${judgeTxt} เรียบร้อย (รวม ${data.total} คะแนน)`);
             await fetchScores(true);
           } else {
             alert('เกิดข้อผิดพลาด: ' + (result.error || result.message));
@@ -1578,6 +1733,7 @@
                 <div class="font-bold text-white text-sm">${f.name}</div>
                 <div class="text-xs text-[#FFDE42]">${f.id} • ${f.categoryName}</div>
                 <div class="mt-1">${awardBadges[idx] || ''}</div>
+                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${f.id}', 'qa')" class="mt-1.5 px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[11px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบชิง</button>` : ''}
               </td>
               <td class="px-3 py-3 text-center text-xs font-semibold text-gray-200">${f.categoryName}</td>
               ${qaJudgeCells}
@@ -1628,6 +1784,7 @@
               <td class="px-3 py-3">
                 <div class="font-bold text-white text-sm">${f.name}</div>
                 <div class="text-xs text-[#FFDE42]">${f.id} • ${f.categoryName}</div>
+                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${f.id}', 'speed')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนน Speed</button>` : ''}
               </td>
               <td class="px-3 py-3 text-center text-xs font-semibold text-gray-200">${f.categoryName}</td>
               <td class="px-3 py-3 text-center font-bold text-blue-200 bg-blue-950/30">${f.preTotal || 0}</td>
@@ -1722,7 +1879,10 @@
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
               <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
-              <td class="px-3 py-3 font-semibold text-white text-sm whitespace-nowrap">${c.name}</td>
+              <td class="px-3 py-3 whitespace-nowrap">
+                <div class="font-semibold text-white text-sm">${c.name}</div>
+                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', 'blackroom')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบคัดเลือก</button>` : ''}
+              </td>
               <td class="px-3 py-3 text-center text-[11px] text-gray-300">${c.categoryName}</td>
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.blackroom?.total || 0}</td>
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.grand?.total || 0}</td>
@@ -1791,7 +1951,10 @@
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] whitespace-nowrap">${c.id}</td>
               <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
-              <td class="px-3 py-3 font-semibold text-white text-sm whitespace-nowrap">${c.name}</td>
+              <td class="px-3 py-3 whitespace-nowrap">
+                <div class="font-semibold text-white text-sm">${c.name}</div>
+                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', '${roundId}')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบนี้</button>` : ''}
+              </td>
               <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}</td>
               ${judeCells}
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/60 border-l-2 border-[#FFDE42]/30">${roundTotal || '-'}</td>
