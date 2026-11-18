@@ -142,6 +142,29 @@ async function initDB() {
                     award VARCHAR(100) DEFAULT ''
                 )
             `);
+
+            // ย้ายคะแนนรอบความสามารถพิเศษของ Miss Congeniality (เกณฑ์ 5 ข้อ เต็ม 100) ที่อาจเคยบันทึกค้างใน round_id='blackroom' ไปเก็บแยกที่ round_id='congeniality' อย่างปลอดภัย
+            try {
+                await connection.execute(`
+                    INSERT IGNORE INTO scores (judge_id, contestant_id, round_id, score_c1, score_c2, score_c3, score_c4, score_c5, score_c6, total_score, updated_at)
+                    SELECT s.judge_id, s.contestant_id, 'congeniality', s.score_c1, s.score_c2, s.score_c3, s.score_c4, s.score_c5, s.score_c6, s.total_score, s.updated_at
+                    FROM scores s
+                    INNER JOIN contestants c ON c.id = s.contestant_id
+                    WHERE c.category = 'congeniality'
+                      AND s.round_id = 'blackroom'
+                      AND (s.score_c5 > 0 OR s.total_score > 25)
+                `);
+                await connection.execute(`
+                    DELETE s FROM scores s
+                    INNER JOIN contestants c ON c.id = s.contestant_id
+                    INNER JOIN scores s2 ON s2.judge_id = s.judge_id AND s2.contestant_id = s.contestant_id AND s2.round_id = 'congeniality'
+                    WHERE c.category = 'congeniality'
+                      AND s.round_id = 'blackroom'
+                      AND (s.score_c5 > 0 OR s.total_score > 25)
+                `);
+            } catch (migErr) {
+                console.warn('⚠️ Miss Con legacy talent score migration note:', migErr.message);
+            }
         } finally {
             connection.release();
         }
@@ -397,11 +420,16 @@ app.post('/api/scores', async (req, res) => {
 });
 
 async function calculateSummary() {
-    const [contestants] = await pool.execute('SELECT id, name, category, image FROM contestants');
+    const [contestants] = await pool.execute('SELECT id, name, nickname, faculty, category, image FROM contestants');
     const [scores] = await pool.execute('SELECT * FROM scores');
 
     const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
+    const conTalentJudges = ['judge1', 'judge2', 'judge3'];
     const categoriesData = {};
+
+    const isLegacyConTalentBlackroom = (rec) => {
+        return !!(rec && rec.round_id === 'blackroom' && ((rec.score_c5 || 0) > 0 || (rec.total_score || 0) > 25));
+    };
 
     for (const [catKey, catName] of Object.entries(CATEGORIES)) {
         const catContestants = contestants.filter(c => c.category === catKey);
@@ -410,33 +438,23 @@ async function calculateSummary() {
             const rounds = {};
             let preTotal = 0;
 
-            if (catKey === 'congeniality') {
-                const conJudges = ['judge1', 'judge2', 'judge3'];
-                rounds.congeniality = { judges: {}, total: 0 };
-                conJudges.forEach(jId => {
-                    const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'congeniality')
-                             || contestantScores.find(s => s.judge_id === jId && s.round_id === 'blackroom');
-                    const score = rec ? rec.total_score : 0;
-                    rounds.congeniality.judges[jId] = score;
-                    rounds.congeniality.total += score;
+            ROUNDS_PRE.forEach(rId => {
+                rounds[rId] = { judges: {}, total: 0 };
+                judges.forEach(jId => {
+                    const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === rId);
+                    const isLegacyTalent = catKey === 'congeniality' && rId === 'blackroom' && isLegacyConTalentBlackroom(rec);
+                    const score = (rec && !isLegacyTalent) ? rec.total_score : 0;
+                    rounds[rId].judges[jId] = score;
+                    rounds[rId].total += score;
                     preTotal += score;
                 });
-            } else {
-                ROUNDS_PRE.forEach(rId => {
-                    rounds[rId] = { judges: {}, total: 0 };
-                    judges.forEach(jId => {
-                        const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === rId);
-                        const score = rec ? rec.total_score : 0;
-                        rounds[rId].judges[jId] = score;
-                        rounds[rId].total += score;
-                        preTotal += score;
-                    });
-                });
-            }
+            });
 
             return {
                 id: c.id,
                 name: c.name,
+                nickname: c.nickname || '',
+                faculty: c.faculty || '',
                 category: c.category,
                 categoryName: catName,
                 image: c.image || 'default.jpg',
@@ -447,6 +465,35 @@ async function calculateSummary() {
         list.sort((a, b) => b.preTotal - a.preTotal);
         categoriesData[catKey] = list;
     }
+
+    // แยกผลคะแนนรอบความสามารถพิเศษของ Miss Congeniality (เกณฑ์ 5 ข้อ เต็ม 100 • กรรมการ 3 ท่าน ก.1–ก.3) ออกต่างหาก ไม่ปนกับ TOP 5 / TOP 3
+    const missConTalent = contestants
+        .filter(c => c.category === 'congeniality')
+        .map(c => {
+            const contestantScores = scores.filter(s => s.contestant_id === c.id);
+            const talentJudges = {};
+            let total = 0;
+            conTalentJudges.forEach(jId => {
+                const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'congeniality')
+                         || contestantScores.find(s => s.judge_id === jId && isLegacyConTalentBlackroom(s));
+                const score = rec ? rec.total_score : 0;
+                talentJudges[jId] = rec ? score : null;
+                total += score;
+            });
+            return {
+                id: c.id,
+                name: c.name,
+                nickname: c.nickname || '',
+                faculty: c.faculty || '',
+                category: c.category,
+                categoryName: CATEGORIES.congeniality,
+                image: c.image || 'default.jpg',
+                judges: talentJudges,
+                total,
+                avg: Number((total / 3).toFixed(2))
+            };
+        })
+        .sort((a, b) => b.total - a.total);
 
     const allCalculatedContestants = [];
     for (const [catKey, catList] of Object.entries(categoriesData)) {
@@ -503,7 +550,8 @@ async function calculateSummary() {
         categories: categoriesData,
         top5: top5Finalists,
         top3: top3Finalists,
-        finalRankings: [...top3Finalists, ...remainingTwo]
+        finalRankings: [...top3Finalists, ...remainingTwo],
+        missConTalent
     };
 }
 
