@@ -176,7 +176,7 @@
       </div>
 
       <!-- 🌟 แถบเลือกรอบการตัดสิน (Rounds Navigation) -->
-      <div class="glass-panel p-4 md:p-5 rounded-3xl mb-6 border border-[#5478FF]/40 shadow-xl">
+      <div id="judge-rounds-bar" class="glass-panel p-4 md:p-5 rounded-3xl mb-6 border border-[#5478FF]/40 shadow-xl">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-[#FFDE42] animate-ping"></span>
@@ -248,6 +248,18 @@
           class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
           Miss Jumbo
         </button>
+      </div>
+
+      <!-- แบนเนอร์พิเศษสำหรับ Miss Congeniality (ไม่แยกรอบ) -->
+      <div id="congeniality-banner"
+        class="hidden glass-panel p-4 rounded-2xl mb-6 border-2 border-[#FFDE42] bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/95 to-[#111FA2]/90 text-center shadow-[0_0_25px_rgba(255,222,66,0.3)]">
+        <h4 class="text-lg font-bold text-[#FFDE42] flex items-center justify-center gap-2">
+          <i class="fas fa-star text-xl text-[#FFDE42]"></i> การประกวด Miss Congeniality (คะแนนเต็ม 100 คะแนน)
+        </h4>
+        <p class="text-xs text-gray-200 mt-1">
+          <span class="text-[#FFDE42] font-semibold">เกณฑ์การให้คะแนน (5 ข้อ):</span>
+          1. ความสามารถและทักษะ (30) | 2. ความคิดสร้างสรรค์และการนำเสนอ (30) | 3. บุคลิกภาพและความมั่นใจบนเวที (20) | 4. เสน่ห์และความโดดเด่น (10) | 5. การตอบคำถามของคณะกรรมการ (10)
+        </p>
       </div>
 
       <!-- แบนเนอร์พิเศษสำหรับรอบ Speed (Top 5) -->
@@ -876,6 +888,7 @@
         if (currentUser !== 'admin2') return;
         switchAdmin2Mode('scoring');
         if (roundId) switchRound(roundId);
+        if (getContestantCategory(cId) === 'congeniality') switchCategory('congeniality');
         if (judgeId) selectAdminEditingJudge(judgeId);
         setTimeout(() => {
           const el = document.getElementById(`total-${cId}`);
@@ -1347,6 +1360,8 @@
         });
 
         const catBar = document.getElementById('category-filter-bar');
+        const roundsBar = document.getElementById('judge-rounds-bar');
+        const conBanner = document.getElementById('congeniality-banner');
         const speedBanner = document.getElementById('speed-banner');
         const top3Banner = document.getElementById('top3-banner');
         const hintEl = document.getElementById('round-criteria-info');
@@ -1364,6 +1379,8 @@
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ Grand Opening (50 คะแนน):</span> หน้าตา/ผิวพรรณ/รูปร่าง (20) | บุคลิกภาพ/มั่นใจ (10) | เครื่องแต่งกาย (10) | แนะนำตัว/ภาษากาย (10)';
           switchCategory(currentCategory || 'all');
         } else if (rId === 'speed') {
+          if (roundsBar) roundsBar.classList.remove('hidden');
+          if (conBanner) conBanner.classList.add('hidden');
           catBar.classList.add('hidden');
           if (speedBanner) {
             speedBanner.classList.remove('hidden');
@@ -1374,6 +1391,8 @@
           if (top3Banner) top3Banner.classList.add('hidden');
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5 Speed (50 คะแนน):</span> ภาษากาย (10) | ไหวพริบ/พูด (20) | มั่นใจ/แก้ปัญหา (10) | ชุดนักศึกษา (10)';
         } else if (rId === 'qa') {
+          if (roundsBar) roundsBar.classList.remove('hidden');
+          if (conBanner) conBanner.classList.add('hidden');
           catBar.classList.add('hidden');
           if (speedBanner) speedBanner.classList.add('hidden');
           if (top3Banner) {
@@ -1418,6 +1437,22 @@
             }
           }
         });
+
+        // ซ่อนแถบเลือกรอบทั้งหมดเมื่อเลือกหมวด Miss Congeniality
+        const isCon = cat === 'congeniality';
+        const roundsBar = document.getElementById('judge-rounds-bar');
+        const conBanner = document.getElementById('congeniality-banner');
+        if (roundsBar) roundsBar.classList.toggle('hidden', isCon);
+        if (conBanner) {
+          if (isCon) {
+            conBanner.classList.remove('hidden');
+            conBanner.classList.remove('view-animated');
+            void conBanner.offsetWidth;
+            conBanner.classList.add('view-animated');
+          } else {
+            conBanner.classList.add('hidden');
+          }
+        }
 
         updateRoundCriteriaHint();
         renderJudgeCards();
