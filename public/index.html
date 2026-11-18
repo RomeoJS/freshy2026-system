@@ -348,11 +348,15 @@
             class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-amber-400/30">
             <i class="fas fa-clipboard-list"></i> พิมพ์ใบเกณฑ์ (แนวตั้ง)
           </button>
-          <button onclick="printScoreSheet()"
+          <button onclick="printScoreSheet(false)"
             class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-purple-500/30">
             <i class="fas fa-print"></i> พิมพ์ใบคะแนน
           </button>
-          <button onclick="printMissConScoreSheet()"
+          <button onclick="printScoreSheet(true)"
+            class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-100 border border-slate-500/60 font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
+            <i class="fas fa-file-alt"></i> ใบคะแนนเปล่า
+          </button>
+          <button onclick="printMissConScoreSheet('filled')"
             class="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-pink-500/30">
             <i class="fas fa-star"></i> พิมพ์ใบคะแนนรวม Miss Con
           </button>
@@ -415,10 +419,16 @@
                 * เกณฑ์เฉพาะ 5 ข้อ (30/30/20/10/10 = เต็ม 100 ต่อกรรมการ) • รวม 3 ก. เต็ม 300 ➔ หาร 3 = คะแนนสุทธิเต็ม 100
               </p>
             </div>
-            <button type="button" onclick="printMissConScoreSheet()"
-              class="px-4 py-2.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 shrink-0">
-              <i class="fas fa-print"></i> พิมพ์ใบคะแนนรวม Miss Con (เต็ม 100)
-            </button>
+            <div class="flex flex-wrap items-center justify-center gap-2 shrink-0">
+              <button type="button" onclick="printMissConScoreSheet('filled')"
+                class="px-4 py-2.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
+                <i class="fas fa-print"></i> พิมพ์ใบคะแนนรวม Miss Con
+              </button>
+              <button type="button" onclick="printMissConScoreSheet('blank_names')"
+                class="px-3.5 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-amber-200 border border-amber-400/50 font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
+                <i class="fas fa-file-alt"></i> ใบคะแนนเปล่า Miss Con
+              </button>
+            </div>
           </div>
 
           <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
@@ -518,10 +528,16 @@
               <i class="fas fa-star text-[#FFDE42]"></i>
               <span>เกณฑ์การประกวด Miss Congeniality (5 เกณฑ์ เต็ม 100 คะแนน • กรรมการ 3 ท่าน รวม 300 ➔ หาร 3 = เต็ม 100)</span>
             </span>
-            <button type="button" onclick="printMissConScoreSheet()"
-              class="px-3.5 py-1.5 rounded-lg bg-[#FFDE42] hover:bg-yellow-300 text-[#111FA2] font-bold text-xs flex items-center gap-1.5 shadow transition active:scale-95">
-              <i class="fas fa-print"></i> พิมพ์ใบคะแนนรวม Miss Con (เต็ม 100)
-            </button>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="printMissConScoreSheet('filled')"
+                class="px-3.5 py-1.5 rounded-lg bg-[#FFDE42] hover:bg-yellow-300 text-[#111FA2] font-bold text-xs flex items-center gap-1.5 shadow transition active:scale-95">
+                <i class="fas fa-print"></i> พิมพ์ใบคะแนนรวม Miss Con
+              </button>
+              <button type="button" onclick="printMissConScoreSheet('blank_names')"
+                class="px-3 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-amber-200 border border-amber-400/50 font-bold text-xs flex items-center gap-1.5 shadow transition active:scale-95">
+                <i class="fas fa-file-alt"></i> ใบคะแนนเปล่า
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2558,16 +2574,60 @@
       }
 
       // ==========================================
-      // Print Official Score Sheet
+      // Print Official Score Sheet (Supports Filled & Blank Modes)
       // ==========================================
-      function printScoreSheet() {
-        if (!summaryData || !summaryData.finalRankings) {
-          alert('ยังไม่มีข้อมูลคะแนนสำหรับพิมพ์');
+      function printScoreSheet(isBlank = false) {
+        const list = (summaryData && summaryData.finalRankings) ? summaryData.finalRankings : [];
+        const startBlank = isBlank || list.length === 0;
+
+        const printWindow = window.open('', '_blank', 'width=1100,height=780');
+        if (!printWindow) {
+          alert('เบราว์เซอร์บล็อกหน้าต่างป๊อปอัป กรุณาอนุญาตป๊อปอัปเพื่อพิมพ์ใบคะแนน');
           return;
         }
 
-        const printWindow = window.open('', '_blank', 'width=1100,height=750');
-        const list = summaryData.finalRankings;
+        const filledRowsHtml = list.length > 0
+          ? list.map((f, idx) => {
+              const isWinner = idx === 0;
+              const isTop3 = idx < 3;
+              return `
+                <tr ${isWinner ? 'style="font-weight:bold; background-color:#fef9e7;"' : ''}>
+                  <td>${f.finalRank}</td>
+                  <td>${escapePrintHtml(f.id)}</td>
+                  <td class="text-left">${escapePrintHtml(f.name)}</td>
+                  <td>${escapePrintHtml(f.categoryName)}</td>
+                  <td>${f.speedTotal || 0}</td>
+                  <td>${isTop3 ? (f.qaJudges?.judge1 || 0) : '-'}</td>
+                  <td>${isTop3 ? (f.qaJudges?.judge2 || 0) : '-'}</td>
+                  <td>${isTop3 ? (f.qaJudges?.judge3 || 0) : '-'}</td>
+                  <td>${isTop3 ? (f.qaJudges?.judge4 || 0) : '-'}</td>
+                  <td>${isTop3 ? (f.qaJudges?.judge5 || 0) : '-'}</td>
+                  <td>${isTop3 ? f.qaTotal : '-'}</td>
+                  <td class="bg-highlight" style="font-size:12px;">${isTop3 ? f.avgScore.toFixed(2) : '-'}</td>
+                  <td><strong>${escapePrintHtml(f.award || '-')}</strong></td>
+                </tr>
+              `;
+            }).join('')
+          : `<tr><td colspan="13" style="padding:18px; color:#666;">ยังไม่มีข้อมูลคะแนนในระบบ (สามารถสลับไปใช้โหมด "ใบคะแนนเปล่า" ด้านบนได้)</td></tr>`;
+
+        const blankAwards = ['ชนะเลิศ (The Winner)', 'รองชนะเลิศอันดับ 1', 'รองชนะเลิศอันดับ 2', 'รองชนะเลิศอันดับ 3', 'รองชนะเลิศอันดับ 4'];
+        const blankRowsHtml = blankAwards.map((awardLabel, idx) => `
+          <tr class="blank-row">
+            <td>${idx + 1}</td>
+            <td></td>
+            <td class="text-left"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="bg-highlight"></td>
+            <td style="color:#666; font-size:9.5px;">${awardLabel}</td>
+          </tr>
+        `).join('');
 
         let html = `
         <!DOCTYPE html>
@@ -2577,90 +2637,114 @@
           <title>ใบคะแนนอย่างเป็นทางการ RMUTK FRESHY 2026</title>
           <style>
             @page { size: A4 landscape; margin: 0.8cm; }
-            body { font-family: 'Prompt', 'Sarabun', sans-serif; padding: 10px; color: #000; font-size: 11px; }
+            body { font-family: 'Prompt', 'Sarabun', sans-serif; margin: 0; padding: 0; color: #000; font-size: 11px; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print-bar {
+              position: sticky; top: 0; z-index: 100; background: #111FA2; color: #fff;
+              padding: 9px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            }
+            .bar-title { font-size: 13px; font-weight: 700; color: #FFDE42; }
+            .bar-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+            .bar-actions button {
+              border: none; border-radius: 7px; padding: 6px 12px; font-family: inherit;
+              font-size: 12px; font-weight: 700; cursor: pointer;
+            }
+            .btn-mode { background: rgba(255,255,255,0.16); color: #fff; }
+            .btn-mode.active { background: #FFDE42; color: #111FA2; }
+            .btn-print-now { background: #10b981; color: #fff; }
+            .btn-close-win { background: rgba(255,255,255,0.18); color: #fff; }
+            .sheet-wrap { padding: 14px 18px; }
             h2 { text-align: center; margin-bottom: 2px; font-size: 18px; font-weight: bold; }
             h3 { text-align: center; margin-top: 2px; margin-bottom: 2px; font-size: 14px; font-weight: bold; color: #333; }
             p.sub { text-align: center; font-size: 11px; color: #555; margin-top: 0; margin-bottom: 12px; }
             table { width: 100%; border-collapse: collapse; margin-top: 8px; margin-bottom: 15px; }
-            th, td { border: 1px solid #000; padding: 4px 3px; text-align: center; font-size: 10px; }
+            th, td { border: 1px solid #000; padding: 5px 4px; text-align: center; font-size: 10px; }
+            tr.blank-row td { height: 34px; }
             th { background-color: #f2f2f2; font-weight: bold; }
             .text-left { text-align: left; padding-left: 6px; }
             .bg-highlight { background-color: #fff9db; font-weight: bold; }
             .signature-box { margin-top: 25px; display: flex; justify-content: space-around; }
             .sign-col { text-align: center; font-size: 11px; }
+            .hidden { display: none !important; }
+            @media print {
+              .no-print-bar { display: none !important; }
+              .sheet-wrap { padding: 0; }
+            }
           </style>
         </head>
         <body>
-          <h2>ผลการตัดสินการประกวด RMUTK FRESHY 2026</h2>
-          <h3>รายงานผลการตัดสินชี้ขาดอย่างเป็นทางการ (Official Final Decision)</h3>
-          <p class="sub">สูตรการคิดคะแนนรอบตัดสิน 3 คนสุดท้าย: คะแนนรอบตอบคำถาม (ล้างคะแนนเดิม) ÷ 5 กรรมการ | พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</p>
-          
-          <table>
-            <thead>
-              <tr>
-                <th width="6%">อันดับ</th>
-                <th width="8%">รหัส</th>
-                <th width="20%" class="text-left">ชื่อ-นามสกุล</th>
-                <th width="12%">หมวดหมู่ตัวแทน</th>
-                <th width="10%">รอบ Speed<br>(เต็ม 250)</th>
-                <th width="6%">ก.1 (100)</th>
-                <th width="6%">ก.2 (100)</th>
-                <th width="6%">ก.3 (100)</th>
-                <th width="6%">ก.4 (100)</th>
-                <th width="6%">ก.5 (100)</th>
-                <th width="8%">รวมตอบคำถาม<br>(เต็ม 500)</th>
-                <th width="10%" class="bg-highlight">คะแนนเฉลี่ยสุทธิ<br>(เต็ม 100)</th>
-                <th width="18%">รางวัลเกียรติยศ</th>
-              </tr>
-            </thead>
-            <tbody>
-        `;
-
-        list.forEach((f, idx) => {
-          const isWinner = idx === 0;
-          const isTop3 = idx < 3;
-          html += `
-            <tr ${isWinner ? 'style="font-weight:bold; background-color:#fef9e7;"' : ''}>
-              <td>${f.finalRank}</td>
-              <td>${f.id}</td>
-              <td class="text-left">${f.name}</td>
-              <td>${f.categoryName}</td>
-              <td>${f.speedTotal || 0}</td>
-              <td>${isTop3 ? (f.qaJudges?.judge1 || 0) : '-'}</td>
-              <td>${isTop3 ? (f.qaJudges?.judge2 || 0) : '-'}</td>
-              <td>${isTop3 ? (f.qaJudges?.judge3 || 0) : '-'}</td>
-              <td>${isTop3 ? (f.qaJudges?.judge4 || 0) : '-'}</td>
-              <td>${isTop3 ? (f.qaJudges?.judge5 || 0) : '-'}</td>
-              <td>${isTop3 ? f.qaTotal : '-'}</td>
-              <td class="bg-highlight" style="font-size:12px;">${isTop3 ? f.avgScore.toFixed(2) : '-'}</td>
-              <td><strong>${f.award || '-'}</strong></td>
-            </tr>
-          `;
-        });
-
-        html += `
-            </tbody>
-          </table>
-
-          <div class="signature-box">
-            <div class="sign-col">
-              ลงชื่อ..........................................................<br><br>
-              (..........................................................)<br>
-              เจ้าหน้าที่ผู้บันทึกคะแนน
+          <div class="no-print-bar">
+            <div class="bar-title">📄 ใบคะแนนอย่างเป็นทางการ (A4 แนวนอน)</div>
+            <div class="bar-actions">
+              <button type="button" id="btn-mode-filled" class="btn-mode ${!startBlank ? 'active' : ''}" onclick="setSheetMode('filled')">📊 แสดงคะแนนจากระบบ</button>
+              <button type="button" id="btn-mode-blank" class="btn-mode ${startBlank ? 'active' : ''}" onclick="setSheetMode('blank')">📄 ใบคะแนนเปล่า</button>
+              <button type="button" class="btn-print-now" onclick="window.print()">🖨️ สั่งพิมพ์ทันที</button>
+              <button type="button" class="btn-close-win" onclick="window.close()">ปิด</button>
             </div>
-            <div class="sign-col">
-              ลงชื่อ..........................................................<br><br>
-              (..........................................................)<br>
-              ประธานคณะกรรมการตัดสิน
+          </div>
+
+          <div class="sheet-wrap">
+            <h2>ผลการตัดสินการประกวด RMUTK FRESHY 2026</h2>
+            <h3 id="sheet-sub-heading">${startBlank ? 'แบบฟอร์มใบคะแนนอย่างเป็นทางการ — ใบคะแนนเปล่า (Blank Official Score Sheet)' : 'รายงานผลการตัดสินชี้ขาดอย่างเป็นทางการ (Official Final Decision)'}</h3>
+            <p class="sub">สูตรการคิดคะแนนรอบตัดสิน 3 คนสุดท้าย: คะแนนรอบตอบคำถาม (ล้างคะแนนเดิม) ÷ 5 กรรมการ | พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</p>
+
+            <table>
+              <thead>
+                <tr>
+                  <th width="6%">อันดับ</th>
+                  <th width="8%">รหัส</th>
+                  <th width="20%" class="text-left">ชื่อ-นามสกุล</th>
+                  <th width="12%">หมวดหมู่ตัวแทน</th>
+                  <th width="10%">รอบ Speed<br>(เต็ม 250)</th>
+                  <th width="6%">ก.1 (100)</th>
+                  <th width="6%">ก.2 (100)</th>
+                  <th width="6%">ก.3 (100)</th>
+                  <th width="6%">ก.4 (100)</th>
+                  <th width="6%">ก.5 (100)</th>
+                  <th width="8%">รวมตอบคำถาม<br>(เต็ม 500)</th>
+                  <th width="10%" class="bg-highlight">คะแนนเฉลี่ยสุทธิ<br>(เต็ม 100)</th>
+                  <th width="18%">รางวัลเกียรติยศ</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-filled" class="${startBlank ? 'hidden' : ''}">
+                ${filledRowsHtml}
+              </tbody>
+              <tbody id="tbody-blank" class="${!startBlank ? 'hidden' : ''}">
+                ${blankRowsHtml}
+              </tbody>
+            </table>
+
+            <div class="signature-box">
+              <div class="sign-col">
+                ลงชื่อ..........................................................<br><br>
+                (..........................................................)<br>
+                เจ้าหน้าที่ผู้บันทึกคะแนน
+              </div>
+              <div class="sign-col">
+                ลงชื่อ..........................................................<br><br>
+                (..........................................................)<br>
+                ประธานคณะกรรมการตัดสิน
+              </div>
             </div>
           </div>
           <script>
-            window.onload = function() { window.print(); };
+            function setSheetMode(mode) {
+              var isBlank = mode === 'blank';
+              document.getElementById('tbody-filled').classList.toggle('hidden', isBlank);
+              document.getElementById('tbody-blank').classList.toggle('hidden', !isBlank);
+              document.getElementById('btn-mode-filled').classList.toggle('active', !isBlank);
+              document.getElementById('btn-mode-blank').classList.toggle('active', isBlank);
+              document.getElementById('sheet-sub-heading').textContent = isBlank
+                ? 'แบบฟอร์มใบคะแนนอย่างเป็นทางการ — ใบคะแนนเปล่า (Blank Official Score Sheet)'
+                : 'รายงานผลการตัดสินชี้ขาดอย่างเป็นทางการ (Official Final Decision)';
+            }
+            window.onload = function() { setTimeout(function() { window.print(); }, 250); };
           <\/script>
         </body>
         </html>
         `;
 
+        printWindow.document.open();
         printWindow.document.write(html);
         printWindow.document.close();
       }
@@ -3572,9 +3656,10 @@
       }
 
       // ==========================================
-      // Print Official Miss Congeniality Score Summary (3 Judges -> 300 -> /3 = 100, A4 Portrait)
+      // Print Official Miss Congeniality Score Summary (3 Judges -> per-criterion /3 summed to 100, A4 Portrait)
+      // Supports modes: 'filled', 'blank_names', 'blank_all'
       // ==========================================
-      async function printMissConScoreSheet() {
+      async function printMissConScoreSheet(initialMode = 'filled') {
         if (!allContestants || allContestants.length === 0) {
           await loadContestants();
         }
@@ -3582,13 +3667,16 @@
           ? summaryData.categories.congeniality
           : (allContestants || []).filter(c => c.category === 'congeniality');
 
-        if (!conList || conList.length === 0) {
-          alert('ยังไม่มีข้อมูลผู้เข้าประกวดหมวด Miss Congeniality');
-          return;
-        }
+        const safeMode = ['filled', 'blank_names', 'blank_all'].includes(initialMode) ? initialMode : 'filled';
+        const conListById = (conList || []).slice().sort((a, b) => {
+          const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+          const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+          if (numA !== numB) return numA - numB;
+          return (a.id || '').localeCompare(b.id || '');
+        });
 
         const conJudges = ['judge1', 'judge2', 'judge3'];
-        const computed = conList.map(c => {
+        const computed = (conList || []).map(c => {
           const jRecs = {};
           const jTotals = {};
           let total300 = 0;
@@ -3633,7 +3721,7 @@
           return (a.c.id || '').localeCompare(b.c.id || '');
         });
 
-        const printWindow = window.open('', '_blank', 'width=850,height=1050');
+        const printWindow = window.open('', '_blank', 'width=880,height=1050');
         if (!printWindow) {
           alert('เบราว์เซอร์บล็อกหน้าต่างป๊อปอัป กรุณาอนุญาตป๊อปอัปเพื่อพิมพ์ใบคะแนนรวม');
           return;
@@ -3652,52 +3740,104 @@
           return `<div class="bold">${avgVal.toFixed(2)}</div><div class="cell-sub">(${sumVal}÷3)</div>`;
         };
 
-        // ตารางหลัก: คำนวณแต่ละช่อง (รวม 3 กรรมการ ÷ 3) แล้วนำทั้ง 5 ช่องมารวมกันเป็นเต็ม 100
-        const criteriaRowsHtml = computed.map((item, idx) => {
-          const { c, total300, final100, critSums, critAvgs } = item;
-          const hasScore = total300 > 0;
-          const isWinner = idx === 0 && hasScore;
-          const award = (hasScore && awardTitles[idx]) ? awardTitles[idx] : '-';
+        // โหมด 1: แสดงคะแนนจากระบบ
+        const criteriaRowsFilled = computed.length > 0
+          ? computed.map((item, idx) => {
+              const { c, total300, final100, critSums, critAvgs } = item;
+              const hasScore = total300 > 0;
+              const isWinner = idx === 0 && hasScore;
+              const award = (hasScore && awardTitles[idx]) ? awardTitles[idx] : '-';
+              const rawName = c.name || '';
+              const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+
+              return `
+                <tr class="${isWinner ? 'row-winner' : ''}">
+                  <td class="bold">${idx + 1}</td>
+                  <td class="col-id">${escapePrintHtml(c.id)}</td>
+                  <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                  <td>${formatCritCell(hasScore, critAvgs.c1, critSums.c1)}</td>
+                  <td>${formatCritCell(hasScore, critAvgs.c2, critSums.c2)}</td>
+                  <td>${formatCritCell(hasScore, critAvgs.c3, critSums.c3)}</td>
+                  <td>${formatCritCell(hasScore, critAvgs.c4, critSums.c4)}</td>
+                  <td>${formatCritCell(hasScore, critAvgs.c5, critSums.c5)}</td>
+                  <td class="col-final">${hasScore ? final100.toFixed(2) : '-'}</td>
+                  <td class="col-award">${award}</td>
+                </tr>
+              `;
+            }).join('')
+          : `<tr><td colspan="10" style="padding:14px; color:#666;">ยังไม่มีข้อมูลผู้เข้าประกวด</td></tr>`;
+
+        const summaryRowsFilled = computed.length > 0
+          ? computed.map((item, idx) => {
+              const { c, jTotals, total300, final100 } = item;
+              const hasScore = total300 > 0;
+              const isWinner = idx === 0 && hasScore;
+              const rawName = c.name || '';
+              const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+
+              return `
+                <tr class="${isWinner ? 'row-winner' : ''}">
+                  <td class="bold">${idx + 1}</td>
+                  <td class="col-id">${escapePrintHtml(c.id)}</td>
+                  <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                  <td>${jTotals.judge1 !== null ? jTotals.judge1 : '-'}</td>
+                  <td>${jTotals.judge2 !== null ? jTotals.judge2 : '-'}</td>
+                  <td>${jTotals.judge3 !== null ? jTotals.judge3 : '-'}</td>
+                  <td class="bold">${hasScore ? total300 : '-'}</td>
+                  <td class="col-final">${hasScore ? final100.toFixed(2) : '-'}</td>
+                </tr>
+              `;
+            }).join('')
+          : `<tr><td colspan="8" style="padding:14px; color:#666;">ยังไม่มีข้อมูลผู้เข้าประกวด</td></tr>`;
+
+        // โหมด 2: ใบคะแนนเปล่า (มีรายชื่อ C1-C6, ช่องคะแนนเว้นว่างสำหรับเขียนมือ)
+        const blankSourceList = conListById.length > 0 ? conListById : Array.from({ length: 6 }, (_, i) => ({ id: `C${i + 1}`, name: '' }));
+        const criteriaRowsBlankNames = blankSourceList.map((c) => {
           const rawName = c.name || '';
           const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
-
           return `
-            <tr class="${isWinner ? 'row-winner' : ''}">
-              <td class="bold">${idx + 1}</td>
+            <tr class="row-blank">
+              <td></td>
               <td class="col-id">${escapePrintHtml(c.id)}</td>
               <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
-              <td>${formatCritCell(hasScore, critAvgs.c1, critSums.c1)}</td>
-              <td>${formatCritCell(hasScore, critAvgs.c2, critSums.c2)}</td>
-              <td>${formatCritCell(hasScore, critAvgs.c3, critSums.c3)}</td>
-              <td>${formatCritCell(hasScore, critAvgs.c4, critSums.c4)}</td>
-              <td>${formatCritCell(hasScore, critAvgs.c5, critSums.c5)}</td>
-              <td class="col-final">${hasScore ? final100.toFixed(2) : '-'}</td>
-              <td class="col-award">${award}</td>
+              <td></td><td></td><td></td><td></td><td></td>
+              <td class="col-final"></td>
+              <td></td>
             </tr>
           `;
         }).join('');
 
-        // ตารางอ้างอิง: คะแนนดิบแยกตามกรรมการแต่ละท่าน (ก.1 - ก.3 รวมเต็ม 300)
-        const summaryRowsHtml = computed.map((item, idx) => {
-          const { c, jTotals, total300, final100 } = item;
-          const hasScore = total300 > 0;
-          const isWinner = idx === 0 && hasScore;
+        const summaryRowsBlankNames = blankSourceList.map((c) => {
           const rawName = c.name || '';
           const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
-
           return `
-            <tr class="${isWinner ? 'row-winner' : ''}">
-              <td class="bold">${idx + 1}</td>
+            <tr class="row-blank">
+              <td></td>
               <td class="col-id">${escapePrintHtml(c.id)}</td>
               <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
-              <td>${jTotals.judge1 !== null ? jTotals.judge1 : '-'}</td>
-              <td>${jTotals.judge2 !== null ? jTotals.judge2 : '-'}</td>
-              <td>${jTotals.judge3 !== null ? jTotals.judge3 : '-'}</td>
-              <td class="bold">${hasScore ? total300 : '-'}</td>
-              <td class="col-final">${hasScore ? final100.toFixed(2) : '-'}</td>
+              <td></td><td></td><td></td><td></td>
+              <td class="col-final"></td>
             </tr>
           `;
         }).join('');
+
+        // โหมด 3: ใบคะแนนเปล่าทั้งหมด (เว้นว่างแม้กระทั่งรหัสและชื่อ)
+        const blankCount = Math.max(6, blankSourceList.length);
+        const criteriaRowsBlankAll = Array.from({ length: blankCount }, () => `
+          <tr class="row-blank">
+            <td></td><td></td><td class="text-left"></td>
+            <td></td><td></td><td></td><td></td><td></td>
+            <td class="col-final"></td><td></td>
+          </tr>
+        `).join('');
+
+        const summaryRowsBlankAll = Array.from({ length: blankCount }, () => `
+          <tr class="row-blank">
+            <td></td><td></td><td class="text-left"></td>
+            <td></td><td></td><td></td><td></td>
+            <td class="col-final"></td>
+          </tr>
+        `).join('');
 
         const docHtml = `<!DOCTYPE html>
         <html lang="th">
@@ -3871,6 +4011,11 @@
               font-size: 10px;
               color: #64748b;
             }
+            tr.row-blank td { height: 28px; }
+            .hidden { display: none !important; }
+            .btn-mode { background: rgba(255,255,255,0.16); color: #fff; }
+            .btn-mode.active { background: #FFDE42; color: #111FA2; }
+            .btn-print-now { background: #10b981; color: #fff; }
 
             @media print {
               body { background: #fff; }
@@ -3886,10 +4031,13 @@
         </head>
         <body>
           <div class="no-print-bar">
-            <div class="bar-title">📄 ตัวอย่างก่อนพิมพ์: ใบสรุปคะแนนรวม Miss Congeniality (A4 แนวตั้ง • เต็ม 100 คะแนน)</div>
+            <div class="bar-title">📄 ใบสรุปคะแนนรวม Miss Congeniality (A4 แนวตั้ง • เต็ม 100)</div>
             <div class="bar-actions">
-              <button class="btn-print-now" onclick="window.print()">🖨️ สั่งพิมพ์ทันที</button>
-              <button class="btn-close-win" onclick="window.close()">ปิดหน้าต่าง</button>
+              <button type="button" id="mc-mode-filled" class="btn-mode ${safeMode === 'filled' ? 'active' : ''}" onclick="setMcMode('filled')">📊 แสดงคะแนน</button>
+              <button type="button" id="mc-mode-blank_names" class="btn-mode ${safeMode === 'blank_names' ? 'active' : ''}" onclick="setMcMode('blank_names')">📝 ใบเปล่า (มีรายชื่อ)</button>
+              <button type="button" id="mc-mode-blank_all" class="btn-mode ${safeMode === 'blank_all' ? 'active' : ''}" onclick="setMcMode('blank_all')">📄 ใบเปล่าทั้งหมด</button>
+              <button type="button" class="btn-print-now" onclick="window.print()">🖨️ สั่งพิมพ์ทันที</button>
+              <button type="button" class="btn-close-win" onclick="window.close()">ปิด</button>
             </div>
           </div>
 
@@ -3900,7 +4048,7 @@
                 <h1>ใบสรุปผลคะแนนรวมการประกวด RMUTK FRESHY 2026</h1>
                 <div class="header-sub">
                   <span class="cat-pill">ประเภท Miss Congeniality</span>
-                  <span class="sub-desc">รายงานผลคะแนนอย่างเป็นทางการ (กรรมการ 3 ท่าน • คะแนนสุทธิเต็ม 100 คะแนน)</span>
+                  <span id="mc-sub-desc" class="sub-desc">${safeMode === 'filled' ? 'รายงานผลคะแนนอย่างเป็นทางการ (กรรมการ 3 ท่าน • คะแนนสุทธิเต็ม 100 คะแนน)' : 'แบบฟอร์มใบคะแนนรวม — ใบคะแนนเปล่าสำหรับกรอกด้วยมือ (กรรมการ 3 ท่าน • เต็ม 100 คะแนน)'}</span>
                 </div>
               </div>
             </header>
@@ -3929,9 +4077,9 @@
                   <th style="width:10.5%;">รางวัล</th>
                 </tr>
               </thead>
-              <tbody>
-                ${criteriaRowsHtml}
-              </tbody>
+              <tbody id="mc-t1-filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${criteriaRowsFilled}</tbody>
+              <tbody id="mc-t1-blank_names" class="${safeMode !== 'blank_names' ? 'hidden' : ''}">${criteriaRowsBlankNames}</tbody>
+              <tbody id="mc-t1-blank_all" class="${safeMode !== 'blank_all' ? 'hidden' : ''}">${criteriaRowsBlankAll}</tbody>
             </table>
 
             <div class="section-heading">2. ตารางอ้างอิงคะแนนดิบแยกตามกรรมการทั้ง 3 ท่าน (ก.1 – ก.3 รวมเต็ม 300 คะแนน)</div>
@@ -3948,9 +4096,9 @@
                   <th style="width:12%;" class="th-final">รวมสุทธิ<div class="th-sub">(เต็ม 100)</div></th>
                 </tr>
               </thead>
-              <tbody>
-                ${summaryRowsHtml}
-              </tbody>
+              <tbody id="mc-t2-filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${summaryRowsFilled}</tbody>
+              <tbody id="mc-t2-blank_names" class="${safeMode !== 'blank_names' ? 'hidden' : ''}">${summaryRowsBlankNames}</tbody>
+              <tbody id="mc-t2-blank_all" class="${safeMode !== 'blank_all' ? 'hidden' : ''}">${summaryRowsBlankAll}</tbody>
             </table>
 
             <div class="signature-box">
@@ -3973,6 +4121,18 @@
           </section>
 
           <script>
+            function setMcMode(mode) {
+              var modes = ['filled', 'blank_names', 'blank_all'];
+              modes.forEach(function(m) {
+                var active = m === mode;
+                document.getElementById('mc-t1-' + m).classList.toggle('hidden', !active);
+                document.getElementById('mc-t2-' + m).classList.toggle('hidden', !active);
+                document.getElementById('mc-mode-' + m).classList.toggle('active', active);
+              });
+              document.getElementById('mc-sub-desc').textContent = mode === 'filled'
+                ? 'รายงานผลคะแนนอย่างเป็นทางการ (กรรมการ 3 ท่าน • คะแนนสุทธิเต็ม 100 คะแนน)'
+                : 'แบบฟอร์มใบคะแนนรวม — ใบคะแนนเปล่าสำหรับกรอกด้วยมือ (กรรมการ 3 ท่าน • เต็ม 100 คะแนน)';
+            }
             window.onload = function() {
               setTimeout(function() { window.print(); }, 350);
             };
