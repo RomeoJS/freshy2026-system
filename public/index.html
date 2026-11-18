@@ -928,6 +928,33 @@
         ]
       };
 
+      const CONGENIALITY_CRITERIA = [
+        { id: 'c1', name: '1. ความสามารถและทักษะ', max: 30, short: 'ความสามารถ/ทักษะ', desc: 'แสดงความสามารถได้อย่างถูกต้อง มีทักษะและความชำนาญ ตลอดจนถ่ายทอดศักยภาพของตนเองได้อย่างชัดเจน' },
+        { id: 'c2', name: '2. ความคิดสร้างสรรค์และการนำเสนอ', max: 30, short: 'สร้างสรรค์/นำเสนอ', desc: 'มีความแปลกใหม่ น่าสนใจ รูปแบบการนำเสนอเหมาะสม และสามารถดึงดูดความสนใจของผู้ชมได้' },
+        { id: 'c3', name: '3. บุคลิกภาพและความมั่นใจบนเวที', max: 20, short: 'บุคลิก/มั่นใจ', desc: 'มีความมั่นใจ ควบคุมท่าทาง การเคลื่อนไหว สีหน้า และการแสดงออกได้อย่างเหมาะสม' },
+        { id: 'c4', name: '4. เสน่ห์และความโดดเด่น', max: 10, short: 'เสน่ห์/โดดเด่น', desc: 'มีเอกลักษณ์และความน่าสนใจ สามารถสร้างความประทับใจและทำให้ผู้ชมจดจำได้' },
+        { id: 'c5', name: '5. การตอบคำถามของคณะกรรมการ', max: 10, short: 'ตอบคำถาม', desc: 'ตอบคำถามตรงประเด็น มีเหตุผล ไหวพริบดี แสดงทัศนคติที่เหมาะสม และสื่อสารได้อย่างมั่นใจ' }
+      ];
+
+      function getCriteriaForContestant(roundId, category) {
+        if (category === 'congeniality') return CONGENIALITY_CRITERIA;
+        return CRITERIA_MAP[roundId] || [];
+      }
+
+      function getMaxScoreForContestant(roundId, category) {
+        if (category === 'congeniality') return 100;
+        const roundObj = ROUNDS.find(r => r.id === roundId);
+        return roundObj ? roundObj.max : 100;
+      }
+
+      function getContestantCategory(cId) {
+        const c = (allContestants || []).find(x => x.id === cId) ||
+                  (summaryData?.top5 || []).find(x => x.id === cId) ||
+                  (summaryData?.top3 || []).find(x => x.id === cId) ||
+                  (summaryData?.finalRankings || []).find(x => x.id === cId);
+        return c ? c.category : '';
+      }
+
       const CATEGORIES = {
         miss: 'Miss',
         mister: 'Mister',
@@ -1351,6 +1378,22 @@
         renderJudgeCards();
       }
 
+      function updateRoundCriteriaHint() {
+        const hintEl = document.getElementById('round-criteria-info');
+        if (!hintEl) return;
+        if ((currentRound === 'blackroom' || currentRound === 'grand') && currentCategory === 'congeniality') {
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์เฉพาะ Miss Congeniality (100 คะแนน):</span> ความสามารถ/ทักษะ (30) | สร้างสรรค์/นำเสนอ (30) | บุคลิก/มั่นใจ (20) | เสน่ห์/โดดเด่น (10) | ตอบคำถาม (10)';
+        } else if (currentRound === 'blackroom') {
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบห้องดำ (25 คะแนน):</span> First Impression (10) | บุคลิกภาพ/มั่นใจ (5) | เครื่องแต่งกาย (5) | เสน่ห์/มั่นใจ (5)';
+        } else if (currentRound === 'grand') {
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ Grand Opening (50 คะแนน):</span> หน้าตา/ผิวพรรณ/รูปร่าง (20) | บุคลิกภาพ/มั่นใจ (10) | เครื่องแต่งกาย (10) | แนะนำตัว/ภาษากาย (10)';
+        } else if (currentRound === 'speed') {
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5 Speed (50 คะแนน):</span> ภาษากาย (10) | ไหวพริบ/พูด (20) | มั่นใจ/แก้ปัญหา (10) | ชุดนักศึกษา (10)';
+        } else if (currentRound === 'qa') {
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 3 ตัดสิน (100 คะแนน):</span> ภาษากาย(10) | ไหวพริบ(20) | มั่นใจ(20) | เสน่ห์ตัวแทนมหาลัย(20) | ประทับใจรวม(10) | ตรงคำถาม/ครบถ้วน(20)';
+        }
+      }
+
       function switchCategory(cat) {
         currentCategory = cat;
         const allCats = ['all', 'miss', 'mister', 'queen', 'congeniality', 'jumbo'];
@@ -1366,6 +1409,7 @@
           }
         });
 
+        updateRoundCriteriaHint();
         renderJudgeCards();
       }
 
@@ -1443,9 +1487,7 @@
           return;
         }
 
-        const criteriaList = CRITERIA_MAP[currentRound] || [];
         const roundObj = ROUNDS.find(r => r.id === currentRound);
-        const maxScore = roundObj ? roundObj.max : 100;
         const roundName = roundObj ? roundObj.name : currentRound;
 
         const cardsHtml = [];
@@ -1454,6 +1496,11 @@
           const cName = contestant.name;
           const cCat = contestant.category;
           const catTitle = CATEGORIES[cCat] || cCat;
+          const criteriaList = getCriteriaForContestant(currentRound, cCat);
+          const maxScore = getMaxScoreForContestant(currentRound, cCat);
+          const cardRoundTitle = cCat === 'congeniality'
+            ? `${roundName} • เกณฑ์เฉพาะ Miss Congeniality`
+            : roundName;
 
           const effectiveJudge = (currentUser === 'admin2') ? adminSelectedJudge : currentUser;
           const record = (allScores || []).find(
@@ -1531,9 +1578,9 @@
               <!-- ฝั่งขวา: ช่องกรอกเกณฑ์ย่อย -->
               <div class="w-full md:w-7/12 flex flex-col justify-between bg-[#091054]/60 p-4 md:p-5 rounded-2xl border border-[#5478FF]/20 space-y-4">
                 <div class="border-b border-[#5478FF]/20 pb-2">
-                  <div class="text-xs uppercase font-bold text-[#FFDE42] flex items-center justify-between">
-                    <span>เกณฑ์การให้คะแนน: ${roundName}</span>
-                    <span class="text-gray-300 text-[11px] font-normal">รวม ${maxScore} คะแนน</span>
+                  <div class="text-xs uppercase font-bold text-[#FFDE42] flex items-center justify-between gap-2">
+                    <span>เกณฑ์การให้คะแนน: ${cardRoundTitle}</span>
+                    <span class="text-gray-300 text-[11px] font-normal shrink-0">รวม ${maxScore} คะแนน</span>
                   </div>
                 </div>
 
@@ -1545,10 +1592,11 @@
             const pct = crit.max > 0 ? (val / crit.max) * 100 : 0;
             cardHtml += `
               <div class="p-3 rounded-2xl bg-[#050a30]/60 border border-[#5478FF]/30 hover:border-[#FFDE42]/60 transition-all duration-200">
-                <div class="flex justify-between items-center mb-1.5">
+                <div class="flex justify-between items-center mb-1">
                   <span class="text-sm font-semibold text-gray-200">${crit.name}</span>
-                  <span class="text-xs font-bold text-[#FFDE42] bg-[#FFDE42]/10 px-2.5 py-0.5 rounded-full border border-[#FFDE42]/20">เต็ม ${crit.max}</span>
+                  <span class="text-xs font-bold text-[#FFDE42] bg-[#FFDE42]/10 px-2.5 py-0.5 rounded-full border border-[#FFDE42]/20 shrink-0">เต็ม ${crit.max}</span>
                 </div>
+                ${crit.desc ? `<div class="text-[11px] text-gray-400 mb-2 leading-snug">${crit.desc}</div>` : ''}
                 <div class="flex items-center gap-3.5">
                   <input
                     type="range"
@@ -1604,7 +1652,8 @@
       }
 
       function recalculateCardTotal(cId) {
-        const criteriaList = CRITERIA_MAP[currentRound] || [];
+        const cCat = getContestantCategory(cId);
+        const criteriaList = getCriteriaForContestant(currentRound, cCat);
         let total = 0;
         criteriaList.forEach(crit => {
           const input = document.getElementById(`input-${crit.id}-${cId}`);
@@ -1624,9 +1673,10 @@
       // Score Submission & Modal
       // ==========================================
       function openSubmitModal(cId, cName) {
-        const criteriaList = CRITERIA_MAP[currentRound] || [];
+        const cCat = getContestantCategory(cId);
+        const criteriaList = getCriteriaForContestant(currentRound, cCat);
         const roundObj = ROUNDS.find(r => r.id === currentRound);
-        const maxScore = roundObj ? roundObj.max : 100;
+        const maxScore = getMaxScoreForContestant(currentRound, cCat);
 
         let total = 0;
         const scores = {};
@@ -1652,7 +1702,9 @@
           total
         };
 
-        document.getElementById('modal-round-title').innerText = roundObj ? roundObj.fullTitle : currentRound;
+        document.getElementById('modal-round-title').innerText = cCat === 'congeniality'
+          ? `${roundObj ? roundObj.name : currentRound} — เกณฑ์เฉพาะ Miss Congeniality (เต็ม 100 คะแนน)`
+          : (roundObj ? roundObj.fullTitle : currentRound);
         document.getElementById('modal-cid').innerText = cId;
         document.getElementById('modal-cname').innerText = cName;
         document.getElementById('modal-criteria-container').innerHTML = criteriaHtml;
@@ -2027,6 +2079,8 @@
         const topBadge = '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-0.5"></i> ผ่านเข้ารอบ TOP 5</span>';
         const noBadge = '<span class="text-[10px] text-gray-500">-</span>';
 
+        const isConOnly = selectedCat === 'congeniality';
+
         if (adminPreRoundView === 'all') {
           // สรุปรวม 2 รอบแรก
           thead.innerHTML = `
@@ -2035,9 +2089,9 @@
             <th class="px-3 py-3 text-center">รูป</th>
             <th class="px-3 py-3">ชื่อ-นามสกุล</th>
             <th class="px-3 py-3 text-center">หมวด</th>
-            <th class="px-3 py-3 text-center">1. รอบห้องดำ<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 125)</span></th>
-            <th class="px-3 py-3 text-center">2. Grand Opening<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 250)</span></th>
-            <th class="px-3 py-3 text-center bg-blue-900/60 text-white font-bold">รวม 2 รอบแรก<br><span class="text-amber-200 text-[9px] font-normal normal-case">(เต็ม 375)</span></th>
+            <th class="px-3 py-3 text-center">1. รอบห้องดำ<br><span class="text-gray-400 text-[9px] font-normal normal-case">${isConOnly ? '(รวม 5 ก. เต็ม 500)' : '(รวม 5 ก. เต็ม 125)'}</span></th>
+            <th class="px-3 py-3 text-center">2. Grand Opening<br><span class="text-gray-400 text-[9px] font-normal normal-case">${isConOnly ? '(รวม 5 ก. เต็ม 500)' : '(รวม 5 ก. เต็ม 250)'}</span></th>
+            <th class="px-3 py-3 text-center bg-blue-900/60 text-white font-bold">รวม 2 รอบแรก<br><span class="text-amber-200 text-[9px] font-normal normal-case">${isConOnly ? '(เต็ม 1,000)' : '(เต็ม 375)'}</span></th>
             <th class="px-3 py-3 text-center">สถานะ TOP 5</th>
           </tr>`;
 
@@ -2053,7 +2107,7 @@
                 <div class="font-semibold text-white text-sm">${c.name}</div>
                 ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', 'blackroom')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบคัดเลือก</button>` : ''}
               </td>
-              <td class="px-3 py-3 text-center text-[11px] text-gray-300">${c.categoryName}</td>
+              <td class="px-3 py-3 text-center text-[11px] text-gray-300">${c.categoryName}${c.category === 'congeniality' && !isConOnly ? '<span class="block text-[9px] text-amber-300/90 mt-0.5">(เกณฑ์ 5 ข้อ เต็ม 100)</span>' : ''}</td>
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.blackroom?.total || 0}</td>
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.grand?.total || 0}</td>
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/50">${c.preTotal || 0}</td>
@@ -2065,9 +2119,9 @@
         } else {
           // มุมมองเกณฑ์ย่อยรายรอบ (blackroom หรือ grand)
           const roundId = adminPreRoundView;
-          const criteriaList = CRITERIA_MAP[roundId] || [];
+          const criteriaList = isConOnly ? CONGENIALITY_CRITERIA : (CRITERIA_MAP[roundId] || []);
           const roundObj = ROUNDS.find(r => r.id === roundId);
-          const maxPerJudge = roundObj ? roundObj.max : 25;
+          const maxPerJudge = isConOnly ? 100 : (roundObj ? roundObj.max : 25);
           const maxAllJudges = maxPerJudge * 5;
 
           let judgeGroupHeaders = judges.map((j, i) =>
@@ -2125,7 +2179,7 @@
                 <div class="font-semibold text-white text-sm">${c.name}</div>
                 ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', '${roundId}')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบนี้</button>` : ''}
               </td>
-              <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}</td>
+              <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}${c.category === 'congeniality' && !isConOnly ? '<span class="block text-[9px] text-amber-300/90 mt-0.5">(เกณฑ์ 5 ข้อ เต็ม 100)</span>' : ''}</td>
               ${judeCells}
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/60 border-l-2 border-[#FFDE42]/30">${roundTotal || '-'}</td>
               <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
@@ -2588,21 +2642,26 @@
           return group.contestants;
         }
 
-        function buildRoundBlock(roundId, contestants, showCatTag, compact) {
-          const criteriaList = CRITERIA_MAP[roundId] || [];
+        function buildRoundBlock(roundId, contestants, showCatTag, compact, catKey) {
+          const isCon = catKey === 'congeniality';
+          const criteriaList = getCriteriaForContestant(roundId, catKey);
           const roundObj = ROUNDS.find(r => r.id === roundId);
-          const maxTotal = roundObj ? roundObj.max : 100;
-          const roundLabel = roundObj ? roundObj.fullTitle : roundId;
-          const isSixCrit = criteriaList.length >= 6;
-          const critColW = isSixCrit ? '8.5%' : '11%';
-          const nameColW = isSixCrit ? '26%' : '32%';
-          const totalColW = isSixCrit ? '11%' : '12%';
+          const maxTotal = getMaxScoreForContestant(roundId, catKey);
+          const roundLabel = isCon
+            ? `${roundShortMap[roundId] || roundId} (เกณฑ์เฉพาะ Miss Congeniality)`
+            : (roundObj ? roundObj.fullTitle : roundId);
+          const critCount = criteriaList.length;
+          const critColW = critCount >= 6 ? '8.5%' : (critCount === 5 ? '9.5%' : '11%');
+          const nameColW = critCount >= 6 ? '26%' : (critCount === 5 ? '29%' : '32%');
+          const totalColW = critCount >= 6 ? '11%' : (critCount === 5 ? '11.5%' : '12%');
 
+          const useFullDescList = isCon && !compact;
           const criteriaLegendHtml = criteriaList.map((crit, idx) => `
-            <div class="crit-item">
+            <div class="crit-item ${useFullDescList ? 'crit-item-full' : ''}">
               <span class="crit-num">ข้อ ${idx + 1}:</span>
-              <span>${escapePrintHtml(crit.name.replace(/^\d+\.\s*/, ''))}</span>
+              <span class="${useFullDescList ? 'crit-title-bold' : ''}">${escapePrintHtml(crit.name.replace(/^\d+\.\s*/, ''))}</span>
               <span class="crit-pt">(${crit.max} คะแนน)</span>
+              ${useFullDescList && crit.desc ? `<div class="crit-desc">${escapePrintHtml(crit.desc)}</div>` : ''}
             </div>
           `).join('');
 
@@ -2655,8 +2714,8 @@
             <div class="round-block ${compact ? 'round-block-compact' : ''}">
               ${compact ? `<div class="round-section-title">${escapePrintHtml(roundLabel)} — คะแนนเต็ม ${maxTotal} คะแนน</div>` : ''}
               <div class="criteria-legend ${compact ? 'criteria-legend-compact' : ''}">
-                <div class="legend-title">เกณฑ์การให้คะแนน (เต็ม ${maxTotal} คะแนน):</div>
-                <div class="legend-grid">${criteriaLegendHtml}</div>
+                <div class="legend-title">${isCon ? 'เกณฑ์การให้คะแนน การประกวด Miss Congeniality' : 'เกณฑ์การให้คะแนน'} (เต็ม ${maxTotal} คะแนน):</div>
+                <div class="${useFullDescList ? 'summary-legend-list' : 'legend-grid'}">${criteriaLegendHtml}</div>
               </div>
               <table class="score-table">
                 <thead>
@@ -2676,29 +2735,37 @@
           `;
         }
 
-        function buildSummaryOnePageBlock(rounds, contestants, showCatTag) {
+        function buildSummaryOnePageBlock(rounds, contestants, showCatTag, catKey) {
+          const isCon = catKey === 'congeniality';
           const hasBothPre = rounds.includes('blackroom') && rounds.includes('grand');
-          const legendRowsHtml = rounds.map(rId => {
-            const criteriaList = CRITERIA_MAP[rId] || [];
-            const roundObj = ROUNDS.find(r => r.id === rId);
-            const maxTotal = roundObj ? roundObj.max : 100;
-            const critLine = criteriaList
-              .map((cr, idx) => `${idx + 1}.${escapePrintHtml(cr.short)} (${cr.max})`)
-              .join(' • ');
-            return `
+          const legendRowsHtml = isCon
+            ? CONGENIALITY_CRITERIA.map((cr, idx) => `
               <div class="summary-legend-row">
-                <span class="sl-round">${escapePrintHtml(roundShortMap[rId] || rId)} (${maxTotal}):</span>
-                <span>${critLine}</span>
+                <span class="sl-round">ข้อ ${idx + 1}. ${escapePrintHtml(cr.name.replace(/^\d+\.\s*/, ''))} (${cr.max} คะแนน):</span>
+                <span>${escapePrintHtml(cr.desc || '')}</span>
               </div>
-            `;
-          }).join('');
+            `).join('')
+            : rounds.map(rId => {
+              const criteriaList = CRITERIA_MAP[rId] || [];
+              const roundObj = ROUNDS.find(r => r.id === rId);
+              const maxTotal = roundObj ? roundObj.max : 100;
+              const critLine = criteriaList
+                .map((cr, idx) => `${idx + 1}.${escapePrintHtml(cr.short)} (${cr.max})`)
+                .join(' • ');
+              return `
+                <div class="summary-legend-row">
+                  <span class="sl-round">${escapePrintHtml(roundShortMap[rId] || rId)} (${maxTotal}):</span>
+                  <span>${critLine}</span>
+                </div>
+              `;
+            }).join('');
 
           const colDefs = [];
           rounds.forEach(rId => {
-            const roundObj = ROUNDS.find(r => r.id === rId);
-            colDefs.push({ type: 'round', rId, label: roundShortMap[rId] || rId, max: roundObj ? roundObj.max : 100 });
+            const maxVal = getMaxScoreForContestant(rId, catKey);
+            colDefs.push({ type: 'round', rId, label: roundShortMap[rId] || rId, max: maxVal });
             if (rId === 'grand' && hasBothPre) {
-              colDefs.push({ type: 'pre_sum', label: 'รวมคัดเลือก', max: 75 });
+              colDefs.push({ type: 'pre_sum', label: 'รวมคัดเลือก', max: isCon ? 200 : 75 });
             }
           });
 
@@ -2759,7 +2826,7 @@
           return `
             <div class="round-block">
               <div class="criteria-legend">
-                <div class="legend-title">สรุปเกณฑ์อ้างอิงทุกรอบที่เลือก:</div>
+                <div class="legend-title">${isCon ? 'เกณฑ์การให้คะแนน การประกวด Miss Congeniality (เต็ม 100 คะแนน):' : 'สรุปเกณฑ์อ้างอิงทุกรอบที่เลือก:'}</div>
                 <div class="summary-legend-list">${legendRowsHtml}</div>
               </div>
               <table class="score-table">
@@ -2784,13 +2851,16 @@
         const pagesHtml = renderPages.map((page, pageIdx) => {
           const { group, mode, rounds, compact } = page;
           const isSummaryMode = mode === 'summary_one_page';
+          const isConPage = group.catKey === 'congeniality';
           const subtitleText = rounds.length === 1
-            ? (roundTitleMap[rounds[0]] || rounds[0])
-            : `รวม ${rounds.length} รอบ: ${rounds.map(r => roundShortMap[r] || r).join(' + ')}`;
+            ? (isConPage
+                ? `${roundShortMap[rounds[0]] || rounds[0]} — เกณฑ์เฉพาะ Miss Congeniality (เต็ม 100 คะแนน)`
+                : (roundTitleMap[rounds[0]] || rounds[0]))
+            : `รวม ${rounds.length} รอบ: ${rounds.map(r => roundShortMap[r] || r).join(' + ')}${isConPage ? ' (เกณฑ์ Miss Congeniality เต็ม 100/รอบ)' : ''}`;
 
           const bodyBlocksHtml = isSummaryMode
-            ? buildSummaryOnePageBlock(rounds, group.contestants, group.showCatTag)
-            : rounds.map(rId => buildRoundBlock(rId, getContestantsForRound(group, rId), group.showCatTag, compact)).join('');
+            ? buildSummaryOnePageBlock(rounds, group.contestants, group.showCatTag, group.catKey)
+            : rounds.map(rId => buildRoundBlock(rId, getContestantsForRound(group, rId), group.showCatTag, compact, group.catKey)).join('');
 
           const judgeLineHtml = judgeNum
             ? `<div><strong>กรรมการผู้ตัดสิน:</strong> กรรมการท่านที่ ${judgeNum} <span class="muted">(แสดงคะแนนที่บันทึกไว้ในระบบ)</span></div>
@@ -3047,6 +3117,20 @@
               font-weight: 700;
               color: #111FA2;
               margin-right: 4px;
+            }
+            .crit-item-full {
+              line-height: 1.3;
+              padding-bottom: 2px;
+            }
+            .crit-title-bold {
+              font-weight: 700;
+              color: #111;
+            }
+            .crit-desc {
+              font-size: 10.5px;
+              color: #475569;
+              padding-left: 14px;
+              margin-top: 1px;
             }
 
             .score-table {
