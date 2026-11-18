@@ -1711,8 +1711,8 @@
                   <div class="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden border-2 ${hasVoted ? 'border-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'border-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.25)]'} bg-[#111FA2] group mb-2 cursor-pointer transition-all duration-300 hover:border-[#FFDE42]" onclick="openImageModal('${cId}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
                     <img src="${imagePath}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${cId}');" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
                     
-                    <!-- ป้ายรหัสและหมวดหมู่ (จัดแนวตั้ง ไม่บังรูปผู้เข้าประกวด) -->
-                    <div class="absolute top-2 left-2 bg-[#111FA2]/95 backdrop-blur-sm border border-[#FFDE42] text-[#FFDE42] rounded-xl px-2.5 py-1.5 shadow-md z-10 pointer-events-none flex flex-col items-center text-center">
+                    <!-- ป้ายรหัสและหมวดหมู่ (มุมซ้ายล่าง ไม่บังรูปผู้เข้าประกวด) -->
+                    <div class="absolute bottom-2 left-2 bg-[#111FA2]/95 backdrop-blur-sm border border-[#FFDE42] text-[#FFDE42] rounded-xl px-2.5 py-1.5 shadow-md z-10 pointer-events-none flex flex-col items-center text-center">
                       <span class="text-xs font-black tracking-wider leading-none text-[#FFDE42]">${cId}</span>
                       <span class="text-[9px] text-amber-200 font-bold leading-tight mt-1 max-w-[70px]">${catTitle}</span>
                     </div>
