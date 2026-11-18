@@ -626,7 +626,7 @@
       class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden"
       onclick="closePrintCriteriaModal()">
       <div
-        class="modal-dialog glass-panel max-w-lg w-full rounded-3xl p-6 md:p-7 border-2 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.35)] relative"
+        class="modal-dialog glass-panel max-w-xl w-full max-h-[92vh] overflow-y-auto rounded-3xl p-6 md:p-7 border-2 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.35)] relative"
         onclick="event.stopPropagation()">
         <button type="button" onclick="closePrintCriteriaModal()"
           class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-[#FFDE42] text-white hover:text-[#111FA2] flex items-center justify-center transition-all duration-200"
@@ -641,7 +641,7 @@
           </div>
           <div>
             <h3 class="text-xl font-bold text-[#FFDE42] gold-glow">พิมพ์ใบเกณฑ์การให้คะแนน</h3>
-            <p class="text-xs text-gray-300">รูปแบบกระดาษ A4 แนวตั้ง (Portrait) แยกตามประเภทผู้เข้าประกวด</p>
+            <p class="text-xs text-gray-300">รูปแบบกระดาษ A4 แนวตั้ง (Portrait) • เลือกพิมพ์แยกหรือรวมหลายรอบได้</p>
           </div>
         </div>
 
@@ -651,9 +651,9 @@
             <label for="print-criteria-category" class="block text-xs font-semibold text-[#FFDE42] mb-1.5">
               <i class="fas fa-users mr-1"></i> ประเภทผู้เข้าประกวด
             </label>
-            <select id="print-criteria-category"
+            <select id="print-criteria-category" onchange="updatePrintCriteriaPreviewInfo()"
               class="w-full input-dark p-3 rounded-xl text-sm text-white font-semibold border border-[#5478FF]/40 focus:border-[#FFDE42] focus:outline-none">
-              <option value="all">ทุกประเภท (แยกหน้าละ 1 ประเภท — 5 หน้า A4 แนวตั้ง)</option>
+              <option value="all">ทุกประเภท (แยกตามประเภท: Miss, Mister, Queen, Congeniality, Jumbo)</option>
               <option value="miss">Miss</option>
               <option value="mister">Mister</option>
               <option value="queen">Miss Queen</option>
@@ -663,18 +663,70 @@
             </select>
           </div>
 
-          <!-- เลือกรอบการประกวด -->
+          <!-- เลือกรอบการประกวด (เลือกได้หลายรอบ / รวมทุกรอบ) -->
           <div>
-            <label for="print-criteria-round" class="block text-xs font-semibold text-[#FFDE42] mb-1.5">
-              <i class="fas fa-layer-group mr-1"></i> รอบการประกวด / ชุดเกณฑ์คะแนน
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <label class="text-xs font-semibold text-[#FFDE42]">
+                <i class="fas fa-layer-group mr-1"></i> รอบการประกวด (ติ๊กเลือกรวมหลายรอบได้)
+              </label>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" onclick="setPrintRoundPreset('all')"
+                  class="px-2.5 py-1 rounded-lg bg-[#FFDE42]/20 hover:bg-[#FFDE42]/40 text-[#FFDE42] border border-[#FFDE42]/40 text-[11px] font-bold transition active:scale-95">
+                  รวมทุกรอบ (4 รอบ)
+                </button>
+                <button type="button" onclick="setPrintRoundPreset('pre')"
+                  class="px-2.5 py-1 rounded-lg bg-blue-500/20 hover:bg-blue-500/40 text-blue-200 border border-blue-400/30 text-[11px] font-semibold transition active:scale-95">
+                  2 รอบคัดเลือก
+                </button>
+                <button type="button" onclick="setPrintRoundPreset('final')"
+                  class="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/40 text-purple-200 border border-purple-400/30 text-[11px] font-semibold transition active:scale-95">
+                  2 รอบชิง
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#091054]/80 border border-[#5478FF]/40 hover:border-[#FFDE42] cursor-pointer transition select-none">
+                <input type="checkbox" class="print-round-cb w-4 h-4 accent-[#FFDE42] rounded cursor-pointer" value="blackroom" onchange="updatePrintCriteriaPreviewInfo()" checked />
+                <div class="leading-tight">
+                  <div class="text-xs font-bold text-white">1. รอบห้องดำ</div>
+                  <div class="text-[10px] text-amber-200">เต็ม 25 คะแนน (4 เกณฑ์)</div>
+                </div>
+              </label>
+              <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#091054]/80 border border-[#5478FF]/40 hover:border-[#FFDE42] cursor-pointer transition select-none">
+                <input type="checkbox" class="print-round-cb w-4 h-4 accent-[#FFDE42] rounded cursor-pointer" value="grand" onchange="updatePrintCriteriaPreviewInfo()" checked />
+                <div class="leading-tight">
+                  <div class="text-xs font-bold text-white">2. รอบ Grand Opening</div>
+                  <div class="text-[10px] text-amber-200">เต็ม 50 คะแนน (4 เกณฑ์)</div>
+                </div>
+              </label>
+              <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#091054]/80 border border-[#5478FF]/40 hover:border-[#FFDE42] cursor-pointer transition select-none">
+                <input type="checkbox" class="print-round-cb w-4 h-4 accent-[#FFDE42] rounded cursor-pointer" value="speed" onchange="updatePrintCriteriaPreviewInfo()" />
+                <div class="leading-tight">
+                  <div class="text-xs font-bold text-white">3. รอบ TOP 5 - Speed</div>
+                  <div class="text-[10px] text-amber-200">เต็ม 50 คะแนน (4 เกณฑ์)</div>
+                </div>
+              </label>
+              <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#091054]/80 border border-[#5478FF]/40 hover:border-[#FFDE42] cursor-pointer transition select-none">
+                <input type="checkbox" class="print-round-cb w-4 h-4 accent-[#FFDE42] rounded cursor-pointer" value="qa" onchange="updatePrintCriteriaPreviewInfo()" />
+                <div class="leading-tight">
+                  <div class="text-xs font-bold text-white">4. รอบ TOP 3 - ตอบคำถาม</div>
+                  <div class="text-[10px] text-amber-200">เต็ม 100 คะแนน (6 เกณฑ์)</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- รูปแบบการจัดหน้าเมื่อเลือกหลายรอบ -->
+          <div id="print-criteria-layout-wrap">
+            <label for="print-criteria-layout" class="block text-xs font-semibold text-[#FFDE42] mb-1.5">
+              <i class="fas fa-columns mr-1"></i> รูปแบบการจัดหน้าเมื่อพิมพ์รวมหลายรอบ
             </label>
-            <select id="print-criteria-round"
+            <select id="print-criteria-layout" onchange="updatePrintCriteriaPreviewInfo()"
               class="w-full input-dark p-3 rounded-xl text-sm text-white font-semibold border border-[#5478FF]/40 focus:border-[#FFDE42] focus:outline-none">
-              <option value="blackroom">1. รอบห้องดำ (เต็ม 25 คะแนน)</option>
-              <option value="grand">2. รอบ Grand Opening (เต็ม 50 คะแนน)</option>
-              <option value="pre_both">รอบคัดเลือกทั้ง 2 รอบ (ห้องดำ 25 + Grand Opening 50 ในหน้าเดียว)</option>
-              <option value="speed">3. รอบ TOP 5 - Speed (เต็ม 50 คะแนน)</option>
-              <option value="qa">4. รอบ TOP 3 - ตอบคำถามชี้ขาด (เต็ม 100 คะแนน)</option>
+              <option value="paired">จัดรวม 2 รอบต่อ 1 หน้า A4 (แสดงเกณฑ์ย่อยครบทุกข้อ ประหยัดกระดาษ)</option>
+              <option value="separate">แยกหน้าละ 1 รอบ A4 (แสดงเกณฑ์ย่อยครบทุกข้อ ช่องเขียนใหญ่ชัดเจน)</option>
+              <option value="summary_one_page">รวมทุกรอบที่เลือกใน 1 หน้าเดียว (ตารางสรุปคะแนนแต่ละรอบ + เกณฑ์อ้างอิง)</option>
             </select>
           </div>
 
@@ -696,7 +748,7 @@
 
           <div class="p-3 bg-blue-950/60 border border-[#5478FF]/30 rounded-xl text-xs text-blue-200 flex items-start gap-2">
             <i class="fas fa-file-alt text-[#FFDE42] mt-0.5 shrink-0"></i>
-            <span>เอกสารจะจัดหน้าเป็นขนาด <b>A4 แนวตั้ง</b> พร้อมตารางรายละเอียดเกณฑ์ทุกข้อ รายชื่อผู้เข้าประกวด และช่องลงนามกรรมการ</span>
+            <span id="print-criteria-summary-hint">เอกสารจะจัดหน้าเป็นขนาด <b>A4 แนวตั้ง</b> พร้อมตารางรายละเอียดเกณฑ์ทุกข้อ รายชื่อผู้เข้าประกวด และช่องลงนามกรรมการ</span>
           </div>
         </div>
 
@@ -705,9 +757,9 @@
             class="w-1/3 py-3 rounded-xl border border-gray-500 text-gray-300 hover:bg-gray-800 transition font-semibold text-sm active:scale-95">
             ยกเลิก
           </button>
-          <button type="button" onclick="printCriteriaSheet()"
+          <button type="button" id="btn-print-criteria-submit" onclick="printCriteriaSheet()"
             class="w-2/3 py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-[1.02] active:scale-95 transition text-sm flex items-center justify-center gap-2">
-            <i class="fas fa-print"></i> พิมพ์ใบเกณฑ์ (A4 แนวตั้ง)
+            <i class="fas fa-print"></i> <span id="print-criteria-btn-label">พิมพ์ใบเกณฑ์ (A4 แนวตั้ง)</span>
           </button>
         </div>
       </div>
@@ -2306,6 +2358,78 @@
       // ==========================================
       // Print Criteria Sheet by Category (A4 Portrait)
       // ==========================================
+      const PRINT_ROUND_ORDER = ['blackroom', 'grand', 'speed', 'qa'];
+
+      function getSelectedPrintRounds() {
+        const checked = Array.from(document.querySelectorAll('.print-round-cb:checked')).map(cb => cb.value);
+        return PRINT_ROUND_ORDER.filter(r => checked.includes(r));
+      }
+
+      function setPrintRoundsChecked(roundIds) {
+        const set = new Set(roundIds);
+        document.querySelectorAll('.print-round-cb').forEach(cb => {
+          cb.checked = set.has(cb.value);
+        });
+        updatePrintCriteriaPreviewInfo();
+      }
+
+      function setPrintRoundPreset(preset) {
+        if (preset === 'all') setPrintRoundsChecked(['blackroom', 'grand', 'speed', 'qa']);
+        else if (preset === 'pre') setPrintRoundsChecked(['blackroom', 'grand']);
+        else if (preset === 'final') setPrintRoundsChecked(['speed', 'qa']);
+      }
+
+      function updatePrintCriteriaPreviewInfo() {
+        const selectedCat = document.getElementById('print-criteria-category')?.value || 'all';
+        const selectedRounds = getSelectedPrintRounds();
+        const layoutWrap = document.getElementById('print-criteria-layout-wrap');
+        const layout = document.getElementById('print-criteria-layout')?.value || 'paired';
+        const btnLabel = document.getElementById('print-criteria-btn-label');
+        const btnSubmit = document.getElementById('btn-print-criteria-submit');
+        const hintEl = document.getElementById('print-criteria-summary-hint');
+
+        if (layoutWrap) {
+          layoutWrap.classList.toggle('hidden', selectedRounds.length <= 1);
+        }
+
+        let catCount = 1;
+        if (selectedCat === 'all') {
+          const nonEmptyCats = Object.keys(CATEGORIES).filter(k => (allContestants || []).some(c => c.category === k));
+          catCount = nonEmptyCats.length || Object.keys(CATEGORIES).length;
+        }
+
+        let pagesPerCat = 0;
+        if (selectedRounds.length === 1 || (selectedRounds.length > 1 && layout === 'summary_one_page')) {
+          pagesPerCat = 1;
+        } else if (selectedRounds.length > 1) {
+          pagesPerCat = layout === 'paired' ? Math.ceil(selectedRounds.length / 2) : selectedRounds.length;
+        }
+
+        const totalPages = catCount * pagesPerCat;
+
+        if (btnSubmit) {
+          btnSubmit.disabled = selectedRounds.length === 0;
+          btnSubmit.classList.toggle('opacity-50', selectedRounds.length === 0);
+          btnSubmit.classList.toggle('cursor-not-allowed', selectedRounds.length === 0);
+        }
+        if (btnLabel) {
+          btnLabel.textContent = selectedRounds.length === 0
+            ? 'กรุณาเลือกอย่างน้อย 1 รอบ'
+            : `พิมพ์ใบเกณฑ์ (A4 แนวตั้ง • ${totalPages} หน้า)`;
+        }
+        if (hintEl) {
+          if (selectedRounds.length === 0) {
+            hintEl.innerHTML = 'กรุณาติ๊กเลือกอย่างน้อย <b>1 รอบการประกวด</b> เพื่อสร้างใบเกณฑ์สำหรับพิมพ์';
+          } else {
+            const catText = selectedCat === 'all' ? `${catCount} ประเภท` : (selectedCat === 'finalists' ? 'ผู้ผ่านเข้ารอบ' : `ประเภท ${CATEGORIES[selectedCat] || selectedCat}`);
+            const layoutNote = selectedRounds.length > 1
+              ? (layout === 'paired' ? ' (จัดรวม 2 รอบ/หน้า)' : (layout === 'summary_one_page' ? ' (ตารางสรุปรวมทุกรอบใน 1 หน้า)' : ' (แยกหน้าละ 1 รอบ)'))
+              : '';
+            hintEl.innerHTML = `จะพิมพ์ทั้งหมด <b>${totalPages} หน้า (A4 แนวตั้ง)</b> — ${catText} × ${selectedRounds.length} รอบ${layoutNote} พร้อมเกณฑ์ครบทุกข้อและช่องลงนามกรรมการ`;
+          }
+        }
+      }
+
       async function openPrintCriteriaModal() {
         if (!allContestants || allContestants.length === 0) {
           await loadContestants();
@@ -2315,22 +2439,23 @@
 
         // ตั้งค่าเริ่มต้นให้สอดคล้องกับแท็บที่แอดมินกำลังดูอยู่
         const catSelect = document.getElementById('print-criteria-category');
-        const roundSelect = document.getElementById('print-criteria-round');
-        if (catSelect && roundSelect) {
+        if (catSelect) {
           if (adminCurrentView === 'pre') {
             const curFilter = document.getElementById('admin-category-filter')?.value || 'all';
             catSelect.value = curFilter;
-            roundSelect.value = adminPreRoundView === 'all' ? 'pre_both' : (adminPreRoundView || 'blackroom');
+            setPrintRoundsChecked(adminPreRoundView === 'all' ? ['blackroom', 'grand'] : [adminPreRoundView || 'blackroom']);
           } else if (adminCurrentView === 'speed') {
             catSelect.value = 'finalists';
-            roundSelect.value = 'speed';
+            setPrintRoundsChecked(['speed']);
           } else if (adminCurrentView === 'top3') {
             catSelect.value = 'finalists';
-            roundSelect.value = 'qa';
+            setPrintRoundsChecked(['qa']);
           } else {
             catSelect.value = 'all';
-            roundSelect.value = 'blackroom';
+            setPrintRoundsChecked(['blackroom', 'grand']);
           }
+        } else {
+          updatePrintCriteriaPreviewInfo();
         }
 
         modal.classList.remove('hidden');
@@ -2361,15 +2486,24 @@
 
       function printCriteriaSheet() {
         const selectedCat = document.getElementById('print-criteria-category')?.value || 'all';
-        const selectedRound = document.getElementById('print-criteria-round')?.value || 'blackroom';
+        const selectedRounds = getSelectedPrintRounds();
+        const layout = document.getElementById('print-criteria-layout')?.value || 'paired';
         const fillMode = document.getElementById('print-criteria-fill')?.value || 'blank';
 
-        const pageGroups = [];
+        if (selectedRounds.length === 0) {
+          alert('กรุณาเลือกอย่างน้อย 1 รอบการประกวด');
+          return;
+        }
+
+        const top5List = (summaryData && summaryData.top5 && summaryData.top5.length > 0) ? summaryData.top5 : getAutoTop5Local();
+        const top3List = (summaryData && summaryData.top3 && summaryData.top3.length > 0) ? summaryData.top3 : getAutoTop3Local();
+
+        const catGroups = [];
         if (selectedCat === 'all') {
           Object.entries(CATEGORIES).forEach(([catKey, catName]) => {
             const list = (allContestants || []).filter(c => c.category === catKey);
             if (list.length > 0) {
-              pageGroups.push({
+              catGroups.push({
                 catKey,
                 title: `ประเภท ${catName}`,
                 badge: catName,
@@ -2379,21 +2513,19 @@
             }
           });
         } else if (selectedCat === 'finalists') {
-          const isQa = selectedRound === 'qa';
-          const list = isQa
-            ? ((summaryData && summaryData.top3 && summaryData.top3.length > 0) ? summaryData.top3 : getAutoTop3Local())
-            : ((summaryData && summaryData.top5 && summaryData.top5.length > 0) ? summaryData.top5 : getAutoTop5Local());
-          pageGroups.push({
+          const isOnlyQa = selectedRounds.length === 1 && selectedRounds[0] === 'qa';
+          const list = isOnlyQa ? top3List : top5List;
+          catGroups.push({
             catKey: 'finalists',
-            title: isQa ? 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย (TOP 3)' : 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย (TOP 5)',
-            badge: isQa ? 'TOP 3 Finalists' : 'TOP 5 Finalists',
+            title: isOnlyQa ? 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย (TOP 3)' : 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย (TOP 5)',
+            badge: isOnlyQa ? 'TOP 3 Finalists' : 'TOP 5 Finalists',
             contestants: list,
             showCatTag: true
           });
         } else {
           const catName = CATEGORIES[selectedCat] || selectedCat;
           const list = (allContestants || []).filter(c => c.category === selectedCat);
-          pageGroups.push({
+          catGroups.push({
             catKey: selectedCat,
             title: `ประเภท ${catName}`,
             badge: catName,
@@ -2402,10 +2534,29 @@
           });
         }
 
-        if (pageGroups.length === 0 || pageGroups.every(g => g.contestants.length === 0)) {
+        if (catGroups.length === 0 || catGroups.every(g => g.contestants.length === 0)) {
           alert('ยังไม่มีข้อมูลผู้เข้าประกวดในประเภทที่เลือก');
           return;
         }
+
+        // สร้างรายการหน้าทั้งหมดตามโหมดการจัดหน้า
+        const renderPages = [];
+        catGroups.forEach(group => {
+          if (selectedRounds.length === 1) {
+            renderPages.push({ group, mode: 'detail', rounds: [selectedRounds[0]], compact: false });
+          } else if (layout === 'summary_one_page') {
+            renderPages.push({ group, mode: 'summary_one_page', rounds: selectedRounds, compact: true });
+          } else if (layout === 'paired') {
+            for (let i = 0; i < selectedRounds.length; i += 2) {
+              const chunk = selectedRounds.slice(i, i + 2);
+              renderPages.push({ group, mode: 'detail', rounds: chunk, compact: chunk.length > 1 });
+            }
+          } else {
+            selectedRounds.forEach(rId => {
+              renderPages.push({ group, mode: 'detail', rounds: [rId], compact: false });
+            });
+          }
+        });
 
         const printWindow = window.open('', '_blank', 'width=850,height=1050');
         if (!printWindow) {
@@ -2414,18 +2565,28 @@
         }
 
         const roundTitleMap = {
-          blackroom: 'รอบที่ 1: รอบห้องดำ (คะแนนเต็ม 25 คะแนน)',
-          grand: 'รอบที่ 2: รอบ Grand Opening แนะนำตัว (คะแนนเต็ม 50 คะแนน)',
-          pre_both: 'รอบคัดเลือก 2 รอบแรก: ห้องดำ (25) + Grand Opening (50) — รวม 75 คะแนน',
-          speed: 'รอบที่ 3: รอบ 5 คนสุดท้าย Speed (คะแนนเต็ม 50 คะแนน)',
-          qa: 'รอบที่ 4: รอบชิงชนะเลิศ ตอบคำถามชี้ขาด (คะแนนเต็ม 100 คะแนน)'
+          blackroom: 'รอบที่ 1: รอบห้องดำ (เต็ม 25)',
+          grand: 'รอบที่ 2: Grand Opening (เต็ม 50)',
+          speed: 'รอบที่ 3: TOP 5 Speed (เต็ม 50)',
+          qa: 'รอบที่ 4: TOP 3 ตอบคำถามชี้ขาด (เต็ม 100)'
+        };
+        const roundShortMap = {
+          blackroom: '1. ห้องดำ',
+          grand: '2. Grand Opening',
+          speed: '3. TOP 5 Speed',
+          qa: '4. TOP 3 ตอบคำถาม'
         };
 
-        const isCombined = selectedRound === 'pre_both';
-        const roundsToRender = isCombined ? ['blackroom', 'grand'] : [selectedRound];
         const judgeNum = fillMode.startsWith('judge') ? fillMode.replace('judge', '') : null;
         const printedAt = new Date().toLocaleString('th-TH');
         const logoUrl = `${window.location.origin}/images/logo.png`;
+
+        function getContestantsForRound(group, roundId) {
+          if (group.catKey === 'finalists') {
+            return roundId === 'qa' ? (top3List.length > 0 ? top3List : group.contestants) : (top5List.length > 0 ? top5List : group.contestants);
+          }
+          return group.contestants;
+        }
 
         function buildRoundBlock(roundId, contestants, showCatTag, compact) {
           const criteriaList = CRITERIA_MAP[roundId] || [];
@@ -2515,11 +2676,121 @@
           `;
         }
 
-        const totalPages = pageGroups.length;
-        const pagesHtml = pageGroups.map((group, pageIdx) => {
-          const blocksHtml = roundsToRender
-            .map(rId => buildRoundBlock(rId, group.contestants, group.showCatTag, isCombined))
-            .join('');
+        function buildSummaryOnePageBlock(rounds, contestants, showCatTag) {
+          const hasBothPre = rounds.includes('blackroom') && rounds.includes('grand');
+          const legendRowsHtml = rounds.map(rId => {
+            const criteriaList = CRITERIA_MAP[rId] || [];
+            const roundObj = ROUNDS.find(r => r.id === rId);
+            const maxTotal = roundObj ? roundObj.max : 100;
+            const critLine = criteriaList
+              .map((cr, idx) => `${idx + 1}.${escapePrintHtml(cr.short)} (${cr.max})`)
+              .join(' • ');
+            return `
+              <div class="summary-legend-row">
+                <span class="sl-round">${escapePrintHtml(roundShortMap[rId] || rId)} (${maxTotal}):</span>
+                <span>${critLine}</span>
+              </div>
+            `;
+          }).join('');
+
+          const colDefs = [];
+          rounds.forEach(rId => {
+            const roundObj = ROUNDS.find(r => r.id === rId);
+            colDefs.push({ type: 'round', rId, label: roundShortMap[rId] || rId, max: roundObj ? roundObj.max : 100 });
+            if (rId === 'grand' && hasBothPre) {
+              colDefs.push({ type: 'pre_sum', label: 'รวมคัดเลือก', max: 75 });
+            }
+          });
+
+          const scoreColCount = colDefs.length;
+          const remarkW = 14;
+          const scoreColW = scoreColCount <= 3 ? 13 : (scoreColCount === 4 ? 11.5 : 10.5);
+          const nameW = Math.max(22, 100 - 5 - 7 - remarkW - (scoreColCount * scoreColW));
+
+          const dynamicThs = colDefs.map(col => `
+            <th style="width:${scoreColW}%;" class="${col.type === 'pre_sum' ? 'th-total' : ''}">
+              <div>${escapePrintHtml(col.label)}</div>
+              <div class="th-max">(เต็ม ${col.max})</div>
+            </th>
+          `).join('');
+
+          const rowsHtml = contestants.map((c, idx) => {
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = showCatTag ? (c.categoryName || CATEGORIES[c.category] || c.category || '') : '';
+            const subLineParts = [];
+            if (catLabel) subLineParts.push(catLabel);
+            if (c.faculty) subLineParts.push(c.faculty);
+            const subLine = subLineParts.length > 0
+              ? `<div class="sub-meta">${escapePrintHtml(subLineParts.join(' • '))}</div>`
+              : '';
+
+            const getRoundTotal = (rId) => {
+              if (!judgeNum) return null;
+              const rec = (allScores || []).find(s => s.judge_id === fillMode && s.contestant_id === c.id && s.round_id === rId);
+              return rec ? (rec.total_score ?? 0) : null;
+            };
+
+            const dynamicTds = colDefs.map(col => {
+              if (col.type === 'pre_sum') {
+                const b = getRoundTotal('blackroom');
+                const g = getRoundTotal('grand');
+                const sum = (b !== null || g !== null) ? ((b || 0) + (g || 0)) : '';
+                return `<td class="col-total">${sum !== '' ? sum : ''}</td>`;
+              }
+              const val = getRoundTotal(col.rId);
+              return `<td class="score-cell">${val !== null ? val : ''}</td>`;
+            }).join('');
+
+            return `
+              <tr class="row-normal">
+                <td class="col-idx">${idx + 1}</td>
+                <td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="col-name">
+                  <div class="c-name">${escapePrintHtml(rawName + nick)}</div>
+                  ${subLine}
+                </td>
+                ${dynamicTds}
+                <td class="score-cell"></td>
+              </tr>
+            `;
+          }).join('');
+
+          return `
+            <div class="round-block">
+              <div class="criteria-legend">
+                <div class="legend-title">สรุปเกณฑ์อ้างอิงทุกรอบที่เลือก:</div>
+                <div class="summary-legend-list">${legendRowsHtml}</div>
+              </div>
+              <table class="score-table">
+                <thead>
+                  <tr>
+                    <th style="width:5%;">ที่</th>
+                    <th style="width:7%;">รหัส</th>
+                    <th style="width:${nameW}%;" class="text-left">ชื่อ - นามสกุล</th>
+                    ${dynamicThs}
+                    <th style="width:${remarkW}%;">หมายเหตุ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rowsHtml}
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+
+        const totalPages = renderPages.length;
+        const pagesHtml = renderPages.map((page, pageIdx) => {
+          const { group, mode, rounds, compact } = page;
+          const isSummaryMode = mode === 'summary_one_page';
+          const subtitleText = rounds.length === 1
+            ? (roundTitleMap[rounds[0]] || rounds[0])
+            : `รวม ${rounds.length} รอบ: ${rounds.map(r => roundShortMap[r] || r).join(' + ')}`;
+
+          const bodyBlocksHtml = isSummaryMode
+            ? buildSummaryOnePageBlock(rounds, group.contestants, group.showCatTag)
+            : rounds.map(rId => buildRoundBlock(rId, getContestantsForRound(group, rId), group.showCatTag, compact)).join('');
 
           const judgeLineHtml = judgeNum
             ? `<div><strong>กรรมการผู้ตัดสิน:</strong> กรรมการท่านที่ ${judgeNum} <span class="muted">(แสดงคะแนนที่บันทึกไว้ในระบบ)</span></div>
@@ -2527,7 +2798,8 @@
             : `<div><strong>กรรมการผู้ตัดสิน:</strong> ....................................................................... (กรรมการท่านที่ ......... )</div>
                <div><strong>วันที่:</strong> ........ / ........ / ............</div>`;
 
-          const notesHtml = !isCombined ? `
+          const showNotes = !compact || isSummaryMode;
+          const notesHtml = showNotes ? `
             <div class="notes-box">
               <div class="notes-title">หมายเหตุ / ข้อเสนอแนะเพิ่มเติมของกรรมการ:</div>
               <div class="note-line"></div>
@@ -2537,13 +2809,13 @@
 
           return `
             <section class="page-sheet">
-              <header class="sheet-header ${isCombined ? 'sheet-header-compact' : ''}">
+              <header class="sheet-header ${compact && !isSummaryMode ? 'sheet-header-compact' : ''}">
                 <img src="${logoUrl}" alt="RMUTK FRESHY 2026" class="sheet-logo" onerror="this.style.display='none'" />
                 <div class="header-text">
                   <h1>ใบเกณฑ์การให้คะแนนการประกวด RMUTK FRESHY 2026</h1>
                   <div class="cat-banner">
                     <span class="cat-pill">${escapePrintHtml(group.title)}</span>
-                    <span class="round-subtitle">${escapePrintHtml(roundTitleMap[selectedRound] || selectedRound)}</span>
+                    <span class="round-subtitle">${escapePrintHtml(subtitleText)}</span>
                   </div>
                 </div>
               </header>
@@ -2552,11 +2824,11 @@
                 ${judgeLineHtml}
               </div>
 
-              ${blocksHtml}
+              ${bodyBlocksHtml}
 
               ${notesHtml}
 
-              <footer class="signature-area ${isCombined ? 'signature-area-compact' : ''}">
+              <footer class="signature-area ${compact && !isSummaryMode ? 'signature-area-compact' : ''}">
                 <div class="sig-row">
                   <div class="sig-col">
                     <div class="sig-line">ลงชื่อ ...........................................................................</div>
@@ -2761,6 +3033,20 @@
             .crit-pt {
               font-weight: 700;
               color: #92400e;
+            }
+            .summary-legend-list {
+              display: flex;
+              flex-direction: column;
+              gap: 3px;
+            }
+            .summary-legend-row {
+              line-height: 1.35;
+              font-size: 11px;
+            }
+            .sl-round {
+              font-weight: 700;
+              color: #111FA2;
+              margin-right: 4px;
             }
 
             .score-table {
