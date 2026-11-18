@@ -410,16 +410,28 @@ async function calculateSummary() {
             const rounds = {};
             let preTotal = 0;
 
-            ROUNDS_PRE.forEach(rId => {
-                rounds[rId] = { judges: {}, total: 0 };
+            if (catKey === 'congeniality') {
+                rounds.congeniality = { judges: {}, total: 0 };
                 judges.forEach(jId => {
-                    const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === rId);
+                    const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'congeniality')
+                             || contestantScores.find(s => s.judge_id === jId && s.round_id === 'blackroom');
                     const score = rec ? rec.total_score : 0;
-                    rounds[rId].judges[jId] = score;
-                    rounds[rId].total += score;
+                    rounds.congeniality.judges[jId] = score;
+                    rounds.congeniality.total += score;
                     preTotal += score;
                 });
-            });
+            } else {
+                ROUNDS_PRE.forEach(rId => {
+                    rounds[rId] = { judges: {}, total: 0 };
+                    judges.forEach(jId => {
+                        const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === rId);
+                        const score = rec ? rec.total_score : 0;
+                        rounds[rId].judges[jId] = score;
+                        rounds[rId].total += score;
+                        preTotal += score;
+                    });
+                });
+            }
 
             return {
                 id: c.id,

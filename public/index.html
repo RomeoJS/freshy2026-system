@@ -446,7 +446,7 @@
             </select>
           </div>
           <!-- Round Tabs -->
-          <div class="flex flex-wrap gap-2">
+          <div id="admin-pre-round-tabs" class="flex flex-wrap gap-2">
             <button onclick="switchAdminPreRound('blackroom')" id="admin-pre-tab-blackroom"
               class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]">
               <i class="fas fa-user-secret"></i> 1. รอบห้องดำ (25)
@@ -459,6 +459,10 @@
               class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white border border-[#5478FF]/40">
               <i class="fas fa-table"></i> สรุปรวม 2 รอบแรก (375) คัด TOP 5
             </button>
+          </div>
+          <div id="admin-pre-con-badge" class="hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs font-bold">
+            <i class="fas fa-star text-[#FFDE42]"></i>
+            <span>เกณฑ์การประกวด Miss Congeniality (5 เกณฑ์ เต็ม 100 คะแนนต่อกรรมการ • ไม่แยกรอบ)</span>
           </div>
         </div>
 
@@ -663,8 +667,14 @@
             </select>
           </div>
 
+          <!-- แจ้งเตือนเฉพาะ Miss Congeniality (ไม่แยกรอบ) -->
+          <div id="print-criteria-con-notice" class="hidden p-3 rounded-xl bg-amber-500/15 border border-amber-400/40 text-xs text-amber-200 flex items-start gap-2">
+            <i class="fas fa-star text-[#FFDE42] mt-0.5 shrink-0"></i>
+            <span>หมวด <b>Miss Congeniality</b> ใช้ใบเกณฑ์เฉพาะ 5 ข้อ (30 / 30 / 20 / 10 / 10 = <b>เต็ม 100 คะแนน</b>) แบบไม่ต้องแยกรอบ (พิมพ์ 1 หน้า A4 แนวตั้ง)</span>
+          </div>
+
           <!-- เลือกรอบการประกวด (เลือกได้หลายรอบ / รวมทุกรอบ) -->
-          <div>
+          <div id="print-criteria-rounds-wrap">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
               <label class="text-xs font-semibold text-[#FFDE42]">
                 <i class="fas fa-layer-group mr-1"></i> รอบการประกวด (ติ๊กเลือกรวมหลายรอบได้)
@@ -1495,17 +1505,17 @@
           const cId = contestant.id;
           const cName = contestant.name;
           const cCat = contestant.category;
+          const isCon = cCat === 'congeniality';
           const catTitle = CATEGORIES[cCat] || cCat;
           const criteriaList = getCriteriaForContestant(currentRound, cCat);
           const maxScore = getMaxScoreForContestant(currentRound, cCat);
-          const cardRoundTitle = cCat === 'congeniality'
-            ? `${roundName} • เกณฑ์เฉพาะ Miss Congeniality`
-            : roundName;
+          const cardRoundTitle = isCon ? 'การประกวด Miss Congeniality' : roundName;
 
           const effectiveJudge = (currentUser === 'admin2') ? adminSelectedJudge : currentUser;
-          const record = (allScores || []).find(
-            s => s.judge_id === effectiveJudge && s.contestant_id === cId && s.round_id === currentRound
-          );
+          const record = isCon
+            ? ((allScores || []).find(s => s.judge_id === effectiveJudge && s.contestant_id === cId && s.round_id === 'congeniality')
+               || (allScores || []).find(s => s.judge_id === effectiveJudge && s.contestant_id === cId && s.round_id === 'blackroom'))
+            : (allScores || []).find(s => s.judge_id === effectiveJudge && s.contestant_id === cId && s.round_id === currentRound);
           const hasVoted = !!record;
 
           let totalScore = 0;
@@ -1563,7 +1573,7 @@
                   ` : '')}
 
                   <div class="mt-2.5 px-4 py-1.5 bg-[#111FA2]/80 rounded-full text-[#FFDE42] font-bold text-sm border border-[#5478FF]/40 shadow-inner flex items-center justify-center gap-1.5">
-                    <span>รอบนี้</span>
+                    <span>${isCon ? 'คะแนนรวม' : 'รอบนี้'}</span>
                     <span id="total-${cId}" class="text-xl font-extrabold transition-all duration-200">${totalScore}</span>
                     <span class="text-gray-300 font-normal">/ ${maxScore}</span>
                   </div>
@@ -1571,7 +1581,7 @@
 
                 <button onclick="openSubmitModal('${cId}', '${cName}')" class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 active:scale-95 ${hasVoted ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white hover:shadow-[0_0_20px_rgba(52,211,153,0.5)]' : 'bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] hover:shadow-[0_0_25px_rgba(255,222,66,0.65)] hover:scale-[1.02]'}">
                   <i class="fas ${hasVoted ? 'fa-check' : 'fa-gavel'}"></i>
-                  <span>${hasVoted ? 'แก้ไขคะแนนรอบนี้' : 'บันทึกคะแนนรอบนี้'}${judgeTitle}</span>
+                  <span>${hasVoted ? (isCon ? 'แก้ไขคะแนน' : 'แก้ไขคะแนนรอบนี้') : (isCon ? 'บันทึกคะแนน' : 'บันทึกคะแนนรอบนี้')}${judgeTitle}</span>
                 </button>
               </div>
 
@@ -1694,16 +1704,17 @@
           `;
         });
 
+        const isCon = cCat === 'congeniality';
         pendingSubmitData = {
           cId,
           cName,
-          roundId: currentRound,
+          roundId: isCon ? 'congeniality' : currentRound,
           scores,
           total
         };
 
-        document.getElementById('modal-round-title').innerText = cCat === 'congeniality'
-          ? `${roundObj ? roundObj.name : currentRound} — เกณฑ์เฉพาะ Miss Congeniality (เต็ม 100 คะแนน)`
+        document.getElementById('modal-round-title').innerText = isCon
+          ? 'เกณฑ์การให้คะแนน การประกวด Miss Congeniality (เต็ม 100 คะแนน)'
           : (roundObj ? roundObj.fullTitle : currentRound);
         document.getElementById('modal-cid').innerText = cId;
         document.getElementById('modal-cname').innerText = cName;
@@ -2080,8 +2091,81 @@
         const noBadge = '<span class="text-[10px] text-gray-500">-</span>';
 
         const isConOnly = selectedCat === 'congeniality';
+        const preRoundTabsEl = document.getElementById('admin-pre-round-tabs');
+        const preConBadgeEl = document.getElementById('admin-pre-con-badge');
+        if (preRoundTabsEl) preRoundTabsEl.classList.toggle('hidden', isConOnly);
+        if (preConBadgeEl) preConBadgeEl.classList.toggle('hidden', !isConOnly);
 
-        if (adminPreRoundView === 'all') {
+        if (isConOnly) {
+          // มุมมองเฉพาะ Miss Congeniality (5 เกณฑ์ เต็ม 100 คะแนนต่อกรรมการ ไม่แยกรอบ)
+          const criteriaList = CONGENIALITY_CRITERIA;
+          const maxPerJudge = 100;
+          const maxAllJudges = 500;
+
+          let judgeGroupHeaders = judges.map((j, i) =>
+            `<th colspan="${criteriaList.length + 1}" class="px-2 py-2.5 text-center text-[11px] font-bold border-l border-[#5478FF]/30 ${judgeHeaderColors[i]}">กรรมการ ${i + 1}</th>`
+          ).join('');
+
+          let criteriaSubHeaders = judges.map((j, i) =>
+            criteriaList.map(crit =>
+              `<th class="px-2 py-2 text-center text-[9px] font-semibold whitespace-nowrap ${judgeColors[i]} border-l border-[#5478FF]/20 text-gray-300">${crit.short}<br><span class="text-[#FFDE42]">(${crit.max})</span></th>`
+            ).join('') +
+            `<th class="px-2 py-2 text-center text-[9px] font-bold ${judgeColors[i]} border-l-2 border-[#FFDE42]/40 text-[#FFDE42] whitespace-nowrap">รวม<br>(${maxPerJudge})</th>`
+          ).join('');
+
+          thead.innerHTML = `
+          <tr class="bg-[#111FA2] text-[#FFDE42] text-xs uppercase">
+            <th rowspan="2" class="px-3 py-3 text-center align-middle">อันดับ</th>
+            <th rowspan="2" class="px-3 py-3 text-center align-middle">รหัส</th>
+            <th rowspan="2" class="px-3 py-3 text-center align-middle">รูป</th>
+            <th rowspan="2" class="px-3 py-3 align-middle">ชื่อ-นามสกุล</th>
+            ${judgeGroupHeaders}
+            <th rowspan="2" class="px-3 py-3 text-center align-middle bg-[#FFDE42]/10 text-[#FFDE42] border-l-2 border-[#FFDE42]/50 whitespace-nowrap">รวม 5 ก.<br><span class="text-[9px] text-amber-200 font-normal normal-case">(เต็ม ${maxAllJudges})</span></th>
+            <th rowspan="2" class="px-3 py-3 text-center align-middle bg-blue-900/60 text-white whitespace-nowrap">เฉลี่ย<br><span class="text-[9px] text-amber-200 font-normal normal-case">(เต็ม 100)</span></th>
+          </tr>
+          <tr class="bg-[#091054] border-b-2 border-[#5478FF]/40">
+            ${criteriaSubHeaders}
+          </tr>`;
+
+          const rows = [];
+          list.forEach((c, idx) => {
+            const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
+            let judeCells = '';
+            let sumTotal = 0;
+            judges.forEach((jId, jIdx) => {
+              const rec = (allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === 'congeniality')
+                       || (allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === 'blackroom');
+              const tot = rec ? (rec.total_score || 0) : null;
+              if (tot !== null) sumTotal += tot;
+              const bg = judgeColors[jIdx];
+              const na = '<span class="text-gray-600 text-xs">-</span>';
+
+              criteriaList.forEach(crit => {
+                const s = rec ? (rec[`score_${crit.id}`] || 0) : null;
+                judeCells += `<td class="px-2 py-2 text-center text-xs ${bg} border-l border-[#5478FF]/20">${s !== null ? `<span class="font-medium text-blue-200">${s}</span>` : na}</td>`;
+              });
+
+              judeCells += `<td class="px-2 py-2 text-center font-bold ${bg} border-l-2 border-[#FFDE42]/30">${tot !== null ? `<span class="text-[#FFDE42] text-sm">${tot}</span>` : na}</td>`;
+            });
+            const avg = sumTotal > 0 ? (sumTotal / 5).toFixed(2) : '-';
+
+            rows.push(`
+            <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${idx === 0 && sumTotal > 0 ? 'bg-[#FFDE42]/10' : ''}">
+              <td class="px-3 py-3 text-center font-bold text-white whitespace-nowrap">${idx + 1}</td>
+              <td class="px-3 py-3 text-center font-bold text-[#FFDE42] whitespace-nowrap">${c.id}</td>
+              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
+              <td class="px-3 py-3 whitespace-nowrap">
+                <div class="font-semibold text-white text-sm">${c.name}</div>
+                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', 'blackroom')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนน</button>` : ''}
+              </td>
+              ${judeCells}
+              <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/60 border-l-2 border-[#FFDE42]/30">${sumTotal || '-'}</td>
+              <td class="px-3 py-3 text-center font-bold text-sm text-emerald-300 bg-blue-950/50">${avg}</td>
+            </tr>`);
+          });
+          tbody.innerHTML = rows.join('');
+
+        } else if (adminPreRoundView === 'all') {
           // สรุปรวม 2 รอบแรก
           thead.innerHTML = `
           <tr class="bg-[#111FA2] text-[#FFDE42] text-xs uppercase">
@@ -2089,9 +2173,9 @@
             <th class="px-3 py-3 text-center">รูป</th>
             <th class="px-3 py-3">ชื่อ-นามสกุล</th>
             <th class="px-3 py-3 text-center">หมวด</th>
-            <th class="px-3 py-3 text-center">1. รอบห้องดำ<br><span class="text-gray-400 text-[9px] font-normal normal-case">${isConOnly ? '(รวม 5 ก. เต็ม 500)' : '(รวม 5 ก. เต็ม 125)'}</span></th>
-            <th class="px-3 py-3 text-center">2. Grand Opening<br><span class="text-gray-400 text-[9px] font-normal normal-case">${isConOnly ? '(รวม 5 ก. เต็ม 500)' : '(รวม 5 ก. เต็ม 250)'}</span></th>
-            <th class="px-3 py-3 text-center bg-blue-900/60 text-white font-bold">รวม 2 รอบแรก<br><span class="text-amber-200 text-[9px] font-normal normal-case">${isConOnly ? '(เต็ม 1,000)' : '(เต็ม 375)'}</span></th>
+            <th class="px-3 py-3 text-center">1. รอบห้องดำ<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 125)</span></th>
+            <th class="px-3 py-3 text-center">2. Grand Opening<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 250)</span></th>
+            <th class="px-3 py-3 text-center bg-blue-900/60 text-white font-bold">รวม 2 รอบแรก<br><span class="text-amber-200 text-[9px] font-normal normal-case">(เต็ม 375)</span></th>
             <th class="px-3 py-3 text-center">สถานะ TOP 5</th>
           </tr>`;
 
@@ -2099,17 +2183,18 @@
           list.forEach(c => {
             const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
             const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
+            const isConRow = c.category === 'congeniality';
             rows.push(`
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
               <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 whitespace-nowrap">
                 <div class="font-semibold text-white text-sm">${c.name}</div>
-                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', 'blackroom')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบคัดเลือก</button>` : ''}
+                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', 'blackroom')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> ${isConRow ? 'แก้ไขคะแนน Miss Con' : 'แก้ไขคะแนนรอบคัดเลือก'}</button>` : ''}
               </td>
-              <td class="px-3 py-3 text-center text-[11px] text-gray-300">${c.categoryName}${c.category === 'congeniality' && !isConOnly ? '<span class="block text-[9px] text-amber-300/90 mt-0.5">(เกณฑ์ 5 ข้อ เต็ม 100)</span>' : ''}</td>
-              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.blackroom?.total || 0}</td>
-              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.grand?.total || 0}</td>
+              <td class="px-3 py-3 text-center text-[11px] text-gray-300">${c.categoryName}${isConRow ? '<span class="block text-[9px] text-amber-300/90 mt-0.5">(ไม่แยกรอบ • เต็ม 100)</span>' : ''}</td>
+              <td class="px-3 py-3 text-center text-gray-200 font-medium">${isConRow ? (c.rounds.congeniality?.total || 0) : (c.rounds.blackroom?.total || 0)}</td>
+              <td class="px-3 py-3 text-center text-gray-200 font-medium">${isConRow ? '<span class="text-gray-500">-</span>' : (c.rounds.grand?.total || 0)}</td>
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/50">${c.preTotal || 0}</td>
               <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
             </tr>`);
@@ -2119,9 +2204,9 @@
         } else {
           // มุมมองเกณฑ์ย่อยรายรอบ (blackroom หรือ grand)
           const roundId = adminPreRoundView;
-          const criteriaList = isConOnly ? CONGENIALITY_CRITERIA : (CRITERIA_MAP[roundId] || []);
+          const criteriaList = CRITERIA_MAP[roundId] || [];
           const roundObj = ROUNDS.find(r => r.id === roundId);
-          const maxPerJudge = isConOnly ? 100 : (roundObj ? roundObj.max : 25);
+          const maxPerJudge = roundObj ? roundObj.max : 25;
           const maxAllJudges = maxPerJudge * 5;
 
           let judgeGroupHeaders = judges.map((j, i) =>
@@ -2153,11 +2238,15 @@
           list.forEach(c => {
             const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
             const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
+            const isConRow = c.category === 'congeniality';
 
             let judeCells = '';
             let roundTotal = 0;
             judges.forEach((jId, jIdx) => {
-              const rec = (allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === roundId);
+              const rec = isConRow
+                ? ((allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === 'congeniality')
+                   || (allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === 'blackroom'))
+                : (allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === roundId);
               const tot = rec ? (rec.total_score || 0) : null;
               if (tot !== null) roundTotal += tot;
               const bg = judgeColors[jIdx];
@@ -2177,9 +2266,9 @@
               <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 whitespace-nowrap">
                 <div class="font-semibold text-white text-sm">${c.name}</div>
-                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', '${roundId}')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบนี้</button>` : ''}
+                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', '${roundId}')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> ${isConRow ? 'แก้ไขคะแนน Miss Con' : 'แก้ไขคะแนนรอบนี้'}</button>` : ''}
               </td>
-              <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}${c.category === 'congeniality' && !isConOnly ? '<span class="block text-[9px] text-amber-300/90 mt-0.5">(เกณฑ์ 5 ข้อ เต็ม 100)</span>' : ''}</td>
+              <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}${isConRow ? '<span class="block text-[9px] text-amber-300/90 mt-0.5">(ไม่แยกรอบ • เต็ม 100)</span>' : ''}</td>
               ${judeCells}
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/60 border-l-2 border-[#FFDE42]/30">${roundTotal || '-'}</td>
               <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
@@ -2435,47 +2524,62 @@
 
       function updatePrintCriteriaPreviewInfo() {
         const selectedCat = document.getElementById('print-criteria-category')?.value || 'all';
+        const isConSelected = selectedCat === 'congeniality';
         const selectedRounds = getSelectedPrintRounds();
+        const roundsWrap = document.getElementById('print-criteria-rounds-wrap');
+        const conNotice = document.getElementById('print-criteria-con-notice');
         const layoutWrap = document.getElementById('print-criteria-layout-wrap');
         const layout = document.getElementById('print-criteria-layout')?.value || 'paired';
         const btnLabel = document.getElementById('print-criteria-btn-label');
         const btnSubmit = document.getElementById('btn-print-criteria-submit');
         const hintEl = document.getElementById('print-criteria-summary-hint');
 
+        if (roundsWrap) roundsWrap.classList.toggle('hidden', isConSelected);
+        if (conNotice) conNotice.classList.toggle('hidden', !isConSelected);
         if (layoutWrap) {
-          layoutWrap.classList.toggle('hidden', selectedRounds.length <= 1);
+          layoutWrap.classList.toggle('hidden', isConSelected || selectedRounds.length <= 1);
         }
 
-        let catCount = 1;
-        if (selectedCat === 'all') {
-          const nonEmptyCats = Object.keys(CATEGORIES).filter(k => (allContestants || []).some(c => c.category === k));
-          catCount = nonEmptyCats.length || Object.keys(CATEGORIES).length;
+        let totalPages = 0;
+        if (isConSelected) {
+          totalPages = 1;
+        } else {
+          let pagesPerNormalCat = 0;
+          if (selectedRounds.length === 1 || (selectedRounds.length > 1 && layout === 'summary_one_page')) {
+            pagesPerNormalCat = 1;
+          } else if (selectedRounds.length > 1) {
+            pagesPerNormalCat = layout === 'paired' ? Math.ceil(selectedRounds.length / 2) : selectedRounds.length;
+          }
+
+          if (selectedCat === 'all') {
+            const nonEmptyCats = Object.keys(CATEGORIES).filter(k => (allContestants || []).some(c => c.category === k));
+            const activeCats = nonEmptyCats.length > 0 ? nonEmptyCats : Object.keys(CATEGORIES);
+            const hasCon = activeCats.includes('congeniality');
+            const normalCatCount = activeCats.filter(k => k !== 'congeniality').length;
+            totalPages = (normalCatCount * pagesPerNormalCat) + (hasCon && selectedRounds.length > 0 ? 1 : 0);
+          } else {
+            totalPages = pagesPerNormalCat;
+          }
         }
 
-        let pagesPerCat = 0;
-        if (selectedRounds.length === 1 || (selectedRounds.length > 1 && layout === 'summary_one_page')) {
-          pagesPerCat = 1;
-        } else if (selectedRounds.length > 1) {
-          pagesPerCat = layout === 'paired' ? Math.ceil(selectedRounds.length / 2) : selectedRounds.length;
-        }
-
-        const totalPages = catCount * pagesPerCat;
-
+        const isDisabled = !isConSelected && selectedRounds.length === 0;
         if (btnSubmit) {
-          btnSubmit.disabled = selectedRounds.length === 0;
-          btnSubmit.classList.toggle('opacity-50', selectedRounds.length === 0);
-          btnSubmit.classList.toggle('cursor-not-allowed', selectedRounds.length === 0);
+          btnSubmit.disabled = isDisabled;
+          btnSubmit.classList.toggle('opacity-50', isDisabled);
+          btnSubmit.classList.toggle('cursor-not-allowed', isDisabled);
         }
         if (btnLabel) {
-          btnLabel.textContent = selectedRounds.length === 0
+          btnLabel.textContent = isDisabled
             ? 'กรุณาเลือกอย่างน้อย 1 รอบ'
             : `พิมพ์ใบเกณฑ์ (A4 แนวตั้ง • ${totalPages} หน้า)`;
         }
         if (hintEl) {
-          if (selectedRounds.length === 0) {
+          if (isConSelected) {
+            hintEl.innerHTML = 'จะพิมพ์ทั้งหมด <b>1 หน้า (A4 แนวตั้ง)</b> — ประเภท <b>Miss Congeniality</b> (เกณฑ์ 5 ข้อ เต็ม 100 คะแนน ไม่แยกรอบ) พร้อมช่องลงนามกรรมการ';
+          } else if (selectedRounds.length === 0) {
             hintEl.innerHTML = 'กรุณาติ๊กเลือกอย่างน้อย <b>1 รอบการประกวด</b> เพื่อสร้างใบเกณฑ์สำหรับพิมพ์';
           } else {
-            const catText = selectedCat === 'all' ? `${catCount} ประเภท` : (selectedCat === 'finalists' ? 'ผู้ผ่านเข้ารอบ' : `ประเภท ${CATEGORIES[selectedCat] || selectedCat}`);
+            const catText = selectedCat === 'all' ? 'ทุกประเภท (Miss Con แยก 1 หน้าไม่แยกรอบ)' : (selectedCat === 'finalists' ? 'ผู้ผ่านเข้ารอบ' : `ประเภท ${CATEGORIES[selectedCat] || selectedCat}`);
             const layoutNote = selectedRounds.length > 1
               ? (layout === 'paired' ? ' (จัดรวม 2 รอบ/หน้า)' : (layout === 'summary_one_page' ? ' (ตารางสรุปรวมทุกรอบใน 1 หน้า)' : ' (แยกหน้าละ 1 รอบ)'))
               : '';
@@ -2540,11 +2644,12 @@
 
       function printCriteriaSheet() {
         const selectedCat = document.getElementById('print-criteria-category')?.value || 'all';
+        const isConOnlyPrint = selectedCat === 'congeniality';
         const selectedRounds = getSelectedPrintRounds();
         const layout = document.getElementById('print-criteria-layout')?.value || 'paired';
         const fillMode = document.getElementById('print-criteria-fill')?.value || 'blank';
 
-        if (selectedRounds.length === 0) {
+        if (!isConOnlyPrint && selectedRounds.length === 0) {
           alert('กรุณาเลือกอย่างน้อย 1 รอบการประกวด');
           return;
         }
@@ -2596,7 +2701,9 @@
         // สร้างรายการหน้าทั้งหมดตามโหมดการจัดหน้า
         const renderPages = [];
         catGroups.forEach(group => {
-          if (selectedRounds.length === 1) {
+          if (group.catKey === 'congeniality') {
+            renderPages.push({ group, mode: 'detail', rounds: ['congeniality'], compact: false });
+          } else if (selectedRounds.length === 1) {
             renderPages.push({ group, mode: 'detail', rounds: [selectedRounds[0]], compact: false });
           } else if (layout === 'summary_one_page') {
             renderPages.push({ group, mode: 'summary_one_page', rounds: selectedRounds, compact: true });
@@ -2686,7 +2793,10 @@
 
             let rec = null;
             if (judgeNum) {
-              rec = (allScores || []).find(s => s.judge_id === fillMode && s.contestant_id === c.id && s.round_id === roundId);
+              rec = isCon
+                ? ((allScores || []).find(s => s.judge_id === fillMode && s.contestant_id === c.id && s.round_id === 'congeniality')
+                   || (allScores || []).find(s => s.judge_id === fillMode && s.contestant_id === c.id && s.round_id === 'blackroom'))
+                : (allScores || []).find(s => s.judge_id === fillMode && s.contestant_id === c.id && s.round_id === roundId);
             }
 
             const critTds = criteriaList.map(crit => {
@@ -2852,11 +2962,11 @@
           const { group, mode, rounds, compact } = page;
           const isSummaryMode = mode === 'summary_one_page';
           const isConPage = group.catKey === 'congeniality';
-          const subtitleText = rounds.length === 1
-            ? (isConPage
-                ? `${roundShortMap[rounds[0]] || rounds[0]} — เกณฑ์เฉพาะ Miss Congeniality (เต็ม 100 คะแนน)`
-                : (roundTitleMap[rounds[0]] || rounds[0]))
-            : `รวม ${rounds.length} รอบ: ${rounds.map(r => roundShortMap[r] || r).join(' + ')}${isConPage ? ' (เกณฑ์ Miss Congeniality เต็ม 100/รอบ)' : ''}`;
+          const subtitleText = isConPage
+            ? 'เกณฑ์การให้คะแนน การประกวด Miss Congeniality (เต็ม 100 คะแนน)'
+            : (rounds.length === 1
+                ? (roundTitleMap[rounds[0]] || rounds[0])
+                : `รวม ${rounds.length} รอบ: ${rounds.map(r => roundShortMap[r] || r).join(' + ')}`);
 
           const bodyBlocksHtml = isSummaryMode
             ? buildSummaryOnePageBlock(rounds, group.contestants, group.showCatTag, group.catKey)
