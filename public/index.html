@@ -360,11 +360,11 @@
             class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-amber-400/30">
             <i class="fas fa-clipboard-list"></i> พิมพ์ใบเกณฑ์ (แนวตั้ง)
           </button>
-          <button onclick="printScoreSheet(false)"
+          <button onclick="openPrintScoreModal('filled')"
             class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-purple-500/30">
             <i class="fas fa-print"></i> พิมพ์ใบคะแนน
           </button>
-          <button onclick="printScoreSheet(true)"
+          <button onclick="openPrintScoreModal('blank_names')"
             class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-100 border border-slate-500/60 font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
             <i class="fas fa-file-alt"></i> ใบคะแนนเปล่า
           </button>
@@ -387,14 +387,26 @@
       <div id="admin-view-top3" class="space-y-6">
         <div
           class="glass-panel p-6 rounded-3xl border-2 border-[#FFDE42] shadow-[0_0_40px_rgba(255,222,66,0.2)] overflow-x-auto">
-          <div class="text-center mb-6">
-            <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow flex items-center justify-center gap-2">
-              <i class="fas fa-trophy text-3xl"></i> ผลการตัดสินอย่างเป็นทางการ: รอบตอบคำถาม (TOP 3 ตัดสิน)
-            </h3>
-            <p class="text-xs text-amber-200 mt-1 font-semibold">
-              * คะแนนรอบ 5 คนถูกล้างทั้งหมดเพื่อเข้าสู่รอบ 3 คนสุดท้าย — ตัดสินชี้ขาดตำแหน่ง The Winner
-              จากรอบตอบคำถามนี้ 100%
-            </p>
+          <div class="flex flex-col lg:flex-row items-center justify-between gap-3 mb-6">
+            <div class="text-center lg:text-left">
+              <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow flex items-center justify-center lg:justify-start gap-2">
+                <i class="fas fa-trophy text-3xl"></i> ผลการตัดสินอย่างเป็นทางการ: รอบตอบคำถาม (TOP 3 ตัดสิน)
+              </h3>
+              <p class="text-xs text-amber-200 mt-1 font-semibold">
+                * คะแนนรอบ 5 คนถูกล้างทั้งหมดเพื่อเข้าสู่รอบ 3 คนสุดท้าย — ตัดสินชี้ขาดตำแหน่ง The Winner
+                จากรอบตอบคำถามนี้ 100%
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-2 shrink-0">
+              <button type="button" onclick="printStyledScoreSheets({ scope: 'overall', category: 'all', initialMode: 'filled' })"
+                class="px-4 py-2.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
+                <i class="fas fa-award"></i> พิมพ์ใบสรุปรวมทุกรอบ
+              </button>
+              <button type="button" onclick="printStyledScoreSheets({ scope: 'qa', category: 'all', initialMode: 'filled' })"
+                class="px-3.5 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-amber-200 border border-amber-400/50 font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
+                <i class="fas fa-print"></i> ใบคะแนนรอบ TOP 3
+              </button>
+            </div>
           </div>
 
           <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
@@ -423,13 +435,19 @@
       <!-- วิว 2: ⚡ ผลคะแนนรอบ TOP 5 (Speed) -->
       <div id="admin-view-speed" class="hidden space-y-6">
         <div class="glass-panel p-6 rounded-3xl border border-amber-400 shadow-xl overflow-x-auto">
-          <div class="text-center mb-6">
-            <h3 class="text-xl font-bold text-amber-300 flex items-center justify-center gap-2">
-              <i class="fas fa-bolt text-2xl text-[#FFDE42]"></i> ผลการตัดสินรอบ 5 คนสุดท้าย (Speed)
-            </h3>
-            <p class="text-xs text-gray-300 mt-1">
-              เต็ม 50 คะแนนต่อกรรมการ (รวม 250 คะแนน) — คัดเลือก 3 อันดับแรกผ่านเข้าสู่รอบตอบคำถามตัดสิน (TOP 3)
-            </p>
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6">
+            <div class="text-center sm:text-left">
+              <h3 class="text-xl font-bold text-amber-300 flex items-center justify-center sm:justify-start gap-2">
+                <i class="fas fa-bolt text-2xl text-[#FFDE42]"></i> ผลการตัดสินรอบ 5 คนสุดท้าย (Speed)
+              </h3>
+              <p class="text-xs text-gray-300 mt-1">
+                เต็ม 50 คะแนนต่อกรรมการ (รวม 250 คะแนน) — คัดเลือก 3 อันดับแรกผ่านเข้าสู่รอบตอบคำถามตัดสิน (TOP 3)
+              </p>
+            </div>
+            <button type="button" onclick="printStyledScoreSheets({ scope: 'speed', category: 'all', initialMode: 'filled' })"
+              class="px-4 py-2.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 shrink-0">
+              <i class="fas fa-print"></i> พิมพ์ใบคะแนนรอบ Speed
+            </button>
           </div>
 
           <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
@@ -490,6 +508,10 @@
             <button onclick="switchAdminPreRound('all')" id="admin-pre-tab-all"
               class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white border border-[#5478FF]/40">
               <i class="fas fa-table"></i> สรุปรวม 2 รอบแรก (375) คัด TOP 5
+            </button>
+            <button type="button" onclick="printCurrentPreRoundScoreSheet()"
+              class="ml-auto px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] shadow-md hover:-translate-y-0.5 active:scale-95">
+              <i class="fas fa-print"></i> พิมพ์ใบคะแนนรอบนี้
             </button>
           </div>
         </div>
@@ -865,6 +887,97 @@
           <button type="button" id="btn-print-criteria-submit" onclick="printCriteriaSheet()"
             class="w-2/3 py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-[1.02] active:scale-95 transition text-sm flex items-center justify-center gap-2">
             <i class="fas fa-print"></i> <span id="print-criteria-btn-label">พิมพ์ใบเกณฑ์ (A4 แนวตั้ง)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: พิมพ์ใบคะแนนแต่ละรอบ & ใบสรุปคะแนนรวมทุกรอบ (A4 แนวตั้ง สไตล์ Miss Con) -->
+    <div id="print-score-modal"
+      class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden"
+      onclick="closePrintScoreModal()">
+      <div
+        class="modal-dialog glass-panel max-w-xl w-full max-h-[92vh] overflow-y-auto rounded-3xl p-6 md:p-7 border-2 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.35)] relative"
+        onclick="event.stopPropagation()">
+        <button type="button" onclick="closePrintScoreModal()"
+          class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-[#FFDE42] text-white hover:text-[#111FA2] flex items-center justify-center transition-all duration-200"
+          title="ปิดหน้าต่าง (Esc)">
+          <i class="fas fa-times text-base"></i>
+        </button>
+
+        <div class="flex items-center gap-3 mb-5 pr-8">
+          <div
+            class="w-12 h-12 rounded-2xl bg-[#FFDE42] text-[#111FA2] flex items-center justify-center shadow-[0_0_20px_rgba(255,222,66,0.4)] shrink-0">
+            <i class="fas fa-award text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-[#FFDE42] gold-glow">พิมพ์ใบคะแนน & ใบสรุปคะแนนรวม</h3>
+            <p class="text-xs text-gray-300">รูปแบบ A4 แนวตั้งอย่างเป็นทางการ (สไตล์เดียวกับใบสรุป Miss Con)</p>
+          </div>
+        </div>
+
+        <div class="space-y-4 text-left">
+          <!-- เลือกรอบ / ประเภทใบคะแนน -->
+          <div>
+            <label for="print-score-scope" class="block text-xs font-semibold text-[#FFDE42] mb-1.5">
+              <i class="fas fa-layer-group mr-1"></i> เลือกใบคะแนนที่ต้องการพิมพ์
+            </label>
+            <select id="print-score-scope" onchange="updatePrintScorePreviewInfo()"
+              class="w-full input-dark p-3 rounded-xl text-sm text-white font-semibold border border-[#5478FF]/40 focus:border-[#FFDE42] focus:outline-none">
+              <option value="overall">🏆 ใบสรุปคะแนนรวมจากรอบทั้งหมด (Official All-Rounds Summary)</option>
+              <option value="pre_summary">📊 ใบคะแนนรวม 2 รอบคัดเลือก (ห้องดำ 25 + Grand 50 = เต็ม 75 • คัด TOP 5)</option>
+              <option value="blackroom">1️⃣ ใบคะแนนรอบที่ 1: รอบห้องดำ (4 เกณฑ์ เต็ม 25 • ก.1–ก.5)</option>
+              <option value="grand">2️⃣ ใบคะแนนรอบที่ 2: Grand Opening (4 เกณฑ์ เต็ม 50 • ก.1–ก.5)</option>
+              <option value="speed">3️⃣ ใบคะแนนรอบที่ 3: TOP 5 Speed (4 เกณฑ์ เต็ม 50 • ก.1–ก.5)</option>
+              <option value="qa">4️⃣ ใบคะแนนรอบที่ 4: TOP 3 ตอบคำถามชี้ขาด (6 เกณฑ์ เต็ม 100 • ก.1–ก.5)</option>
+              <option value="all_pack">📚 พิมพ์ครบชุดทั้งหมด (ทั้ง 4 รอบ + รวม 2 รอบแรก + ใบสรุปรวมทุกรอบ)</option>
+            </select>
+          </div>
+
+          <!-- เลือกหมวดหมู่ (สำหรับรอบคัดเลือก) -->
+          <div id="print-score-category-wrap">
+            <label for="print-score-category" class="block text-xs font-semibold text-[#FFDE42] mb-1.5">
+              <i class="fas fa-users mr-1"></i> ขอบเขตผู้เข้าประกวด / หมวดหมู่
+            </label>
+            <select id="print-score-category" onchange="updatePrintScorePreviewInfo()"
+              class="w-full input-dark p-3 rounded-xl text-sm text-white font-semibold border border-[#5478FF]/40 focus:border-[#FFDE42] focus:outline-none">
+              <option value="split_categories">แยกหน้าทีละหมวด (Miss, Mister, Queen, Con, Jumbo — พอดีหน้า A4 เหมือน Miss Con)</option>
+              <option value="all">รวมทุกหมวดในตารางเดียว (เรียงตามคะแนนสูงสุดทั้งหมด)</option>
+              <option value="miss">เฉพาะหมวด Miss</option>
+              <option value="mister">เฉพาะหมวด Mister</option>
+              <option value="queen">เฉพาะหมวด Miss Queen</option>
+              <option value="congeniality">เฉพาะหมวด Miss Congeniality (วันจริง)</option>
+              <option value="jumbo">เฉพาะหมวด Miss Jumbo</option>
+            </select>
+          </div>
+
+          <!-- เลือกรูปแบบโหมดข้อมูล -->
+          <div>
+            <label for="print-score-mode" class="block text-xs font-semibold text-[#FFDE42] mb-1.5">
+              <i class="fas fa-pen-fancy mr-1"></i> โหมดข้อมูลเริ่มต้น (สลับได้อีกในหน้าตัวอย่างก่อนพิมพ์)
+            </label>
+            <select id="print-score-mode" onchange="updatePrintScorePreviewInfo()"
+              class="w-full input-dark p-3 rounded-xl text-sm text-white font-semibold border border-[#5478FF]/40 focus:border-[#FFDE42] focus:outline-none">
+              <option value="filled">📊 แสดงคะแนนจากระบบ (คำนวณเฉลี่ยรายข้อ ÷ 5 และตารางกรรมการ ก.1–ก.5)</option>
+              <option value="blank_names">📝 ใบคะแนนเปล่า (มีรายชื่อผู้เข้าประกวด เว้นว่างช่องคะแนน)</option>
+              <option value="blank_all">📄 ใบคะแนนเปล่าทั้งหมด (เว้นว่างทุกช่องสำหรับเขียนมือ)</option>
+            </select>
+          </div>
+
+          <div class="p-3 bg-blue-950/60 border border-[#5478FF]/30 rounded-xl text-xs text-blue-200 flex items-start gap-2">
+            <i class="fas fa-info-circle text-[#FFDE42] mt-0.5 shrink-0"></i>
+            <span id="print-score-summary-hint">เอกสารจัดหน้าขนาด <b>A4 แนวตั้ง</b> พร้อมโลโก้ สูตรคำนวณ ตารางคะแนนรายเกณฑ์ (÷5) ตารางอ้างอิงกรรมการ 5 ท่าน และช่องลงนาม ก.1–ก.5</span>
+          </div>
+        </div>
+
+        <div class="flex gap-3 mt-6">
+          <button type="button" onclick="closePrintScoreModal()"
+            class="w-1/3 py-3 rounded-xl border border-gray-500 text-gray-300 hover:bg-gray-800 transition font-semibold text-sm active:scale-95">
+            ยกเลิก
+          </button>
+          <button type="button" onclick="submitPrintScoreModal()"
+            class="w-2/3 py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-[1.02] active:scale-95 transition text-sm flex items-center justify-center gap-2">
+            <i class="fas fa-print"></i> <span id="print-score-btn-label">พิมพ์ใบคะแนน (A4 แนวตั้ง)</span>
           </button>
         </div>
       </div>
@@ -1988,6 +2101,7 @@
           closeImageModal();
           closeModal();
           closePrintCriteriaModal();
+          closePrintScoreModal();
         }
       });
 
@@ -2623,178 +2737,1164 @@
       }
 
       // ==========================================
-      // Print Official Score Sheet (Supports Filled & Blank Modes)
+      // Print Official Per-Round & All-Rounds Score Sheets (A4 Portrait — Miss Con Official Style)
+      // Supports modes: 'filled', 'blank_names', 'blank_all'
       // ==========================================
       function printScoreSheet(isBlank = false) {
-        const list = (summaryData && summaryData.finalRankings) ? summaryData.finalRankings : [];
-        const startBlank = isBlank || list.length === 0;
+        openPrintScoreModal(isBlank ? 'blank_names' : 'filled');
+      }
 
-        const printWindow = window.open('', '_blank', 'width=1100,height=780');
+      async function openPrintScoreModal(defaultMode = 'filled') {
+        if (!allContestants || allContestants.length === 0) {
+          await loadContestants();
+        }
+        const modal = document.getElementById('print-score-modal');
+        if (!modal) return;
+
+        const scopeEl = document.getElementById('print-score-scope');
+        const catEl = document.getElementById('print-score-category');
+        const modeEl = document.getElementById('print-score-mode');
+
+        if (scopeEl) {
+          if (adminCurrentView === 'pre') {
+            scopeEl.value = adminPreRoundView === 'all' ? 'pre_summary' : (adminPreRoundView || 'blackroom');
+          } else if (adminCurrentView === 'speed') {
+            scopeEl.value = 'speed';
+          } else if (adminCurrentView === 'top3') {
+            scopeEl.value = 'overall';
+          } else {
+            scopeEl.value = 'overall';
+          }
+        }
+        if (catEl) {
+          if (adminCurrentView === 'pre') {
+            const curFilter = document.getElementById('admin-category-filter')?.value || 'all';
+            catEl.value = curFilter === 'all' ? 'split_categories' : curFilter;
+          } else {
+            catEl.value = 'split_categories';
+          }
+        }
+        if (modeEl) {
+          modeEl.value = ['filled', 'blank_names', 'blank_all'].includes(defaultMode) ? defaultMode : 'filled';
+        }
+
+        updatePrintScorePreviewInfo();
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          modal.classList.add('open');
+        });
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closePrintScoreModal() {
+        const modal = document.getElementById('print-score-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          modal.classList.remove('open');
+          setTimeout(() => {
+            modal.classList.add('hidden');
+          }, 220);
+          document.body.style.overflow = '';
+        }
+      }
+
+      function updatePrintScorePreviewInfo() {
+        const scope = document.getElementById('print-score-scope')?.value || 'overall';
+        const cat = document.getElementById('print-score-category')?.value || 'split_categories';
+        const catWrap = document.getElementById('print-score-category-wrap');
+        const hintEl = document.getElementById('print-score-summary-hint');
+        const btnLabel = document.getElementById('print-score-btn-label');
+
+        const needsCat = ['blackroom', 'grand', 'pre_summary', 'all_pack'].includes(scope);
+        if (catWrap) catWrap.classList.toggle('hidden', !needsCat);
+
+        const activeCats = Object.keys(CATEGORIES).filter(k => (allContestants || []).some(c => c.category === k));
+        const catPageCount = cat === 'split_categories' ? Math.max(1, activeCats.length || 5) : 1;
+
+        let pages = 1;
+        let desc = '';
+        if (scope === 'overall') {
+          pages = 1;
+          desc = 'พิมพ์ <b>ใบสรุปคะแนนรวมจากรอบทั้งหมด</b> (ตารางตัดสิน TOP 3 / TOP 5 + ตารางสรุปคะแนนรวม 4 รอบของผู้เข้าประกวดทั้งหมด) พร้อมช่องลงนามกรรมการ 5 ท่าน';
+        } else if (scope === 'pre_summary') {
+          pages = catPageCount;
+          desc = `พิมพ์ <b>ใบคะแนนรวม 2 รอบคัดเลือก (ห้องดำ + Grand Opening = เต็ม 75)</b> จำนวน <b>${pages} ชุด</b> พร้อมตารางคะแนนรายรอบและตารางกรรมการ ก.1–ก.5`;
+        } else if (scope === 'blackroom' || scope === 'grand') {
+          pages = catPageCount;
+          const rName = scope === 'blackroom' ? 'รอบที่ 1: รอบห้องดำ (เต็ม 25)' : 'รอบที่ 2: Grand Opening (เต็ม 50)';
+          desc = `พิมพ์ <b>ใบคะแนน${rName}</b> จำนวน <b>${pages} ชุด</b> แยกตารางเกณฑ์ย่อย (÷5) และตารางอ้างอิงกรรมการ ก.1–ก.5`;
+        } else if (scope === 'speed') {
+          pages = 1;
+          desc = 'พิมพ์ <b>ใบคะแนนรอบที่ 3: TOP 5 Speed (เต็ม 50)</b> พร้อมตารางเกณฑ์ย่อย 4 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และสถานะผ่านเข้า TOP 3';
+        } else if (scope === 'qa') {
+          pages = 1;
+          desc = 'พิมพ์ <b>ใบคะแนนรอบที่ 4: TOP 3 ตอบคำถามชี้ขาด (เต็ม 100)</b> พร้อมตารางเกณฑ์ย่อย 6 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และรางวัลเกียรติยศ';
+        } else if (scope === 'all_pack') {
+          pages = (catPageCount * 3) + 3;
+          desc = `พิมพ์ <b>ครบชุดทั้งหมด (${pages} ชุด)</b> — รอบห้องดำ, Grand Opening, รวม 2 รอบคัดเลือก, รอบ TOP 5 Speed, รอบ TOP 3 ตอบคำถาม และใบสรุปคะแนนรวมทุกรอบอย่างเป็นทางการ`;
+        }
+
+        if (hintEl) hintEl.innerHTML = desc;
+        if (btnLabel) btnLabel.textContent = `พิมพ์ใบคะแนน (A4 แนวตั้ง • ${pages} ชุด)`;
+      }
+
+      function submitPrintScoreModal() {
+        const scope = document.getElementById('print-score-scope')?.value || 'overall';
+        const category = document.getElementById('print-score-category')?.value || 'split_categories';
+        const initialMode = document.getElementById('print-score-mode')?.value || 'filled';
+        closePrintScoreModal();
+        printStyledScoreSheets({ scope, category, initialMode });
+      }
+
+      function printCurrentPreRoundScoreSheet() {
+        const curFilter = document.getElementById('admin-category-filter')?.value || 'all';
+        const scope = adminPreRoundView === 'all' ? 'pre_summary' : (adminPreRoundView || 'blackroom');
+        const category = curFilter === 'all' ? 'split_categories' : curFilter;
+        printStyledScoreSheets({ scope, category, initialMode: 'filled' });
+      }
+
+      async function printStyledScoreSheets(options = {}) {
+        if (!allContestants || allContestants.length === 0) {
+          await loadContestants();
+        }
+        const scope = options.scope || 'overall';
+        const category = options.category || 'split_categories';
+        const safeMode = ['filled', 'blank_names', 'blank_all'].includes(options.initialMode) ? options.initialMode : 'filled';
+
+        const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
+        const printedAt = new Date().toLocaleString('th-TH');
+        const logoUrl = `${window.location.origin}/images/logo.png`;
+
+        const top5List = (summaryData?.top5 && summaryData.top5.length > 0) ? summaryData.top5 : getAutoTop5Local();
+        const top3List = (summaryData?.top3 && summaryData.top3.length > 0) ? summaryData.top3 : getAutoTop3Local();
+        const finalRankingsList = (summaryData?.finalRankings && summaryData.finalRankings.length > 0) ? summaryData.finalRankings : top5List;
+        const top5IdSet = new Set(top5List.filter(x => (x.preTotal || 0) > 0).map(x => x.id));
+        const top3IdSet = new Set(top3List.filter(x => (x.speedTotal || 0) > 0 || (x.preTotal || 0) > 0).map(x => x.id));
+
+        const getByIdOrder = (list) => (list || []).slice().sort((a, b) => {
+          const ordA = categoryOrder[a.category] || 99;
+          const ordB = categoryOrder[b.category] || 99;
+          if (ordA !== ordB) return ordA - ordB;
+          const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+          const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+          if (numA !== numB) return numA - numB;
+          return (a.id || '').localeCompare(b.id || '');
+        });
+
+        const getCategoryGroups = () => {
+          if (category === 'split_categories') {
+            const groups = [];
+            Object.entries(CATEGORIES).forEach(([catKey, catName]) => {
+              const list = (allContestants || []).filter(c => c.category === catKey);
+              if (list.length > 0) {
+                groups.push({ catKey, badge: `ประเภท ${catName}`, contestants: list, showCatCol: false });
+              }
+            });
+            return groups;
+          } else if (category === 'all') {
+            return [{ catKey: 'all', badge: 'รวมทุกประเภท (5 หมวด)', contestants: allContestants || [], showCatCol: true }];
+          } else {
+            const catName = CATEGORIES[category] || category;
+            const list = (allContestants || []).filter(c => c.category === category);
+            return [{ catKey: category, badge: `ประเภท ${catName}`, contestants: list, showCatCol: false }];
+          }
+        };
+
+        const formatAvgCell = (hasScore, avgVal, sumVal) => {
+          if (!hasScore) return '-';
+          return `<div class="bold">${avgVal.toFixed(2)}</div><div class="cell-sub">(${sumVal}÷5)</div>`;
+        };
+
+        const signatureBlock5Html = `
+          <div class="signature-block-5">
+            <div class="sig-row-3">
+              <div class="sign-col">
+                ลงชื่อ ...........................................<br/>
+                ( ........................................... )<br/>
+                <span class="sign-role">กรรมการท่านที่ 1</span>
+              </div>
+              <div class="sign-col">
+                ลงชื่อ ...........................................<br/>
+                ( ........................................... )<br/>
+                <span class="sign-role">กรรมการท่านที่ 2</span>
+              </div>
+              <div class="sign-col">
+                ลงชื่อ ...........................................<br/>
+                ( ........................................... )<br/>
+                <span class="sign-role">กรรมการท่านที่ 3</span>
+              </div>
+            </div>
+            <div class="sig-row-2">
+              <div class="sign-col">
+                ลงชื่อ ...........................................<br/>
+                ( ........................................... )<br/>
+                <span class="sign-role">กรรมการท่านที่ 4</span>
+              </div>
+              <div class="sign-col">
+                ลงชื่อ ...........................................<br/>
+                ( ........................................... )<br/>
+                <span class="sign-role">กรรมการท่านที่ 5</span>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const roundMeta = {
+          blackroom: {
+            pill: 'รอบที่ 1: รอบห้องดำ',
+            maxPerJudge: 25,
+            maxAll5: 125,
+            formulaDesc: 'นำคะแนนรวมของกรรมการทั้ง 5 ท่านในแต่ละเกณฑ์มา<strong>หาร 5</strong> แล้วนำทุกช่องมารวมกันเป็น <strong>คะแนนรวมสุทธิเต็ม 25 คะแนน</strong> (คะแนนดิบรวม 5 ก. เต็ม 125 คะแนน)',
+            statusTitle: 'สถานะ'
+          },
+          grand: {
+            pill: 'รอบที่ 2: Grand Opening',
+            maxPerJudge: 50,
+            maxAll5: 250,
+            formulaDesc: 'นำคะแนนรวมของกรรมการทั้ง 5 ท่านในแต่ละเกณฑ์มา<strong>หาร 5</strong> แล้วนำทุกช่องมารวมกันเป็น <strong>คะแนนรวมสุทธิเต็ม 50 คะแนน</strong> (คะแนนดิบรวม 5 ก. เต็ม 250 คะแนน)',
+            statusTitle: 'สถานะ'
+          },
+          speed: {
+            pill: 'รอบที่ 3: TOP 5 Speed',
+            maxPerJudge: 50,
+            maxAll5: 250,
+            formulaDesc: 'รอบ 5 คนสุดท้ายคัดเลือกเหลือ 3 คนสุดท้าย (TOP 3) — นำคะแนนรวมของกรรมการทั้ง 5 ท่านในแต่ละเกณฑ์มา<strong>หาร 5</strong> รวมเป็น <strong>คะแนนสุทธิเต็ม 50 คะแนน</strong> (ดิบรวม 5 ก. เต็ม 250 คะแนน)',
+            statusTitle: 'ผลคัดเลือก'
+          },
+          qa: {
+            pill: 'รอบที่ 4: TOP 3 ตอบคำถามชี้ขาด',
+            maxPerJudge: 100,
+            maxAll5: 500,
+            formulaDesc: 'รอบ 3 คนสุดท้ายตัดสินชี้ขาด (ล้างคะแนนรอบก่อนหน้าทั้งหมด) — นำคะแนนรวมของกรรมการทั้ง 5 ท่านในแต่ละเกณฑ์มา<strong>หาร 5</strong> รวม 6 ช่องเป็น <strong>คะแนนรวมสุทธิเต็ม 100 คะแนน</strong> (ดิบรวม 5 ก. เต็ม 500 คะแนน)',
+            statusTitle: 'รางวัลเกียรติยศ'
+          }
+        };
+
+        // 1) สร้างหน้าใบคะแนนรายรอบ (blackroom / grand / speed / qa)
+        function buildSingleRoundSheet(roundId, contestants, groupBadge, showCatCol) {
+          const meta = roundMeta[roundId];
+          const criteriaList = CRITERIA_MAP[roundId] || [];
+          const critCount = criteriaList.length;
+          const isCompact = (contestants || []).length > 10;
+          const isQa = roundId === 'qa';
+          const isSpeed = roundId === 'speed';
+
+          const computed = (contestants || []).map(c => {
+            const jTotals = {};
+            const critSums = {};
+            criteriaList.forEach(cr => { critSums[cr.id] = 0; });
+            let total5 = 0;
+
+            judges.forEach(jId => {
+              const rec = getMainRoundRecord(jId, c.id, roundId, c.category);
+              if (rec) {
+                const t = rec.total_score || 0;
+                jTotals[jId] = t;
+                total5 += t;
+                criteriaList.forEach(cr => { critSums[cr.id] += (rec[`score_${cr.id}`] || 0); });
+              } else {
+                jTotals[jId] = null;
+              }
+            });
+
+            const critAvgs = {};
+            let avgSum = 0;
+            criteriaList.forEach(cr => {
+              const a = Number((critSums[cr.id] / 5).toFixed(2));
+              critAvgs[cr.id] = a;
+              avgSum += a;
+            });
+            const finalAvg = Number(avgSum.toFixed(2));
+            return { c, jTotals, total5, finalAvg, critSums, critAvgs };
+          });
+
+          computed.sort((a, b) => {
+            if (b.total5 !== a.total5) return b.total5 - a.total5;
+            return (a.c.id || '').localeCompare(b.c.id || '');
+          });
+
+          const qaAwards = ['👑 ชนะเลิศ', '🥈 รองฯ อันดับ 1', '🥉 รองฯ อันดับ 2'];
+          const critLineText = criteriaList.map((cr, i) => `${i + 1}. ${cr.name.replace(/^\d+\.\s*/, '')} (${cr.max})`).join(' • ');
+
+          const idxColW = 4.5;
+          const idColW = 6;
+          const critColW = critCount >= 6 ? 7.5 : 10.5;
+          const catColW = showCatCol ? 8.5 : 0;
+          const finalColW = 8.5;
+          const statusColW = (isQa || isSpeed) ? 10.5 : 8.5;
+          const nameColW = Number((100 - idxColW - idColW - catColW - (critCount * critColW) - finalColW - statusColW).toFixed(1));
+
+          const t1HeaderCrits = criteriaList.map((cr, i) =>
+            `<th style="width:${critColW}%;">ข้อ ${i + 1}<div class="th-sub">${escapePrintHtml(cr.short)} (${cr.max})</div></th>`
+          ).join('');
+
+          const t1Filled = computed.length > 0 ? computed.map((item, idx) => {
+            const { c, total5, finalAvg, critSums, critAvgs } = item;
+            const hasScore = total5 > 0;
+            const isHighlightRow = (isQa && idx === 0 && hasScore) || (isSpeed && idx < 3 && hasScore) || (!isQa && !isSpeed && idx === 0 && hasScore);
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
+
+            let statusText = '-';
+            if (hasScore) {
+              if (isQa) statusText = qaAwards[idx] || '-';
+              else if (isSpeed) statusText = idx < 3 ? '👑 เข้า TOP 3' : (idx === 3 ? 'รองฯ อันดับ 3' : 'รองฯ อันดับ 4');
+              else statusText = top5IdSet.has(c.id) ? '★ TOP 5' : `อันดับ ${idx + 1}`;
+            }
+
+            const critCells = criteriaList.map(cr => `<td>${formatAvgCell(hasScore, critAvgs[cr.id], critSums[cr.id])}</td>`).join('');
+
+            return `
+              <tr class="${isHighlightRow ? 'row-winner' : ''}">
+                <td class="bold">${idx + 1}</td>
+                <td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
+                ${critCells}
+                <td class="col-final">${hasScore ? finalAvg.toFixed(2) : '-'}</td>
+                <td class="col-award">${statusText}</td>
+              </tr>
+            `;
+          }).join('') : `<tr><td colspan="${5 + critCount + (showCatCol ? 1 : 0)}" style="padding:14px; color:#666;">ยังไม่มีข้อมูลผู้เข้าประกวด</td></tr>`;
+
+          const t2Filled = computed.length > 0 ? computed.map((item, idx) => {
+            const { c, jTotals, total5, finalAvg } = item;
+            const hasScore = total5 > 0;
+            const isHighlightRow = idx === 0 && hasScore;
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
+
+            return `
+              <tr class="${isHighlightRow ? 'row-winner' : ''}">
+                <td class="bold">${idx + 1}</td>
+                <td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
+                ${judges.map(jId => `<td>${jTotals[jId] !== null ? jTotals[jId] : '-'}</td>`).join('')}
+                <td class="bold">${hasScore ? total5 : '-'}</td>
+                <td class="col-final">${hasScore ? finalAvg.toFixed(2) : '-'}</td>
+              </tr>
+            `;
+          }).join('') : `<tr><td colspan="${10 + (showCatCol ? 1 : 0)}" style="padding:14px; color:#666;">ยังไม่มีข้อมูลผู้เข้าประกวด</td></tr>`;
+
+          // โหมดใบเปล่า (มีรายชื่อ)
+          const blankSource = getByIdOrder(contestants);
+          const fallbackBlankLen = isQa ? 3 : (isSpeed ? 5 : 6);
+          const listForBlank = blankSource.length > 0 ? blankSource : Array.from({ length: fallbackBlankLen }, (_, i) => ({ id: `#${i + 1}`, name: '', category: '' }));
+
+          const emptyCritTds = criteriaList.map(() => '<td></td>').join('');
+          const t1BlankNames = listForBlank.map(c => {
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
+            return `
+              <tr class="row-blank">
+                <td></td>
+                <td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
+                ${emptyCritTds}
+                <td class="col-final"></td>
+                <td></td>
+              </tr>
+            `;
+          }).join('');
+
+          const t2BlankNames = listForBlank.map(c => {
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
+            return `
+              <tr class="row-blank">
+                <td></td>
+                <td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
+                <td></td><td></td><td></td><td></td><td></td><td></td>
+                <td class="col-final"></td>
+              </tr>
+            `;
+          }).join('');
+
+          const blankAllCount = Math.max(fallbackBlankLen, listForBlank.length);
+          const t1BlankAll = Array.from({ length: blankAllCount }, () => `
+            <tr class="row-blank">
+              <td></td><td></td><td class="text-left"></td>
+              ${showCatCol ? '<td></td>' : ''}
+              ${emptyCritTds}
+              <td class="col-final"></td><td></td>
+            </tr>
+          `).join('');
+
+          const t2BlankAll = Array.from({ length: blankAllCount }, () => `
+            <tr class="row-blank">
+              <td></td><td></td><td class="text-left"></td>
+              ${showCatCol ? '<td></td>' : ''}
+              <td></td><td></td><td></td><td></td><td></td><td></td>
+              <td class="col-final"></td>
+            </tr>
+          `).join('');
+
+          const t2NameW = showCatCol ? 24 : 33;
+
+          return {
+            title: `ใบสรุปคะแนน${meta.pill} — ${groupBadge}`,
+            badgeHtml: `<span class="cat-pill">${escapePrintHtml(meta.pill)}</span><span class="cat-pill cat-pill-sub">${escapePrintHtml(groupBadge)}</span>`,
+            subFilled: `รายงานผลคะแนนอย่างเป็นทางการ (กรรมการ 5 ท่าน ก.1–ก.5 • คะแนนสุทธิเต็ม ${meta.maxPerJudge} คะแนน)`,
+            subBlank: `แบบฟอร์มใบคะแนนรวม — ใบคะแนนเปล่าสำหรับกรอกด้วยมือ (กรรมการ 5 ท่าน • เต็ม ${meta.maxPerJudge} คะแนน)`,
+            bodyHtml: `
+              <div class="formula-box">
+                <strong>วิธีคำนวณคะแนนสุทธิ (เต็ม ${meta.maxPerJudge} คะแนน):</strong> ${meta.formulaDesc}
+                <br/>
+                <span style="font-size:10px; color:#475569;">เกณฑ์การให้คะแนน (${critCount} ข้อ): ${escapePrintHtml(critLineText)}</span>
+              </div>
+
+              <div class="section-heading">1. ตารางสรุปคะแนนรวมแยกตามเกณฑ์ ${critCount} ข้อ (แต่ละช่อง = รวม 5 กรรมการ ÷ 5 แล้วนำทุกช่องมารวมกัน เต็ม ${meta.maxPerJudge} คะแนน)</div>
+              <table class="${isCompact ? 'table-compact' : ''}">
+                <thead>
+                  <tr>
+                    <th style="width:${idxColW}%;">อันดับ</th>
+                    <th style="width:${idColW}%;">รหัส</th>
+                    <th style="width:${nameColW}%;" class="text-left">ชื่อ - นามสกุล</th>
+                    ${showCatCol ? `<th style="width:${catColW}%;">หมวด</th>` : ''}
+                    ${t1HeaderCrits}
+                    <th style="width:${finalColW}%;" class="th-final">รวมสุทธิ<div class="th-sub">(เต็ม ${meta.maxPerJudge})</div></th>
+                    <th style="width:${statusColW}%;">${meta.statusTitle}</th>
+                  </tr>
+                </thead>
+                <tbody data-mode="filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${t1Filled}</tbody>
+                <tbody data-mode="blank_names" class="${safeMode !== 'blank_names' ? 'hidden' : ''}">${t1BlankNames}</tbody>
+                <tbody data-mode="blank_all" class="${safeMode !== 'blank_all' ? 'hidden' : ''}">${t1BlankAll}</tbody>
+              </table>
+
+              <div class="section-heading">2. ตารางอ้างอิงคะแนนดิบแยกตามกรรมการทั้ง 5 ท่าน (ก.1 – ก.5 รวมเต็ม ${meta.maxAll5} คะแนน)</div>
+              <table class="${isCompact ? 'table-compact' : ''}">
+                <thead>
+                  <tr>
+                    <th style="width:5%;">อันดับ</th>
+                    <th style="width:7%;">รหัส</th>
+                    <th style="width:${t2NameW}%;" class="text-left">ชื่อ - นามสกุล</th>
+                    ${showCatCol ? '<th style="width:9%;">หมวด</th>' : ''}
+                    <th style="width:7.5%;">ก.1<div class="th-sub">(${meta.maxPerJudge})</div></th>
+                    <th style="width:7.5%;">ก.2<div class="th-sub">(${meta.maxPerJudge})</div></th>
+                    <th style="width:7.5%;">ก.3<div class="th-sub">(${meta.maxPerJudge})</div></th>
+                    <th style="width:7.5%;">ก.4<div class="th-sub">(${meta.maxPerJudge})</div></th>
+                    <th style="width:7.5%;">ก.5<div class="th-sub">(${meta.maxPerJudge})</div></th>
+                    <th style="width:9%;">รวม 5 ก.<div class="th-sub">(เต็ม ${meta.maxAll5})</div></th>
+                    <th style="width:8.5%;" class="th-final">รวมสุทธิ<div class="th-sub">(เต็ม ${meta.maxPerJudge})</div></th>
+                  </tr>
+                </thead>
+                <tbody data-mode="filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${t2Filled}</tbody>
+                <tbody data-mode="blank_names" class="${safeMode !== 'blank_names' ? 'hidden' : ''}">${t2BlankNames}</tbody>
+                <tbody data-mode="blank_all" class="${safeMode !== 'blank_all' ? 'hidden' : ''}">${t2BlankAll}</tbody>
+              </table>
+            `
+          };
+        }
+
+        // 2) สร้างหน้าใบคะแนนรวม 2 รอบคัดเลือก (ห้องดำ 25 + Grand 50 = 75)
+        function buildPreSummarySheet(contestants, groupBadge, showCatCol) {
+          const isCompact = (contestants || []).length > 10;
+          const computed = (contestants || []).map(c => {
+            let blackSum = 0;
+            let grandSum = 0;
+            const jCombined = {};
+            judges.forEach(jId => {
+              const rB = getMainRoundRecord(jId, c.id, 'blackroom', c.category);
+              const rG = getMainRoundRecord(jId, c.id, 'grand', c.category);
+              const bVal = rB ? (rB.total_score || 0) : null;
+              const gVal = rG ? (rG.total_score || 0) : null;
+              if (bVal !== null) blackSum += bVal;
+              if (gVal !== null) grandSum += gVal;
+              jCombined[jId] = (bVal !== null || gVal !== null) ? ((bVal || 0) + (gVal || 0)) : null;
+            });
+            const preTotal = blackSum + grandSum;
+            return {
+              c,
+              blackSum,
+              blackAvg: Number((blackSum / 5).toFixed(2)),
+              grandSum,
+              grandAvg: Number((grandSum / 5).toFixed(2)),
+              preTotal,
+              preAvg: Number((preTotal / 5).toFixed(2)),
+              jCombined
+            };
+          });
+
+          computed.sort((a, b) => b.preTotal !== a.preTotal ? b.preTotal - a.preTotal : (a.c.id || '').localeCompare(b.c.id || ''));
+
+          const t1Filled = computed.map((item, idx) => {
+            const { c, blackSum, blackAvg, grandSum, grandAvg, preTotal, preAvg } = item;
+            const hasScore = preTotal > 0;
+            const isTop5 = hasScore && top5IdSet.has(c.id);
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
+            return `
+              <tr class="${isTop5 ? 'row-winner' : ''}">
+                <td class="bold">${idx + 1}</td>
+                <td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
+                <td>${formatAvgCell(blackSum > 0, blackAvg, blackSum)}</td>
+                <td>${formatAvgCell(grandSum > 0, grandAvg, grandSum)}</td>
+                <td class="bold">${hasScore ? preTotal : '-'}</td>
+                <td class="col-final">${hasScore ? preAvg.toFixed(2) : '-'}</td>
+                <td class="col-award">${isTop5 ? '👑 ผ่าน TOP 5' : '-'}</td>
+              </tr>
+            `;
+          }).join('');
+
+          const t2Filled = computed.map((item, idx) => {
+            const { c, jCombined, preTotal, preAvg } = item;
+            const hasScore = preTotal > 0;
+            const isTop5 = hasScore && top5IdSet.has(c.id);
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
+            return `
+              <tr class="${isTop5 ? 'row-winner' : ''}">
+                <td class="bold">${idx + 1}</td>
+                <td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
+                ${judges.map(jId => `<td>${jCombined[jId] !== null ? jCombined[jId] : '-'}</td>`).join('')}
+                <td class="bold">${hasScore ? preTotal : '-'}</td>
+                <td class="col-final">${hasScore ? preAvg.toFixed(2) : '-'}</td>
+              </tr>
+            `;
+          }).join('');
+
+          const listForBlank = getByIdOrder(contestants);
+          const t1BlankNames = listForBlank.map(c => {
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
+            return `
+              <tr class="row-blank">
+                <td></td><td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
+                <td></td><td></td><td></td><td class="col-final"></td><td></td>
+              </tr>
+            `;
+          }).join('');
+
+          const t2BlankNames = listForBlank.map(c => {
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
+            return `
+              <tr class="row-blank">
+                <td></td><td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
+                <td></td><td></td><td></td><td></td><td></td><td></td><td class="col-final"></td>
+              </tr>
+            `;
+          }).join('');
+
+          const blankCnt = Math.max(6, listForBlank.length);
+          const t1BlankAll = Array.from({ length: blankCnt }, () => `
+            <tr class="row-blank"><td></td><td></td><td class="text-left"></td>${showCatCol ? '<td></td>' : ''}<td></td><td></td><td></td><td class="col-final"></td><td></td></tr>
+          `).join('');
+          const t2BlankAll = Array.from({ length: blankCnt }, () => `
+            <tr class="row-blank"><td></td><td></td><td class="text-left"></td>${showCatCol ? '<td></td>' : ''}<td></td><td></td><td></td><td></td><td></td><td></td><td class="col-final"></td></tr>
+          `).join('');
+
+          return {
+            title: `ใบคะแนนรวม 2 รอบคัดเลือก — ${groupBadge}`,
+            badgeHtml: `<span class="cat-pill">สรุปรวม 2 รอบคัดเลือก (คัด TOP 5)</span><span class="cat-pill cat-pill-sub">${escapePrintHtml(groupBadge)}</span>`,
+            subFilled: 'สรุปคะแนนสะสมรอบห้องดำ (25) + Grand Opening (50) • กรรมการ 5 ท่าน เต็ม 375 (เฉลี่ยสุทธิเต็ม 75)',
+            subBlank: 'แบบฟอร์มใบคะแนนรวม 2 รอบคัดเลือก — ใบคะแนนเปล่าสำหรับกรอกด้วยมือ (เต็ม 75 คะแนน)',
+            bodyHtml: `
+              <div class="formula-box">
+                <strong>วิธีคำนวณคะแนนสะสม 2 รอบคัดเลือก (คัดเข้า TOP 5):</strong>
+                นำคะแนนรอบที่ 1 <strong>รอบห้องดำ</strong> (เต็ม 25/ก., รวม 5 ก. เต็ม 125) บวกกับรอบที่ 2 <strong>Grand Opening</strong> (เต็ม 50/ก., รวม 5 ก. เต็ม 250)
+                = <strong>คะแนนสะสมรวม 375 คะแนน (เฉลี่ยสุทธิ ÷ 5 เต็ม 75 คะแนน)</strong>
+              </div>
+
+              <div class="section-heading">1. ตารางสรุปคะแนนรวม 2 รอบแรก (รอบห้องดำ + Grand Opening)</div>
+              <table class="${isCompact ? 'table-compact' : ''}">
+                <thead>
+                  <tr>
+                    <th style="width:5%;">อันดับ</th>
+                    <th style="width:7%;">รหัส</th>
+                    <th style="width:${showCatCol ? 24 : 33}%;" class="text-left">ชื่อ - นามสกุล</th>
+                    ${showCatCol ? '<th style="width:9%;">หมวด</th>' : ''}
+                    <th style="width:13%;">1. รอบห้องดำ<div class="th-sub">(เฉลี่ย 25 / ดิบ 125)</div></th>
+                    <th style="width:13%;">2. Grand Opening<div class="th-sub">(เฉลี่ย 50 / ดิบ 250)</div></th>
+                    <th style="width:9.5%;">รวม 2 รอบ<div class="th-sub">(เต็ม 375)</div></th>
+                    <th style="width:9.5%;" class="th-final">เฉลี่ยสุทธิ<div class="th-sub">(เต็ม 75)</div></th>
+                    <th style="width:10%;">สถานะ</th>
+                  </tr>
+                </thead>
+                <tbody data-mode="filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${t1Filled}</tbody>
+                <tbody data-mode="blank_names" class="${safeMode !== 'blank_names' ? 'hidden' : ''}">${t1BlankNames}</tbody>
+                <tbody data-mode="blank_all" class="${safeMode !== 'blank_all' ? 'hidden' : ''}">${t1BlankAll}</tbody>
+              </table>
+
+              <div class="section-heading">2. ตารางอ้างอิงคะแนนรวม 2 รอบแรกแยกตามกรรมการ 5 ท่าน (ก.1–ก.5 แต่ละท่านเต็ม 75 คะแนน)</div>
+              <table class="${isCompact ? 'table-compact' : ''}">
+                <thead>
+                  <tr>
+                    <th style="width:5%;">อันดับ</th>
+                    <th style="width:7%;">รหัส</th>
+                    <th style="width:${showCatCol ? 24 : 33}%;" class="text-left">ชื่อ - นามสกุล</th>
+                    ${showCatCol ? '<th style="width:9%;">หมวด</th>' : ''}
+                    <th style="width:7.5%;">ก.1<div class="th-sub">(75)</div></th>
+                    <th style="width:7.5%;">ก.2<div class="th-sub">(75)</div></th>
+                    <th style="width:7.5%;">ก.3<div class="th-sub">(75)</div></th>
+                    <th style="width:7.5%;">ก.4<div class="th-sub">(75)</div></th>
+                    <th style="width:7.5%;">ก.5<div class="th-sub">(75)</div></th>
+                    <th style="width:9%;">รวม 5 ก.<div class="th-sub">(เต็ม 375)</div></th>
+                    <th style="width:8.5%;" class="th-final">เฉลี่ยสุทธิ<div class="th-sub">(เต็ม 75)</div></th>
+                  </tr>
+                </thead>
+                <tbody data-mode="filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${t2Filled}</tbody>
+                <tbody data-mode="blank_names" class="${safeMode !== 'blank_names' ? 'hidden' : ''}">${t2BlankNames}</tbody>
+                <tbody data-mode="blank_all" class="${safeMode !== 'blank_all' ? 'hidden' : ''}">${t2BlankAll}</tbody>
+              </table>
+            `
+          };
+        }
+
+        // 3) สร้างหน้าใบสรุปคะแนนรวมจากรอบทั้งหมดอย่างเป็นทางการ (Official All-Rounds Summary)
+        function buildOverallSummarySheet() {
+          const finalRankMap = new Map();
+          (finalRankingsList || []).forEach((f, idx) => { finalRankMap.set(f.id, { ...f, _idx: idx }); });
+
+          const t1Filled = finalRankingsList.length > 0 ? finalRankingsList.map((f, idx) => {
+            const isWinner = idx === 0 && (f.qaTotal || 0) > 0;
+            const isTop3 = idx < 3;
+            const rawName = f.name || '';
+            const nick = (f.nickname && !rawName.includes(f.nickname)) ? ` (${f.nickname})` : '';
+            const catLabel = f.categoryName || CATEGORIES[f.category] || f.category || '';
+            const cleanAward = (f.award || '').replace(/^[👑🥈🥉]\s*/, '');
+            return `
+              <tr class="${isWinner ? 'row-winner' : ''}">
+                <td class="bold">${isWinner ? '👑 1' : (f.finalRank || idx + 1)}</td>
+                <td class="col-id">${escapePrintHtml(f.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                <td class="cat-mini">${escapePrintHtml(catLabel)}</td>
+                <td>${f.preTotal || 0}</td>
+                <td>${f.speedTotal || 0}</td>
+                <td>${isTop3 ? (f.qaJudges?.judge1 ?? '-') : '-'}</td>
+                <td>${isTop3 ? (f.qaJudges?.judge2 ?? '-') : '-'}</td>
+                <td>${isTop3 ? (f.qaJudges?.judge3 ?? '-') : '-'}</td>
+                <td>${isTop3 ? (f.qaJudges?.judge4 ?? '-') : '-'}</td>
+                <td>${isTop3 ? (f.qaJudges?.judge5 ?? '-') : '-'}</td>
+                <td class="bold">${isTop3 ? (f.qaTotal || 0) : '-'}</td>
+                <td class="col-final">${isTop3 && (f.qaTotal || 0) > 0 ? Number(f.avgScore || 0).toFixed(2) : '-'}</td>
+                <td class="col-award">${escapePrintHtml(cleanAward || '-')}</td>
+              </tr>
+            `;
+          }).join('') : `<tr><td colspan="14" style="padding:14px; color:#666;">ยังไม่มีข้อมูลคะแนนรอบชิงชนะเลิศ (สามารถสลับไปใช้โหมด "ใบเปล่า" ด้านบนได้)</td></tr>`;
+
+          const blankAwards = ['ชนะเลิศ (The Winner)', 'รองชนะเลิศอันดับ 1', 'รองชนะเลิศอันดับ 2', 'รองชนะเลิศอันดับ 3', 'รองชนะเลิศอันดับ 4'];
+          const t1BlankNames = blankAwards.map((lbl, idx) => {
+            const f = finalRankingsList[idx];
+            return `
+              <tr class="row-blank">
+                <td class="bold">${idx + 1}</td>
+                <td class="col-id">${f ? escapePrintHtml(f.id) : ''}</td>
+                <td class="text-left bold">${f ? escapePrintHtml(f.name || '') : ''}</td>
+                <td class="cat-mini">${f ? escapePrintHtml(f.categoryName || CATEGORIES[f.category] || '') : ''}</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                <td class="col-final"></td>
+                <td style="color:#64748b; font-size:9px;">${lbl}</td>
+              </tr>
+            `;
+          }).join('');
+
+          const t1BlankAll = blankAwards.map((lbl, idx) => `
+            <tr class="row-blank">
+              <td class="bold">${idx + 1}</td><td></td><td class="text-left"></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+              <td class="col-final"></td>
+              <td style="color:#64748b; font-size:9px;">${lbl}</td>
+            </tr>
+          `).join('');
+
+          // ตารางที่ 2: ภาพรวมคะแนนทุกรอบของผู้เข้าประกวดทั้งหมด (29 คน)
+          const allOverview = (allContestants || []).map(c => {
+            let blackSum = 0, grandSum = 0, speedSum = 0, qaSum = 0;
+            let hasSpeed = false, hasQa = false;
+            judges.forEach(jId => {
+              const rB = getMainRoundRecord(jId, c.id, 'blackroom', c.category);
+              const rG = getMainRoundRecord(jId, c.id, 'grand', c.category);
+              const rS = getMainRoundRecord(jId, c.id, 'speed', c.category);
+              const rQ = getMainRoundRecord(jId, c.id, 'qa', c.category);
+              if (rB) blackSum += (rB.total_score || 0);
+              if (rG) grandSum += (rG.total_score || 0);
+              if (rS) { speedSum += (rS.total_score || 0); hasSpeed = true; }
+              if (rQ) { qaSum += (rQ.total_score || 0); hasQa = true; }
+            });
+            const preTotal = blackSum + grandSum;
+            const fin = finalRankMap.get(c.id);
+            return {
+              c,
+              blackSum,
+              grandSum,
+              preTotal,
+              speedSum,
+              hasSpeed,
+              qaSum,
+              hasQa,
+              qaAvg: Number((qaSum / 5).toFixed(2)),
+              finalRank: fin ? (fin.finalRank || 99) : 99,
+              award: fin ? (fin.award || '') : ''
+            };
+          });
+
+          allOverview.sort((a, b) => {
+            if (a.finalRank !== b.finalRank) return a.finalRank - b.finalRank;
+            if (b.preTotal !== a.preTotal) return b.preTotal - a.preTotal;
+            return (a.c.id || '').localeCompare(b.c.id || '');
+          });
+
+          const t2Filled = allOverview.map((item, idx) => {
+            const { c, blackSum, grandSum, preTotal, speedSum, hasSpeed, qaSum, hasQa, qaAvg, finalRank, award } = item;
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = CATEGORIES[c.category] || c.category || '';
+            const isTop5 = finalRank <= 5 && preTotal > 0;
+            const cleanAward = (award || '').replace(/^[👑🥈🥉]\s*/, '');
+            const statusLabel = cleanAward || (isTop5 ? `TOP ${finalRank}` : '-');
+            return `
+              <tr class="${finalRank === 1 && qaSum > 0 ? 'row-winner' : ''}">
+                <td class="bold">${idx + 1}</td>
+                <td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                <td class="cat-mini">${escapePrintHtml(catLabel)}</td>
+                <td>${blackSum || '-'}</td>
+                <td>${grandSum || '-'}</td>
+                <td class="bold">${preTotal || '-'}</td>
+                <td>${hasSpeed ? speedSum : '-'}</td>
+                <td>${hasQa ? qaSum : '-'}</td>
+                <td class="col-final">${hasQa ? qaAvg.toFixed(2) : '-'}</td>
+                <td class="col-award">${escapePrintHtml(statusLabel)}</td>
+              </tr>
+            `;
+          }).join('');
+
+          const allById = getByIdOrder(allContestants);
+          const t2BlankNames = allById.map((c, idx) => {
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = CATEGORIES[c.category] || c.category || '';
+            return `
+              <tr class="row-blank">
+                <td>${idx + 1}</td>
+                <td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                <td class="cat-mini">${escapePrintHtml(catLabel)}</td>
+                <td></td><td></td><td></td><td></td><td></td><td class="col-final"></td><td></td>
+              </tr>
+            `;
+          }).join('');
+
+          const t2BlankAll = Array.from({ length: Math.max(10, allById.length) }, (_, idx) => `
+            <tr class="row-blank">
+              <td>${idx + 1}</td><td></td><td class="text-left"></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td><td class="col-final"></td><td></td>
+            </tr>
+          `).join('');
+
+          return {
+            title: 'ใบสรุปผลคะแนนรวมทุกรอบอย่างเป็นทางการ — RMUTK FRESHY 2026',
+            badgeHtml: `<span class="cat-pill">สรุปคะแนนรวมทุกรอบ (4 รอบหลัก)</span><span class="cat-pill cat-pill-sub">Official Final Summary</span>`,
+            subFilled: 'รายงานสรุปผลคะแนนรวมทุกรอบและผลการตัดสินชี้ขาดอย่างเป็นทางการ (กรรมการ 5 ท่าน ก.1–ก.5)',
+            subBlank: 'แบบฟอร์มใบสรุปคะแนนรวมทุกรอบ — ใบคะแนนเปล่าสำหรับกรอกด้วยมือ (กรรมการ 5 ท่าน ก.1–ก.5)',
+            bodyHtml: `
+              <div class="formula-box">
+                <strong>โครงสร้างคะแนน 4 รอบหลัก (กรรมการ 5 ท่าน ก.1–ก.5):</strong>
+                <strong>รอบคัดเลือก</strong> = ห้องดำ (25×5 = 125) + Grand Opening (50×5 = 250) ➔ รวม <strong>375</strong> คัด <strong>TOP 5</strong>
+                • <strong>รอบ Speed</strong> (50×5 = 250) คัด <strong>TOP 3</strong>
+                • <strong>รอบชิง TOP 3 ตอบคำถาม</strong> (ล้างคะแนนเดิม • 100×5 = 500 ➔ ÷ 5 = <strong>คะแนนสุทธิเต็ม 100</strong> ตัดสิน The Winner)
+              </div>
+
+              <div class="section-heading">1. ตารางผลการตัดสินชี้ขาดอย่างเป็นทางการ (TOP 5 & TOP 3 ตอบคำถามตัดสิน The Winner)</div>
+              <table class="table-compact">
+                <thead>
+                  <tr>
+                    <th style="width:4.5%;">ที่</th>
+                    <th style="width:5.5%;">รหัส</th>
+                    <th style="width:17%;" class="text-left">ชื่อ - นามสกุล</th>
+                    <th style="width:7.5%;">หมวด</th>
+                    <th style="width:6.5%;">คัดเลือก<div class="th-sub">(375)</div></th>
+                    <th style="width:6.5%;">Speed<div class="th-sub">(250)</div></th>
+                    <th style="width:5.2%;">ก.1<div class="th-sub">(100)</div></th>
+                    <th style="width:5.2%;">ก.2<div class="th-sub">(100)</div></th>
+                    <th style="width:5.2%;">ก.3<div class="th-sub">(100)</div></th>
+                    <th style="width:5.2%;">ก.4<div class="th-sub">(100)</div></th>
+                    <th style="width:5.2%;">ก.5<div class="th-sub">(100)</div></th>
+                    <th style="width:6.8%;">รวมชิง<div class="th-sub">(500)</div></th>
+                    <th style="width:7.7%;" class="th-final">เฉลี่ย<div class="th-sub">(100)</div></th>
+                    <th style="width:12%;">รางวัลเกียรติยศ</th>
+                  </tr>
+                </thead>
+                <tbody data-mode="filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${t1Filled}</tbody>
+                <tbody data-mode="blank_names" class="${safeMode !== 'blank_names' ? 'hidden' : ''}">${t1BlankNames}</tbody>
+                <tbody data-mode="blank_all" class="${safeMode !== 'blank_all' ? 'hidden' : ''}">${t1BlankAll}</tbody>
+              </table>
+
+              <div class="section-heading">2. ตารางสรุปคะแนนรวมทุกรอบของผู้เข้าประกวดทั้งหมด (ภาพรวมครบทั้ง 4 รอบการประกวด)</div>
+              <table class="table-compact">
+                <thead>
+                  <tr>
+                    <th style="width:4.5%;">ที่</th>
+                    <th style="width:6%;">รหัส</th>
+                    <th style="width:23.5%;" class="text-left">ชื่อ - นามสกุล</th>
+                    <th style="width:9%;">หมวด</th>
+                    <th style="width:7.5%;">1. ห้องดำ<div class="th-sub">(125)</div></th>
+                    <th style="width:7.5%;">2. Grand<div class="th-sub">(250)</div></th>
+                    <th style="width:8%;">รวมคัดเลือก<div class="th-sub">(375)</div></th>
+                    <th style="width:7.5%;">3. Speed<div class="th-sub">(250)</div></th>
+                    <th style="width:7.5%;">4. ชิงฯ<div class="th-sub">(500)</div></th>
+                    <th style="width:8%;" class="th-final">เฉลี่ยชิง<div class="th-sub">(100)</div></th>
+                    <th style="width:11%;">สถานะ / รางวัล</th>
+                  </tr>
+                </thead>
+                <tbody data-mode="filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${t2Filled}</tbody>
+                <tbody data-mode="blank_names" class="${safeMode !== 'blank_names' ? 'hidden' : ''}">${t2BlankNames}</tbody>
+                <tbody data-mode="blank_all" class="${safeMode !== 'blank_all' ? 'hidden' : ''}">${t2BlankAll}</tbody>
+              </table>
+            `
+          };
+        }
+
+        // รวบรวมหน้าทั้งหมดตาม scope ที่เลือก
+        const sheets = [];
+        const catGroups = getCategoryGroups();
+
+        if (scope === 'blackroom' || scope === 'grand') {
+          catGroups.forEach(g => sheets.push(buildSingleRoundSheet(scope, g.contestants, g.badge, g.showCatCol)));
+        } else if (scope === 'pre_summary') {
+          catGroups.forEach(g => sheets.push(buildPreSummarySheet(g.contestants, g.badge, g.showCatCol)));
+        } else if (scope === 'speed') {
+          sheets.push(buildSingleRoundSheet('speed', top5List, 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย (TOP 5)', true));
+        } else if (scope === 'qa') {
+          sheets.push(buildSingleRoundSheet('qa', top3List, 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย (TOP 3)', true));
+        } else if (scope === 'overall') {
+          sheets.push(buildOverallSummarySheet());
+        } else if (scope === 'all_pack') {
+          catGroups.forEach(g => sheets.push(buildSingleRoundSheet('blackroom', g.contestants, g.badge, g.showCatCol)));
+          catGroups.forEach(g => sheets.push(buildSingleRoundSheet('grand', g.contestants, g.badge, g.showCatCol)));
+          catGroups.forEach(g => sheets.push(buildPreSummarySheet(g.contestants, g.badge, g.showCatCol)));
+          sheets.push(buildSingleRoundSheet('speed', top5List, 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย (TOP 5)', true));
+          sheets.push(buildSingleRoundSheet('qa', top3List, 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย (TOP 3)', true));
+          sheets.push(buildOverallSummarySheet());
+        }
+
+        if (sheets.length === 0) {
+          alert('ยังไม่มีข้อมูลผู้เข้าประกวดสำหรับสร้างใบคะแนน');
+          return;
+        }
+
+        const printWindow = window.open('', '_blank', 'width=900,height=1050');
         if (!printWindow) {
           alert('เบราว์เซอร์บล็อกหน้าต่างป๊อปอัป กรุณาอนุญาตป๊อปอัปเพื่อพิมพ์ใบคะแนน');
           return;
         }
 
-        const filledRowsHtml = list.length > 0
-          ? list.map((f, idx) => {
-              const isWinner = idx === 0;
-              const isTop3 = idx < 3;
-              return `
-                <tr ${isWinner ? 'style="font-weight:bold; background-color:#fef9e7;"' : ''}>
-                  <td>${f.finalRank}</td>
-                  <td>${escapePrintHtml(f.id)}</td>
-                  <td class="text-left">${escapePrintHtml(f.name)}</td>
-                  <td>${escapePrintHtml(f.categoryName)}</td>
-                  <td>${f.speedTotal || 0}</td>
-                  <td>${isTop3 ? (f.qaJudges?.judge1 || 0) : '-'}</td>
-                  <td>${isTop3 ? (f.qaJudges?.judge2 || 0) : '-'}</td>
-                  <td>${isTop3 ? (f.qaJudges?.judge3 || 0) : '-'}</td>
-                  <td>${isTop3 ? (f.qaJudges?.judge4 || 0) : '-'}</td>
-                  <td>${isTop3 ? (f.qaJudges?.judge5 || 0) : '-'}</td>
-                  <td>${isTop3 ? f.qaTotal : '-'}</td>
-                  <td class="bg-highlight" style="font-size:12px;">${isTop3 ? f.avgScore.toFixed(2) : '-'}</td>
-                  <td><strong>${escapePrintHtml(f.award || '-')}</strong></td>
-                </tr>
-              `;
-            }).join('')
-          : `<tr><td colspan="13" style="padding:18px; color:#666;">ยังไม่มีข้อมูลคะแนนในระบบ (สามารถสลับไปใช้โหมด "ใบคะแนนเปล่า" ด้านบนได้)</td></tr>`;
+        const totalSheets = sheets.length;
+        const barTitleText = totalSheets === 1 ? sheets[0].title : `ชุดใบสรุปคะแนนการประกวด RMUTK FRESHY 2026 (${totalSheets} ชุด • A4 แนวตั้ง)`;
 
-        const blankAwards = ['ชนะเลิศ (The Winner)', 'รองชนะเลิศอันดับ 1', 'รองชนะเลิศอันดับ 2', 'รองชนะเลิศอันดับ 3', 'รองชนะเลิศอันดับ 4'];
-        const blankRowsHtml = blankAwards.map((awardLabel, idx) => `
-          <tr class="blank-row">
-            <td>${idx + 1}</td>
-            <td></td>
-            <td class="text-left"></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td class="bg-highlight"></td>
-            <td style="color:#666; font-size:9.5px;">${awardLabel}</td>
-          </tr>
+        const pagesHtml = sheets.map((sheet, idx) => `
+          <section class="page-sheet">
+            <header class="sheet-header">
+              <img src="${logoUrl}" alt="RMUTK FRESHY 2026" class="sheet-logo" onerror="this.style.display='none'" />
+              <div class="header-text">
+                <h1>ใบสรุปผลคะแนนการประกวด RMUTK FRESHY 2026</h1>
+                <div class="header-sub">
+                  ${sheet.badgeHtml}
+                  <span class="sub-desc js-sub-desc" data-filled="${escapePrintHtml(sheet.subFilled)}" data-blank="${escapePrintHtml(sheet.subBlank)}">${escapePrintHtml(safeMode === 'filled' ? sheet.subFilled : sheet.subBlank)}</span>
+                </div>
+              </div>
+            </header>
+
+            ${sheet.bodyHtml}
+
+            ${signatureBlock5Html}
+
+            <div class="page-foot-meta">
+              <span>RMUTK FRESHY 2026 Scoring System • ${escapePrintHtml(sheet.title)}</span>
+              <span>ชุดที่ ${idx + 1} / ${totalSheets} • พิมพ์เมื่อ: ${escapePrintHtml(printedAt)}</span>
+            </div>
+          </section>
         `).join('');
 
-        let html = `
-        <!DOCTYPE html>
+        const docHtml = `<!DOCTYPE html>
         <html lang="th">
         <head>
           <meta charset="UTF-8">
-          <title>ใบคะแนนอย่างเป็นทางการ RMUTK FRESHY 2026</title>
+          <title>${escapePrintHtml(barTitleText)}</title>
+          <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet" />
           <style>
-            @page { size: A4 landscape; margin: 0.8cm; }
-            body { font-family: 'Prompt', 'Sarabun', sans-serif; margin: 0; padding: 0; color: #000; font-size: 11px; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .no-print-bar {
-              position: sticky; top: 0; z-index: 100; background: #111FA2; color: #fff;
-              padding: 9px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
-              box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            @page {
+              size: A4 portrait;
+              margin: 0.95cm 0.85cm;
             }
-            .bar-title { font-size: 13px; font-weight: 700; color: #FFDE42; }
-            .bar-actions { display: flex; flex-wrap: wrap; gap: 6px; }
-            .bar-actions button {
-              border: none; border-radius: 7px; padding: 6px 12px; font-family: inherit;
-              font-size: 12px; font-weight: 700; cursor: pointer;
+            * { box-sizing: border-box; }
+            body {
+              margin: 0;
+              padding: 0;
+              font-family: 'Sarabun', 'Prompt', 'Tahoma', sans-serif;
+              color: #111;
+              background: #e5e7eb;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .no-print-bar {
+              position: sticky;
+              top: 0;
+              z-index: 100;
+              background: #111FA2;
+              color: #fff;
+              padding: 10px 18px;
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+              justify-content: space-between;
+              gap: 8px;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+              font-family: 'Prompt', sans-serif;
+            }
+            .no-print-bar .bar-title { font-size: 13px; font-weight: 600; color: #FFDE42; }
+            .no-print-bar .bar-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+            .no-print-bar button {
+              border: none;
+              border-radius: 8px;
+              padding: 7px 12px;
+              font-family: 'Prompt', sans-serif;
+              font-size: 12px;
+              font-weight: 700;
+              cursor: pointer;
             }
             .btn-mode { background: rgba(255,255,255,0.16); color: #fff; }
             .btn-mode.active { background: #FFDE42; color: #111FA2; }
             .btn-print-now { background: #10b981; color: #fff; }
             .btn-close-win { background: rgba(255,255,255,0.18); color: #fff; }
-            .sheet-wrap { padding: 14px 18px; }
-            h2 { text-align: center; margin-bottom: 2px; font-size: 18px; font-weight: bold; }
-            h3 { text-align: center; margin-top: 2px; margin-bottom: 2px; font-size: 14px; font-weight: bold; color: #333; }
-            p.sub { text-align: center; font-size: 11px; color: #555; margin-top: 0; margin-bottom: 12px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; margin-bottom: 15px; }
-            th, td { border: 1px solid #000; padding: 5px 4px; text-align: center; font-size: 10px; }
-            tr.blank-row td { height: 34px; }
-            th { background-color: #f2f2f2; font-weight: bold; }
-            .text-left { text-align: left; padding-left: 6px; }
-            .bg-highlight { background-color: #fff9db; font-weight: bold; }
-            .signature-box { margin-top: 25px; display: flex; justify-content: space-around; }
-            .sign-col { text-align: center; font-size: 11px; }
+
+            .pages-wrapper { padding: 14px 0 30px; }
+            .page-sheet {
+              width: 210mm;
+              margin: 0 auto 18px;
+              background: #fff;
+              padding: 11mm 10mm;
+              box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+            }
+            .sheet-header {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              border-bottom: 2.5px solid #111FA2;
+              padding-bottom: 8px;
+              margin-bottom: 9px;
+            }
+            .sheet-logo { height: 48px; width: auto; object-fit: contain; flex-shrink: 0; }
+            .header-text { flex: 1; }
+            .header-text h1 {
+              margin: 0 0 4px 0;
+              font-family: 'Prompt', 'Sarabun', sans-serif;
+              font-size: 16px;
+              font-weight: 700;
+              color: #111FA2;
+            }
+            .header-sub {
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+              gap: 6px;
+            }
+            .cat-pill {
+              display: inline-block;
+              background: #111FA2;
+              color: #FFDE42;
+              font-family: 'Prompt', 'Sarabun', sans-serif;
+              font-weight: 700;
+              font-size: 11.5px;
+              padding: 2px 10px;
+              border-radius: 999px;
+            }
+            .cat-pill-sub {
+              background: #fef3c7;
+              color: #111FA2;
+              border: 1px solid #d4b106;
+            }
+            .sub-desc { font-size: 11.5px; font-weight: 600; color: #222; }
+
+            .formula-box {
+              background: #fffdf2;
+              border: 1px solid #d4b106;
+              border-radius: 6px;
+              padding: 6px 10px;
+              margin-bottom: 10px;
+              font-size: 11px;
+              line-height: 1.45;
+            }
+            .formula-box strong { color: #111FA2; }
+
+            .section-heading {
+              font-family: 'Prompt', 'Sarabun', sans-serif;
+              font-size: 12px;
+              font-weight: 700;
+              color: #111FA2;
+              background: #eef2ff;
+              border-left: 4px solid #111FA2;
+              padding: 4px 9px;
+              margin: 10px 0 6px;
+              page-break-after: avoid;
+              break-after: avoid;
+            }
+
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              table-layout: fixed;
+              margin-bottom: 10px;
+            }
+            thead { display: table-header-group; }
+            tr { page-break-inside: avoid; break-inside: avoid; }
+            th, td {
+              border: 1px solid #222;
+              padding: 5.5px 3.5px;
+              text-align: center;
+              vertical-align: middle;
+              font-size: 11px;
+              word-wrap: break-word;
+            }
+            thead th {
+              background: #eef2ff;
+              font-weight: 700;
+              font-size: 10px;
+              line-height: 1.2;
+              padding: 5.5px 2.5px;
+            }
+            thead th.th-final {
+              background: #fef3c7;
+              color: #111FA2;
+            }
+            table.table-compact th,
+            table.table-compact td {
+              padding: 3.5px 2.5px;
+              font-size: 9.8px;
+            }
+            table.table-compact thead th {
+              font-size: 9px;
+              padding: 4px 2px;
+            }
+            .th-sub { font-size: 8.5px; font-weight: 600; color: #334155; }
+            .cell-sub { font-size: 8px; color: #64748b; line-height: 1.1; margin-top: 1px; }
+            .text-left { text-align: left !important; padding-left: 6px !important; }
+            .bold { font-weight: 700; }
+            .col-id { font-weight: 700; color: #111FA2; }
+            .cat-mini { font-size: 9.5px; color: #334155; font-weight: 600; }
+            .col-final {
+              background: #fffbeb;
+              font-weight: 700;
+              font-size: 11.5px;
+              color: #111FA2;
+            }
+            table.table-compact .col-final { font-size: 10.5px; }
+            .col-award { font-size: 9.5px; font-weight: 700; color: #92400e; }
+            .row-winner { background: #fefce8; }
+            tr.row-blank td { height: 26px; }
+            table.table-compact tr.row-blank td { height: 21px; }
+
+            .signature-block-5 {
+              margin-top: 18px;
+              page-break-inside: avoid;
+              break-inside: avoid;
+            }
+            .sig-row-3 {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 10px;
+              margin-bottom: 14px;
+            }
+            .sig-row-2 {
+              display: flex;
+              justify-content: center;
+              gap: 56px;
+            }
+            .sign-col {
+              text-align: center;
+              font-size: 10.5px;
+              line-height: 1.75;
+              white-space: nowrap;
+            }
+            .sign-role { font-weight: 700; }
+
+            .page-foot-meta {
+              margin-top: 12px;
+              padding-top: 6px;
+              border-top: 1px solid #cbd5e1;
+              display: flex;
+              justify-content: space-between;
+              font-size: 9.5px;
+              color: #64748b;
+            }
             .hidden { display: none !important; }
+
             @media print {
+              body { background: #fff; }
               .no-print-bar { display: none !important; }
-              .sheet-wrap { padding: 0; }
+              .pages-wrapper { padding: 0; }
+              .page-sheet {
+                width: auto;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+              }
+              .page-sheet:not(:last-child) {
+                page-break-after: always;
+                break-after: page;
+              }
             }
           </style>
         </head>
         <body>
           <div class="no-print-bar">
-            <div class="bar-title">📄 ใบคะแนนอย่างเป็นทางการ (A4 แนวนอน)</div>
+            <div class="bar-title">📄 ${escapePrintHtml(barTitleText)}</div>
             <div class="bar-actions">
-              <button type="button" id="btn-mode-filled" class="btn-mode ${!startBlank ? 'active' : ''}" onclick="setSheetMode('filled')">📊 แสดงคะแนนจากระบบ</button>
-              <button type="button" id="btn-mode-blank" class="btn-mode ${startBlank ? 'active' : ''}" onclick="setSheetMode('blank')">📄 ใบคะแนนเปล่า</button>
+              <button type="button" id="sc-mode-filled" class="btn-mode ${safeMode === 'filled' ? 'active' : ''}" onclick="setScoreSheetMode('filled')">📊 แสดงคะแนน</button>
+              <button type="button" id="sc-mode-blank_names" class="btn-mode ${safeMode === 'blank_names' ? 'active' : ''}" onclick="setScoreSheetMode('blank_names')">📝 ใบเปล่า (มีรายชื่อ)</button>
+              <button type="button" id="sc-mode-blank_all" class="btn-mode ${safeMode === 'blank_all' ? 'active' : ''}" onclick="setScoreSheetMode('blank_all')">📄 ใบเปล่าทั้งหมด</button>
               <button type="button" class="btn-print-now" onclick="window.print()">🖨️ สั่งพิมพ์ทันที</button>
               <button type="button" class="btn-close-win" onclick="window.close()">ปิด</button>
             </div>
           </div>
 
-          <div class="sheet-wrap">
-            <h2>ผลการตัดสินการประกวด RMUTK FRESHY 2026</h2>
-            <h3 id="sheet-sub-heading">${startBlank ? 'แบบฟอร์มใบคะแนนอย่างเป็นทางการ — ใบคะแนนเปล่า (Blank Official Score Sheet)' : 'รายงานผลการตัดสินชี้ขาดอย่างเป็นทางการ (Official Final Decision)'}</h3>
-            <p class="sub">สูตรการคิดคะแนนรอบตัดสิน 3 คนสุดท้าย: คะแนนรอบตอบคำถาม (ล้างคะแนนเดิม) ÷ 5 กรรมการ | พิมพ์เมื่อ: ${new Date().toLocaleString('th-TH')}</p>
-
-            <table>
-              <thead>
-                <tr>
-                  <th width="6%">อันดับ</th>
-                  <th width="8%">รหัส</th>
-                  <th width="20%" class="text-left">ชื่อ-นามสกุล</th>
-                  <th width="12%">หมวดหมู่ตัวแทน</th>
-                  <th width="10%">รอบ Speed<br>(เต็ม 250)</th>
-                  <th width="6%">ก.1 (100)</th>
-                  <th width="6%">ก.2 (100)</th>
-                  <th width="6%">ก.3 (100)</th>
-                  <th width="6%">ก.4 (100)</th>
-                  <th width="6%">ก.5 (100)</th>
-                  <th width="8%">รวมตอบคำถาม<br>(เต็ม 500)</th>
-                  <th width="10%" class="bg-highlight">คะแนนเฉลี่ยสุทธิ<br>(เต็ม 100)</th>
-                  <th width="18%">รางวัลเกียรติยศ</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-filled" class="${startBlank ? 'hidden' : ''}">
-                ${filledRowsHtml}
-              </tbody>
-              <tbody id="tbody-blank" class="${!startBlank ? 'hidden' : ''}">
-                ${blankRowsHtml}
-              </tbody>
-            </table>
-
-            <div class="signature-box">
-              <div class="sign-col">
-                ลงชื่อ..........................................................<br><br>
-                (..........................................................)<br>
-                เจ้าหน้าที่ผู้บันทึกคะแนน
-              </div>
-              <div class="sign-col">
-                ลงชื่อ..........................................................<br><br>
-                (..........................................................)<br>
-                ประธานคณะกรรมการตัดสิน
-              </div>
-            </div>
+          <div class="pages-wrapper">
+            ${pagesHtml}
           </div>
+
           <script>
-            function setSheetMode(mode) {
-              var isBlank = mode === 'blank';
-              document.getElementById('tbody-filled').classList.toggle('hidden', isBlank);
-              document.getElementById('tbody-blank').classList.toggle('hidden', !isBlank);
-              document.getElementById('btn-mode-filled').classList.toggle('active', !isBlank);
-              document.getElementById('btn-mode-blank').classList.toggle('active', isBlank);
-              document.getElementById('sheet-sub-heading').textContent = isBlank
-                ? 'แบบฟอร์มใบคะแนนอย่างเป็นทางการ — ใบคะแนนเปล่า (Blank Official Score Sheet)'
-                : 'รายงานผลการตัดสินชี้ขาดอย่างเป็นทางการ (Official Final Decision)';
+            function setScoreSheetMode(mode) {
+              var modes = ['filled', 'blank_names', 'blank_all'];
+              modes.forEach(function(m) {
+                var btn = document.getElementById('sc-mode-' + m);
+                if (btn) btn.classList.toggle('active', m === mode);
+              });
+              document.querySelectorAll('tbody[data-mode]').forEach(function(tb) {
+                tb.classList.toggle('hidden', tb.getAttribute('data-mode') !== mode);
+              });
+              document.querySelectorAll('.js-sub-desc').forEach(function(el) {
+                el.textContent = mode === 'filled' ? el.getAttribute('data-filled') : el.getAttribute('data-blank');
+              });
             }
-            window.onload = function() { setTimeout(function() { window.print(); }, 250); };
+            window.onload = function() {
+              setTimeout(function() { window.print(); }, 350);
+            };
           <\/script>
         </body>
-        </html>
-        `;
+        </html>`;
 
         printWindow.document.open();
-        printWindow.document.write(html);
+        printWindow.document.write(docHtml);
         printWindow.document.close();
       }
 
