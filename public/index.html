@@ -331,7 +331,11 @@
           </button>
         </div>
 
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
+          <button onclick="openPrintCriteriaModal()"
+            class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-amber-400/30">
+            <i class="fas fa-clipboard-list"></i> พิมพ์ใบเกณฑ์ (แนวตั้ง)
+          </button>
           <button onclick="printScoreSheet()"
             class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-purple-500/30">
             <i class="fas fa-print"></i> พิมพ์ใบคะแนน
@@ -612,6 +616,98 @@
           <button onclick="closeImageModal()"
             class="px-4 py-1.5 rounded-xl bg-gray-700/60 hover:bg-gray-600 text-gray-200 text-xs font-semibold transition active:scale-95">
             ปิดหน้าต่าง (Esc)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: พิมพ์ใบเกณฑ์การให้คะแนนแต่ละประเภท (A4 แนวตั้ง) -->
+    <div id="print-criteria-modal"
+      class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden"
+      onclick="closePrintCriteriaModal()">
+      <div
+        class="modal-dialog glass-panel max-w-lg w-full rounded-3xl p-6 md:p-7 border-2 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.35)] relative"
+        onclick="event.stopPropagation()">
+        <button type="button" onclick="closePrintCriteriaModal()"
+          class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-[#FFDE42] text-white hover:text-[#111FA2] flex items-center justify-center transition-all duration-200"
+          title="ปิดหน้าต่าง (Esc)">
+          <i class="fas fa-times text-base"></i>
+        </button>
+
+        <div class="flex items-center gap-3 mb-5 pr-8">
+          <div
+            class="w-12 h-12 rounded-2xl bg-[#FFDE42] text-[#111FA2] flex items-center justify-center shadow-[0_0_20px_rgba(255,222,66,0.4)] shrink-0">
+            <i class="fas fa-clipboard-list text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-[#FFDE42] gold-glow">พิมพ์ใบเกณฑ์การให้คะแนน</h3>
+            <p class="text-xs text-gray-300">รูปแบบกระดาษ A4 แนวตั้ง (Portrait) แยกตามประเภทผู้เข้าประกวด</p>
+          </div>
+        </div>
+
+        <div class="space-y-4 text-left">
+          <!-- เลือกประเภทผู้เข้าประกวด -->
+          <div>
+            <label for="print-criteria-category" class="block text-xs font-semibold text-[#FFDE42] mb-1.5">
+              <i class="fas fa-users mr-1"></i> ประเภทผู้เข้าประกวด
+            </label>
+            <select id="print-criteria-category"
+              class="w-full input-dark p-3 rounded-xl text-sm text-white font-semibold border border-[#5478FF]/40 focus:border-[#FFDE42] focus:outline-none">
+              <option value="all">ทุกประเภท (แยกหน้าละ 1 ประเภท — 5 หน้า A4 แนวตั้ง)</option>
+              <option value="miss">Miss</option>
+              <option value="mister">Mister</option>
+              <option value="queen">Miss Queen</option>
+              <option value="congeniality">Miss Congeniality</option>
+              <option value="jumbo">Miss Jumbo</option>
+              <option value="finalists">ผู้ผ่านเข้ารอบ TOP 5 / TOP 3 (ตามคะแนนปัจจุบัน)</option>
+            </select>
+          </div>
+
+          <!-- เลือกรอบการประกวด -->
+          <div>
+            <label for="print-criteria-round" class="block text-xs font-semibold text-[#FFDE42] mb-1.5">
+              <i class="fas fa-layer-group mr-1"></i> รอบการประกวด / ชุดเกณฑ์คะแนน
+            </label>
+            <select id="print-criteria-round"
+              class="w-full input-dark p-3 rounded-xl text-sm text-white font-semibold border border-[#5478FF]/40 focus:border-[#FFDE42] focus:outline-none">
+              <option value="blackroom">1. รอบห้องดำ (เต็ม 25 คะแนน)</option>
+              <option value="grand">2. รอบ Grand Opening (เต็ม 50 คะแนน)</option>
+              <option value="pre_both">รอบคัดเลือกทั้ง 2 รอบ (ห้องดำ 25 + Grand Opening 50 ในหน้าเดียว)</option>
+              <option value="speed">3. รอบ TOP 5 - Speed (เต็ม 50 คะแนน)</option>
+              <option value="qa">4. รอบ TOP 3 - ตอบคำถามชี้ขาด (เต็ม 100 คะแนน)</option>
+            </select>
+          </div>
+
+          <!-- รูปแบบช่องคะแนน -->
+          <div>
+            <label for="print-criteria-fill" class="block text-xs font-semibold text-[#FFDE42] mb-1.5">
+              <i class="fas fa-pen-fancy mr-1"></i> รูปแบบข้อมูลในตารางคะแนน
+            </label>
+            <select id="print-criteria-fill"
+              class="w-full input-dark p-3 rounded-xl text-sm text-white font-semibold border border-[#5478FF]/40 focus:border-[#FFDE42] focus:outline-none">
+              <option value="blank">ช่องว่างเปล่า (สำหรับกรรมการเขียนให้คะแนนด้วยมือ)</option>
+              <option value="judge1">ใส่คะแนนที่บันทึกไว้ของ กรรมการท่านที่ 1</option>
+              <option value="judge2">ใส่คะแนนที่บันทึกไว้ของ กรรมการท่านที่ 2</option>
+              <option value="judge3">ใส่คะแนนที่บันทึกไว้ของ กรรมการท่านที่ 3</option>
+              <option value="judge4">ใส่คะแนนที่บันทึกไว้ของ กรรมการท่านที่ 4</option>
+              <option value="judge5">ใส่คะแนนที่บันทึกไว้ของ กรรมการท่านที่ 5</option>
+            </select>
+          </div>
+
+          <div class="p-3 bg-blue-950/60 border border-[#5478FF]/30 rounded-xl text-xs text-blue-200 flex items-start gap-2">
+            <i class="fas fa-file-alt text-[#FFDE42] mt-0.5 shrink-0"></i>
+            <span>เอกสารจะจัดหน้าเป็นขนาด <b>A4 แนวตั้ง</b> พร้อมตารางรายละเอียดเกณฑ์ทุกข้อ รายชื่อผู้เข้าประกวด และช่องลงนามกรรมการ</span>
+          </div>
+        </div>
+
+        <div class="flex gap-3 mt-6">
+          <button type="button" onclick="closePrintCriteriaModal()"
+            class="w-1/3 py-3 rounded-xl border border-gray-500 text-gray-300 hover:bg-gray-800 transition font-semibold text-sm active:scale-95">
+            ยกเลิก
+          </button>
+          <button type="button" onclick="printCriteriaSheet()"
+            class="w-2/3 py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-[1.02] active:scale-95 transition text-sm flex items-center justify-center gap-2">
+            <i class="fas fa-print"></i> พิมพ์ใบเกณฑ์ (A4 แนวตั้ง)
           </button>
         </div>
       </div>
@@ -1602,6 +1698,7 @@
         if (e.key === 'Escape') {
           closeImageModal();
           closeModal();
+          closePrintCriteriaModal();
         }
       });
 
@@ -2204,6 +2301,615 @@
 
         printWindow.document.write(html);
         printWindow.document.close();
+      }
+
+      // ==========================================
+      // Print Criteria Sheet by Category (A4 Portrait)
+      // ==========================================
+      async function openPrintCriteriaModal() {
+        if (!allContestants || allContestants.length === 0) {
+          await loadContestants();
+        }
+        const modal = document.getElementById('print-criteria-modal');
+        if (!modal) return;
+
+        // ตั้งค่าเริ่มต้นให้สอดคล้องกับแท็บที่แอดมินกำลังดูอยู่
+        const catSelect = document.getElementById('print-criteria-category');
+        const roundSelect = document.getElementById('print-criteria-round');
+        if (catSelect && roundSelect) {
+          if (adminCurrentView === 'pre') {
+            const curFilter = document.getElementById('admin-category-filter')?.value || 'all';
+            catSelect.value = curFilter;
+            roundSelect.value = adminPreRoundView === 'all' ? 'pre_both' : (adminPreRoundView || 'blackroom');
+          } else if (adminCurrentView === 'speed') {
+            catSelect.value = 'finalists';
+            roundSelect.value = 'speed';
+          } else if (adminCurrentView === 'top3') {
+            catSelect.value = 'finalists';
+            roundSelect.value = 'qa';
+          } else {
+            catSelect.value = 'all';
+            roundSelect.value = 'blackroom';
+          }
+        }
+
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          modal.classList.add('open');
+        });
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closePrintCriteriaModal() {
+        const modal = document.getElementById('print-criteria-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          modal.classList.remove('open');
+          setTimeout(() => {
+            modal.classList.add('hidden');
+          }, 220);
+          document.body.style.overflow = '';
+        }
+      }
+
+      function escapePrintHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function printCriteriaSheet() {
+        const selectedCat = document.getElementById('print-criteria-category')?.value || 'all';
+        const selectedRound = document.getElementById('print-criteria-round')?.value || 'blackroom';
+        const fillMode = document.getElementById('print-criteria-fill')?.value || 'blank';
+
+        const pageGroups = [];
+        if (selectedCat === 'all') {
+          Object.entries(CATEGORIES).forEach(([catKey, catName]) => {
+            const list = (allContestants || []).filter(c => c.category === catKey);
+            if (list.length > 0) {
+              pageGroups.push({
+                catKey,
+                title: `ประเภท ${catName}`,
+                badge: catName,
+                contestants: list,
+                showCatTag: false
+              });
+            }
+          });
+        } else if (selectedCat === 'finalists') {
+          const isQa = selectedRound === 'qa';
+          const list = isQa
+            ? ((summaryData && summaryData.top3 && summaryData.top3.length > 0) ? summaryData.top3 : getAutoTop3Local())
+            : ((summaryData && summaryData.top5 && summaryData.top5.length > 0) ? summaryData.top5 : getAutoTop5Local());
+          pageGroups.push({
+            catKey: 'finalists',
+            title: isQa ? 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย (TOP 3)' : 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย (TOP 5)',
+            badge: isQa ? 'TOP 3 Finalists' : 'TOP 5 Finalists',
+            contestants: list,
+            showCatTag: true
+          });
+        } else {
+          const catName = CATEGORIES[selectedCat] || selectedCat;
+          const list = (allContestants || []).filter(c => c.category === selectedCat);
+          pageGroups.push({
+            catKey: selectedCat,
+            title: `ประเภท ${catName}`,
+            badge: catName,
+            contestants: list,
+            showCatTag: false
+          });
+        }
+
+        if (pageGroups.length === 0 || pageGroups.every(g => g.contestants.length === 0)) {
+          alert('ยังไม่มีข้อมูลผู้เข้าประกวดในประเภทที่เลือก');
+          return;
+        }
+
+        const printWindow = window.open('', '_blank', 'width=850,height=1050');
+        if (!printWindow) {
+          alert('เบราว์เซอร์บล็อกหน้าต่างป๊อปอัป กรุณาอนุญาตป๊อปอัปเพื่อพิมพ์ใบเกณฑ์');
+          return;
+        }
+
+        const roundTitleMap = {
+          blackroom: 'รอบที่ 1: รอบห้องดำ (คะแนนเต็ม 25 คะแนน)',
+          grand: 'รอบที่ 2: รอบ Grand Opening แนะนำตัว (คะแนนเต็ม 50 คะแนน)',
+          pre_both: 'รอบคัดเลือก 2 รอบแรก: ห้องดำ (25) + Grand Opening (50) — รวม 75 คะแนน',
+          speed: 'รอบที่ 3: รอบ 5 คนสุดท้าย Speed (คะแนนเต็ม 50 คะแนน)',
+          qa: 'รอบที่ 4: รอบชิงชนะเลิศ ตอบคำถามชี้ขาด (คะแนนเต็ม 100 คะแนน)'
+        };
+
+        const isCombined = selectedRound === 'pre_both';
+        const roundsToRender = isCombined ? ['blackroom', 'grand'] : [selectedRound];
+        const judgeNum = fillMode.startsWith('judge') ? fillMode.replace('judge', '') : null;
+        const printedAt = new Date().toLocaleString('th-TH');
+        const logoUrl = `${window.location.origin}/images/logo.png`;
+
+        function buildRoundBlock(roundId, contestants, showCatTag, compact) {
+          const criteriaList = CRITERIA_MAP[roundId] || [];
+          const roundObj = ROUNDS.find(r => r.id === roundId);
+          const maxTotal = roundObj ? roundObj.max : 100;
+          const roundLabel = roundObj ? roundObj.fullTitle : roundId;
+          const isSixCrit = criteriaList.length >= 6;
+          const critColW = isSixCrit ? '8.5%' : '11%';
+          const nameColW = isSixCrit ? '26%' : '32%';
+          const totalColW = isSixCrit ? '11%' : '12%';
+
+          const criteriaLegendHtml = criteriaList.map((crit, idx) => `
+            <div class="crit-item">
+              <span class="crit-num">ข้อ ${idx + 1}:</span>
+              <span>${escapePrintHtml(crit.name.replace(/^\d+\.\s*/, ''))}</span>
+              <span class="crit-pt">(${crit.max} คะแนน)</span>
+            </div>
+          `).join('');
+
+          const criteriaThHtml = criteriaList.map((crit, idx) => `
+            <th style="width:${critColW};">
+              <div>ข้อ ${idx + 1}</div>
+              <div class="th-short">${escapePrintHtml(crit.short)}</div>
+              <div class="th-max">(${crit.max})</div>
+            </th>
+          `).join('');
+
+          const rowsHtml = contestants.map((c, idx) => {
+            const rawName = c.name || '';
+            const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+            const catLabel = showCatTag ? (c.categoryName || CATEGORIES[c.category] || c.category || '') : '';
+            const subLineParts = [];
+            if (catLabel) subLineParts.push(catLabel);
+            if (c.faculty) subLineParts.push(c.faculty);
+            const subLine = subLineParts.length > 0
+              ? `<div class="sub-meta">${escapePrintHtml(subLineParts.join(' • '))}</div>`
+              : '';
+
+            let rec = null;
+            if (judgeNum) {
+              rec = (allScores || []).find(s => s.judge_id === fillMode && s.contestant_id === c.id && s.round_id === roundId);
+            }
+
+            const critTds = criteriaList.map(crit => {
+              const val = rec ? (rec[`score_${crit.id}`] ?? '') : '';
+              return `<td class="score-cell">${val !== '' ? val : ''}</td>`;
+            }).join('');
+
+            const totVal = rec ? (rec.total_score ?? '') : '';
+
+            return `
+              <tr class="${compact ? 'row-compact' : 'row-normal'}">
+                <td class="col-idx">${idx + 1}</td>
+                <td class="col-id">${escapePrintHtml(c.id)}</td>
+                <td class="col-name">
+                  <div class="c-name">${escapePrintHtml(rawName + nick)}</div>
+                  ${subLine}
+                </td>
+                ${critTds}
+                <td class="col-total">${totVal !== '' ? totVal : ''}</td>
+              </tr>
+            `;
+          }).join('');
+
+          return `
+            <div class="round-block ${compact ? 'round-block-compact' : ''}">
+              ${compact ? `<div class="round-section-title">${escapePrintHtml(roundLabel)} — คะแนนเต็ม ${maxTotal} คะแนน</div>` : ''}
+              <div class="criteria-legend ${compact ? 'criteria-legend-compact' : ''}">
+                <div class="legend-title">เกณฑ์การให้คะแนน (เต็ม ${maxTotal} คะแนน):</div>
+                <div class="legend-grid">${criteriaLegendHtml}</div>
+              </div>
+              <table class="score-table">
+                <thead>
+                  <tr>
+                    <th style="width:5%;">ที่</th>
+                    <th style="width:7%;">รหัส</th>
+                    <th style="width:${nameColW};" class="text-left">ชื่อ - นามสกุล</th>
+                    ${criteriaThHtml}
+                    <th style="width:${totalColW};" class="th-total">รวม<div class="th-max">(${maxTotal})</div></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rowsHtml}
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+
+        const totalPages = pageGroups.length;
+        const pagesHtml = pageGroups.map((group, pageIdx) => {
+          const blocksHtml = roundsToRender
+            .map(rId => buildRoundBlock(rId, group.contestants, group.showCatTag, isCombined))
+            .join('');
+
+          const judgeLineHtml = judgeNum
+            ? `<div><strong>กรรมการผู้ตัดสิน:</strong> กรรมการท่านที่ ${judgeNum} <span class="muted">(แสดงคะแนนที่บันทึกไว้ในระบบ)</span></div>
+               <div><strong>วันที่พิมพ์:</strong> ${escapePrintHtml(printedAt)}</div>`
+            : `<div><strong>กรรมการผู้ตัดสิน:</strong> ....................................................................... (กรรมการท่านที่ ......... )</div>
+               <div><strong>วันที่:</strong> ........ / ........ / ............</div>`;
+
+          const notesHtml = !isCombined ? `
+            <div class="notes-box">
+              <div class="notes-title">หมายเหตุ / ข้อเสนอแนะเพิ่มเติมของกรรมการ:</div>
+              <div class="note-line"></div>
+              <div class="note-line"></div>
+            </div>
+          ` : '';
+
+          return `
+            <section class="page-sheet">
+              <header class="sheet-header ${isCombined ? 'sheet-header-compact' : ''}">
+                <img src="${logoUrl}" alt="RMUTK FRESHY 2026" class="sheet-logo" onerror="this.style.display='none'" />
+                <div class="header-text">
+                  <h1>ใบเกณฑ์การให้คะแนนการประกวด RMUTK FRESHY 2026</h1>
+                  <div class="cat-banner">
+                    <span class="cat-pill">${escapePrintHtml(group.title)}</span>
+                    <span class="round-subtitle">${escapePrintHtml(roundTitleMap[selectedRound] || selectedRound)}</span>
+                  </div>
+                </div>
+              </header>
+
+              <div class="judge-meta-bar">
+                ${judgeLineHtml}
+              </div>
+
+              ${blocksHtml}
+
+              ${notesHtml}
+
+              <footer class="signature-area ${isCombined ? 'signature-area-compact' : ''}">
+                <div class="sig-row">
+                  <div class="sig-col">
+                    <div class="sig-line">ลงชื่อ ...........................................................................</div>
+                    <div class="sig-paren">( ........................................................................... )</div>
+                    <div class="sig-role">กรรมการผู้ตัดสิน</div>
+                  </div>
+                </div>
+                <div class="page-foot-meta">
+                  <span>RMUTK FRESHY 2026 Scoring System • พิมพ์เมื่อ ${escapePrintHtml(printedAt)}</span>
+                  <span>${escapePrintHtml(group.badge)} • หน้า ${pageIdx + 1} / ${totalPages}</span>
+                </div>
+              </footer>
+            </section>
+          `;
+        }).join('');
+
+        const docHtml = `<!DOCTYPE html>
+        <html lang="th">
+        <head>
+          <meta charset="UTF-8">
+          <title>ใบเกณฑ์การให้คะแนน RMUTK FRESHY 2026 (A4 แนวตั้ง)</title>
+          <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet" />
+          <style>
+            @page {
+              size: A4 portrait;
+              margin: 1cm 0.9cm;
+            }
+            * { box-sizing: border-box; }
+            body {
+              margin: 0;
+              padding: 0;
+              font-family: 'Sarabun', 'Prompt', 'Tahoma', sans-serif;
+              color: #111;
+              background: #e5e7eb;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .no-print-bar {
+              position: sticky;
+              top: 0;
+              z-index: 100;
+              background: #111FA2;
+              color: #fff;
+              padding: 10px 18px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+              font-family: 'Prompt', sans-serif;
+            }
+            .no-print-bar .bar-title {
+              font-size: 13px;
+              font-weight: 600;
+              color: #FFDE42;
+            }
+            .no-print-bar .bar-actions {
+              display: flex;
+              gap: 8px;
+            }
+            .no-print-bar button {
+              border: none;
+              border-radius: 8px;
+              padding: 7px 14px;
+              font-family: 'Prompt', sans-serif;
+              font-size: 12px;
+              font-weight: 700;
+              cursor: pointer;
+            }
+            .btn-print-now { background: #FFDE42; color: #111FA2; }
+            .btn-close-win { background: rgba(255,255,255,0.18); color: #fff; }
+
+            .pages-wrapper {
+              padding: 16px 0 32px;
+            }
+            .page-sheet {
+              width: 210mm;
+              margin: 0 auto 18px;
+              background: #fff;
+              padding: 12mm 11mm;
+              box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+            }
+            .sheet-header {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              border-bottom: 2px solid #111FA2;
+              padding-bottom: 8px;
+              margin-bottom: 10px;
+            }
+            .sheet-header-compact {
+              padding-bottom: 5px;
+              margin-bottom: 7px;
+            }
+            .sheet-logo {
+              height: 46px;
+              width: auto;
+              object-fit: contain;
+              flex-shrink: 0;
+            }
+            .sheet-header-compact .sheet-logo {
+              height: 36px;
+            }
+            .header-text {
+              flex: 1;
+            }
+            .header-text h1 {
+              margin: 0 0 4px 0;
+              font-family: 'Prompt', 'Sarabun', sans-serif;
+              font-size: 16px;
+              font-weight: 700;
+              color: #111FA2;
+              line-height: 1.25;
+            }
+            .sheet-header-compact .header-text h1 {
+              font-size: 14.5px;
+              margin-bottom: 2px;
+            }
+            .cat-banner {
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+              gap: 8px;
+            }
+            .cat-pill {
+              display: inline-block;
+              background: #111FA2;
+              color: #FFDE42;
+              font-family: 'Prompt', 'Sarabun', sans-serif;
+              font-weight: 700;
+              font-size: 12.5px;
+              padding: 2px 10px;
+              border-radius: 999px;
+            }
+            .round-subtitle {
+              font-size: 12px;
+              font-weight: 600;
+              color: #222;
+            }
+
+            .judge-meta-bar {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 6px;
+              font-size: 12.5px;
+              margin-bottom: 10px;
+              padding: 6px 10px;
+              background: #f8fafc;
+              border: 1px solid #cbd5e1;
+              border-radius: 6px;
+            }
+            .muted { color: #555; font-size: 11px; }
+
+            .round-block {
+              margin-bottom: 12px;
+            }
+            .round-block-compact {
+              margin-bottom: 9px;
+            }
+            .round-section-title {
+              font-family: 'Prompt', 'Sarabun', sans-serif;
+              font-size: 12px;
+              font-weight: 700;
+              color: #111FA2;
+              background: #eef2ff;
+              border-left: 4px solid #111FA2;
+              padding: 3px 8px;
+              margin-bottom: 5px;
+            }
+
+            .criteria-legend {
+              background: #fffdf2;
+              border: 1px solid #d4b106;
+              border-radius: 6px;
+              padding: 7px 10px;
+              margin-bottom: 9px;
+              font-size: 11.5px;
+            }
+            .criteria-legend-compact {
+              padding: 4px 8px;
+              margin-bottom: 5px;
+              font-size: 10.5px;
+            }
+            .legend-title {
+              font-weight: 700;
+              color: #111FA2;
+              margin-bottom: 3px;
+            }
+            .legend-grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 2px 12px;
+            }
+            .crit-item {
+              line-height: 1.35;
+            }
+            .crit-num {
+              font-weight: 700;
+              color: #111;
+            }
+            .crit-pt {
+              font-weight: 700;
+              color: #92400e;
+            }
+
+            .score-table {
+              width: 100%;
+              border-collapse: collapse;
+              table-layout: fixed;
+            }
+            .score-table th,
+            .score-table td {
+              border: 1px solid #222;
+              padding: 5px 4px;
+              text-align: center;
+              vertical-align: middle;
+              word-wrap: break-word;
+            }
+            .score-table thead th {
+              background: #eef2ff;
+              color: #111;
+              font-size: 11px;
+              font-weight: 700;
+              line-height: 1.2;
+              padding: 6px 3px;
+            }
+            .score-table thead th.th-total {
+              background: #fef3c7;
+            }
+            .th-short {
+              font-size: 9.5px;
+              font-weight: 600;
+              color: #334155;
+              margin-top: 1px;
+            }
+            .th-max {
+              font-size: 10px;
+              font-weight: 700;
+              color: #111FA2;
+            }
+            .text-left { text-align: left !important; padding-left: 7px !important; }
+            .row-normal td {
+              height: 38px;
+              font-size: 12.5px;
+            }
+            .row-compact td {
+              height: 23px;
+              padding: 2.5px 4px;
+              font-size: 11.5px;
+            }
+            .col-idx { font-weight: 600; color: #333; }
+            .col-id { font-weight: 700; color: #111FA2; }
+            .col-name { text-align: left !important; padding-left: 7px !important; }
+            .c-name { font-weight: 600; line-height: 1.25; }
+            .sub-meta { font-size: 10px; color: #555; line-height: 1.15; margin-top: 1px; }
+            .score-cell { font-size: 13px; font-weight: 600; }
+            .col-total {
+              background: #fffbeb;
+              font-weight: 700;
+              font-size: 13px;
+            }
+
+            .notes-box {
+              margin-top: 14px;
+              border: 1px dashed #64748b;
+              border-radius: 6px;
+              padding: 8px 10px 10px;
+            }
+            .notes-title {
+              font-size: 11.5px;
+              font-weight: 700;
+              color: #333;
+              margin-bottom: 8px;
+            }
+            .note-line {
+              border-bottom: 1px dotted #64748b;
+              height: 22px;
+            }
+
+            .signature-area {
+              margin-top: 26px;
+            }
+            .signature-area-compact {
+              margin-top: 12px;
+            }
+            .sig-row {
+              display: flex;
+              justify-content: flex-end;
+              padding-right: 14px;
+            }
+            .sig-col {
+              text-align: center;
+              font-size: 12px;
+              line-height: 1.75;
+            }
+            .sig-role {
+              font-weight: 700;
+            }
+            .page-foot-meta {
+              margin-top: 14px;
+              padding-top: 6px;
+              border-top: 1px solid #cbd5e1;
+              display: flex;
+              justify-content: space-between;
+              font-size: 10px;
+              color: #64748b;
+            }
+            .signature-area-compact .page-foot-meta {
+              margin-top: 8px;
+              padding-top: 4px;
+            }
+
+            @media print {
+              body { background: #fff; }
+              .no-print-bar { display: none !important; }
+              .pages-wrapper { padding: 0; }
+              .page-sheet {
+                width: auto;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+              }
+              .page-sheet:not(:last-child) {
+                page-break-after: always;
+                break-after: page;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="no-print-bar">
+            <div class="bar-title">📄 ตัวอย่างก่อนพิมพ์: ใบเกณฑ์การให้คะแนน (A4 แนวตั้ง • ${totalPages} หน้า)</div>
+            <div class="bar-actions">
+              <button class="btn-print-now" onclick="window.print()">🖨️ สั่งพิมพ์ทันที</button>
+              <button class="btn-close-win" onclick="window.close()">ปิดหน้าต่าง</button>
+            </div>
+          </div>
+          <div class="pages-wrapper">
+            ${pagesHtml}
+          </div>
+          <script>
+            window.onload = function() {
+              setTimeout(function() { window.print(); }, 350);
+            };
+          <\/script>
+        </body>
+        </html>`;
+
+        printWindow.document.open();
+        printWindow.document.write(docHtml);
+        printWindow.document.close();
+        closePrintCriteriaModal();
       }
     </script>
   </body>
