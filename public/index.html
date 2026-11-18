@@ -352,6 +352,10 @@
             class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-purple-500/30">
             <i class="fas fa-print"></i> พิมพ์ใบคะแนน
           </button>
+          <button onclick="printMissConScoreSheet()"
+            class="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-pink-500/30">
+            <i class="fas fa-star"></i> พิมพ์ใบคะแนนรวม Miss Con
+          </button>
           <a href="/api/export"
             class="btn-link px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-emerald-500/30">
             <i class="fas fa-file-excel"></i> โหลด Excel
@@ -402,13 +406,19 @@
         <!-- 🌟 ผลการตัดสิน Miss Congeniality (กรรมการ 3 ท่าน — ก.1 ถึง ก.3) -->
         <div
           class="glass-panel p-6 rounded-3xl border-2 border-amber-400/80 shadow-[0_0_30px_rgba(251,191,36,0.18)] overflow-x-auto">
-          <div class="text-center mb-5">
-            <h3 class="text-xl font-bold text-[#FFDE42] gold-glow flex items-center justify-center gap-2">
-              <i class="fas fa-star text-2xl text-[#FFDE42]"></i> ผลการตัดสิน Miss Congeniality (กรรมการ 3 ท่าน)
-            </h3>
-            <p class="text-xs text-amber-200 mt-1 font-semibold">
-              * ใช้เกณฑ์เฉพาะ 5 ข้อ (30 / 30 / 20 / 10 / 10 = เต็ม 100 คะแนนต่อกรรมการ) • ตัดสินโดยกรรมการ 3 ท่าน (ก.1 – ก.3 รวมเต็ม 300 คะแนน)
-            </p>
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-5">
+            <div class="text-center sm:text-left">
+              <h3 class="text-xl font-bold text-[#FFDE42] gold-glow flex items-center justify-center sm:justify-start gap-2">
+                <i class="fas fa-star text-2xl text-[#FFDE42]"></i> ผลการตัดสิน Miss Congeniality (กรรมการ 3 ท่าน)
+              </h3>
+              <p class="text-xs text-amber-200 mt-1 font-semibold">
+                * เกณฑ์เฉพาะ 5 ข้อ (30/30/20/10/10 = เต็ม 100 ต่อกรรมการ) • รวม 3 ก. เต็ม 300 ➔ หาร 3 = คะแนนสุทธิเต็ม 100
+              </p>
+            </div>
+            <button type="button" onclick="printMissConScoreSheet()"
+              class="px-4 py-2.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 shrink-0">
+              <i class="fas fa-print"></i> พิมพ์ใบคะแนนรวม Miss Con (เต็ม 100)
+            </button>
           </div>
 
           <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
@@ -503,9 +513,15 @@
               <i class="fas fa-table"></i> สรุปรวม 2 รอบแรก (375) คัด TOP 5
             </button>
           </div>
-          <div id="admin-pre-con-badge" class="hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs font-bold">
-            <i class="fas fa-star text-[#FFDE42]"></i>
-            <span>เกณฑ์การประกวด Miss Congeniality (5 เกณฑ์ เต็ม 100 คะแนน • กรรมการ 3 ท่าน • ไม่แยกรอบ)</span>
+          <div id="admin-pre-con-badge" class="hidden flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-200 text-xs font-bold">
+            <span class="flex items-center gap-2">
+              <i class="fas fa-star text-[#FFDE42]"></i>
+              <span>เกณฑ์การประกวด Miss Congeniality (5 เกณฑ์ เต็ม 100 คะแนน • กรรมการ 3 ท่าน รวม 300 ➔ หาร 3 = เต็ม 100)</span>
+            </span>
+            <button type="button" onclick="printMissConScoreSheet()"
+              class="px-3.5 py-1.5 rounded-lg bg-[#FFDE42] hover:bg-yellow-300 text-[#111FA2] font-bold text-xs flex items-center gap-1.5 shadow transition active:scale-95">
+              <i class="fas fa-print"></i> พิมพ์ใบคะแนนรวม Miss Con (เต็ม 100)
+            </button>
           </div>
         </div>
 
@@ -3553,6 +3569,420 @@
         printWindow.document.write(docHtml);
         printWindow.document.close();
         closePrintCriteriaModal();
+      }
+
+      // ==========================================
+      // Print Official Miss Congeniality Score Summary (3 Judges -> 300 -> /3 = 100, A4 Portrait)
+      // ==========================================
+      async function printMissConScoreSheet() {
+        if (!allContestants || allContestants.length === 0) {
+          await loadContestants();
+        }
+        const conList = (summaryData?.categories?.congeniality && summaryData.categories.congeniality.length > 0)
+          ? summaryData.categories.congeniality
+          : (allContestants || []).filter(c => c.category === 'congeniality');
+
+        if (!conList || conList.length === 0) {
+          alert('ยังไม่มีข้อมูลผู้เข้าประกวดหมวด Miss Congeniality');
+          return;
+        }
+
+        const conJudges = ['judge1', 'judge2', 'judge3'];
+        const computed = conList.map(c => {
+          const jRecs = {};
+          const jTotals = {};
+          let total300 = 0;
+          const critSums = { c1: 0, c2: 0, c3: 0, c4: 0, c5: 0 };
+          let judgedCount = 0;
+
+          conJudges.forEach(jId => {
+            const rec = (allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === 'congeniality')
+                     || (allScores || []).find(s => s.judge_id === jId && s.contestant_id === c.id && s.round_id === 'blackroom');
+            jRecs[jId] = rec || null;
+            if (rec) {
+              judgedCount++;
+              const t = rec.total_score || 0;
+              jTotals[jId] = t;
+              total300 += t;
+              critSums.c1 += (rec.score_c1 || 0);
+              critSums.c2 += (rec.score_c2 || 0);
+              critSums.c3 += (rec.score_c3 || 0);
+              critSums.c4 += (rec.score_c4 || 0);
+              critSums.c5 += (rec.score_c5 || 0);
+            } else {
+              jTotals[jId] = null;
+            }
+          });
+
+          const critAvgs = {
+            c1: Number((critSums.c1 / 3).toFixed(2)),
+            c2: Number((critSums.c2 / 3).toFixed(2)),
+            c3: Number((critSums.c3 / 3).toFixed(2)),
+            c4: Number((critSums.c4 / 3).toFixed(2)),
+            c5: Number((critSums.c5 / 3).toFixed(2))
+          };
+          // นำคะแนนแต่ละช่อง (รวม 3 ท่าน ÷ 3) ทั้ง 5 ช่องมารวมกันเป็นคะแนนสรุปสุทธิ (เต็ม 100)
+          const final100 = Number((critAvgs.c1 + critAvgs.c2 + critAvgs.c3 + critAvgs.c4 + critAvgs.c5).toFixed(2));
+
+          return { c, jTotals, total300, final100, critSums, critAvgs, judgedCount };
+        });
+
+        computed.sort((a, b) => {
+          if (b.final100 !== a.final100) return b.final100 - a.final100;
+          if (b.total300 !== a.total300) return b.total300 - a.total300;
+          return (a.c.id || '').localeCompare(b.c.id || '');
+        });
+
+        const printWindow = window.open('', '_blank', 'width=850,height=1050');
+        if (!printWindow) {
+          alert('เบราว์เซอร์บล็อกหน้าต่างป๊อปอัป กรุณาอนุญาตป๊อปอัปเพื่อพิมพ์ใบคะแนนรวม');
+          return;
+        }
+
+        const awardTitles = [
+          '👑 ชนะเลิศ Miss Con',
+          'รองชนะเลิศอันดับ 1',
+          'รองชนะเลิศอันดับ 2'
+        ];
+        const printedAt = new Date().toLocaleString('th-TH');
+        const logoUrl = `${window.location.origin}/images/logo.png`;
+
+        const formatCritCell = (hasScore, avgVal, sumVal) => {
+          if (!hasScore) return '-';
+          return `<div class="bold">${avgVal.toFixed(2)}</div><div class="cell-sub">(${sumVal}÷3)</div>`;
+        };
+
+        // ตารางหลัก: คำนวณแต่ละช่อง (รวม 3 กรรมการ ÷ 3) แล้วนำทั้ง 5 ช่องมารวมกันเป็นเต็ม 100
+        const criteriaRowsHtml = computed.map((item, idx) => {
+          const { c, total300, final100, critSums, critAvgs } = item;
+          const hasScore = total300 > 0;
+          const isWinner = idx === 0 && hasScore;
+          const award = (hasScore && awardTitles[idx]) ? awardTitles[idx] : '-';
+          const rawName = c.name || '';
+          const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+
+          return `
+            <tr class="${isWinner ? 'row-winner' : ''}">
+              <td class="bold">${idx + 1}</td>
+              <td class="col-id">${escapePrintHtml(c.id)}</td>
+              <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+              <td>${formatCritCell(hasScore, critAvgs.c1, critSums.c1)}</td>
+              <td>${formatCritCell(hasScore, critAvgs.c2, critSums.c2)}</td>
+              <td>${formatCritCell(hasScore, critAvgs.c3, critSums.c3)}</td>
+              <td>${formatCritCell(hasScore, critAvgs.c4, critSums.c4)}</td>
+              <td>${formatCritCell(hasScore, critAvgs.c5, critSums.c5)}</td>
+              <td class="col-final">${hasScore ? final100.toFixed(2) : '-'}</td>
+              <td class="col-award">${award}</td>
+            </tr>
+          `;
+        }).join('');
+
+        // ตารางอ้างอิง: คะแนนดิบแยกตามกรรมการแต่ละท่าน (ก.1 - ก.3 รวมเต็ม 300)
+        const summaryRowsHtml = computed.map((item, idx) => {
+          const { c, jTotals, total300, final100 } = item;
+          const hasScore = total300 > 0;
+          const isWinner = idx === 0 && hasScore;
+          const rawName = c.name || '';
+          const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
+
+          return `
+            <tr class="${isWinner ? 'row-winner' : ''}">
+              <td class="bold">${idx + 1}</td>
+              <td class="col-id">${escapePrintHtml(c.id)}</td>
+              <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+              <td>${jTotals.judge1 !== null ? jTotals.judge1 : '-'}</td>
+              <td>${jTotals.judge2 !== null ? jTotals.judge2 : '-'}</td>
+              <td>${jTotals.judge3 !== null ? jTotals.judge3 : '-'}</td>
+              <td class="bold">${hasScore ? total300 : '-'}</td>
+              <td class="col-final">${hasScore ? final100.toFixed(2) : '-'}</td>
+            </tr>
+          `;
+        }).join('');
+
+        const docHtml = `<!DOCTYPE html>
+        <html lang="th">
+        <head>
+          <meta charset="UTF-8">
+          <title>ใบสรุปคะแนนรวม Miss Congeniality — RMUTK FRESHY 2026</title>
+          <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet" />
+          <style>
+            @page {
+              size: A4 portrait;
+              margin: 1cm 0.9cm;
+            }
+            * { box-sizing: border-box; }
+            body {
+              margin: 0;
+              padding: 0;
+              font-family: 'Sarabun', 'Prompt', 'Tahoma', sans-serif;
+              color: #111;
+              background: #e5e7eb;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .no-print-bar {
+              position: sticky;
+              top: 0;
+              z-index: 100;
+              background: #111FA2;
+              color: #fff;
+              padding: 10px 18px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+              font-family: 'Prompt', sans-serif;
+            }
+            .no-print-bar .bar-title { font-size: 13px; font-weight: 600; color: #FFDE42; }
+            .no-print-bar .bar-actions { display: flex; gap: 8px; }
+            .no-print-bar button {
+              border: none;
+              border-radius: 8px;
+              padding: 7px 14px;
+              font-family: 'Prompt', sans-serif;
+              font-size: 12px;
+              font-weight: 700;
+              cursor: pointer;
+            }
+            .btn-print-now { background: #FFDE42; color: #111FA2; }
+            .btn-close-win { background: rgba(255,255,255,0.18); color: #fff; }
+
+            .page-sheet {
+              width: 210mm;
+              margin: 16px auto 32px;
+              background: #fff;
+              padding: 12mm 11mm;
+              box-shadow: 0 4px 18px rgba(0,0,0,0.15);
+            }
+            .sheet-header {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              border-bottom: 2.5px solid #111FA2;
+              padding-bottom: 8px;
+              margin-bottom: 10px;
+            }
+            .sheet-logo { height: 48px; width: auto; object-fit: contain; flex-shrink: 0; }
+            .header-text { flex: 1; }
+            .header-text h1 {
+              margin: 0 0 3px 0;
+              font-family: 'Prompt', 'Sarabun', sans-serif;
+              font-size: 16px;
+              font-weight: 700;
+              color: #111FA2;
+            }
+            .header-sub {
+              display: flex;
+              flex-wrap: wrap;
+              align-items: center;
+              gap: 8px;
+            }
+            .cat-pill {
+              display: inline-block;
+              background: #111FA2;
+              color: #FFDE42;
+              font-family: 'Prompt', 'Sarabun', sans-serif;
+              font-weight: 700;
+              font-size: 12px;
+              padding: 2px 10px;
+              border-radius: 999px;
+            }
+            .sub-desc { font-size: 12px; font-weight: 600; color: #222; }
+
+            .formula-box {
+              background: #fffdf2;
+              border: 1px solid #d4b106;
+              border-radius: 6px;
+              padding: 6px 10px;
+              margin-bottom: 12px;
+              font-size: 11.5px;
+              line-height: 1.45;
+            }
+            .formula-box strong { color: #111FA2; }
+
+            .section-heading {
+              font-family: 'Prompt', 'Sarabun', sans-serif;
+              font-size: 12.5px;
+              font-weight: 700;
+              color: #111FA2;
+              background: #eef2ff;
+              border-left: 4px solid #111FA2;
+              padding: 4px 9px;
+              margin: 12px 0 6px;
+            }
+
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              table-layout: fixed;
+              margin-bottom: 10px;
+            }
+            th, td {
+              border: 1px solid #222;
+              padding: 6px 4px;
+              text-align: center;
+              vertical-align: middle;
+              font-size: 11.5px;
+              word-wrap: break-word;
+            }
+            thead th {
+              background: #eef2ff;
+              font-weight: 700;
+              font-size: 10.5px;
+              line-height: 1.25;
+              padding: 6px 3px;
+            }
+            thead th.th-final {
+              background: #fef3c7;
+              color: #111FA2;
+            }
+            .th-sub { font-size: 9px; font-weight: 600; color: #334155; }
+            .cell-sub { font-size: 8.5px; color: #64748b; line-height: 1.1; margin-top: 1px; }
+            .text-left { text-align: left !important; padding-left: 7px !important; }
+            .bold { font-weight: 700; }
+            .col-id { font-weight: 700; color: #111FA2; }
+            .col-final {
+              background: #fffbeb;
+              font-weight: 700;
+              font-size: 12.5px;
+              color: #111FA2;
+            }
+            .col-award { font-size: 10.5px; font-weight: 700; color: #92400e; }
+            .row-winner { background: #fefce8; }
+
+            .signature-box {
+              margin-top: 24px;
+              display: flex;
+              justify-content: space-around;
+              gap: 16px;
+            }
+            .sign-col {
+              text-align: center;
+              font-size: 11.5px;
+              line-height: 1.75;
+            }
+            .sign-role { font-weight: 700; }
+            .page-foot-meta {
+              margin-top: 16px;
+              padding-top: 6px;
+              border-top: 1px solid #cbd5e1;
+              display: flex;
+              justify-content: space-between;
+              font-size: 10px;
+              color: #64748b;
+            }
+
+            @media print {
+              body { background: #fff; }
+              .no-print-bar { display: none !important; }
+              .page-sheet {
+                width: auto;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="no-print-bar">
+            <div class="bar-title">📄 ตัวอย่างก่อนพิมพ์: ใบสรุปคะแนนรวม Miss Congeniality (A4 แนวตั้ง • เต็ม 100 คะแนน)</div>
+            <div class="bar-actions">
+              <button class="btn-print-now" onclick="window.print()">🖨️ สั่งพิมพ์ทันที</button>
+              <button class="btn-close-win" onclick="window.close()">ปิดหน้าต่าง</button>
+            </div>
+          </div>
+
+          <section class="page-sheet">
+            <header class="sheet-header">
+              <img src="${logoUrl}" alt="RMUTK FRESHY 2026" class="sheet-logo" onerror="this.style.display='none'" />
+              <div class="header-text">
+                <h1>ใบสรุปผลคะแนนรวมการประกวด RMUTK FRESHY 2026</h1>
+                <div class="header-sub">
+                  <span class="cat-pill">ประเภท Miss Congeniality</span>
+                  <span class="sub-desc">รายงานผลคะแนนอย่างเป็นทางการ (กรรมการ 3 ท่าน • คะแนนสุทธิเต็ม 100 คะแนน)</span>
+                </div>
+              </div>
+            </header>
+
+            <div class="formula-box">
+              <strong>วิธีคำนวณคะแนนสุทธิ (เต็ม 100 คะแนน):</strong>
+              นำคะแนนรวมของกรรมการทั้ง 3 ท่านในแต่ละเกณฑ์มา<strong>หาร 3</strong> (ข้อ 1 เต็ม 30, ข้อ 2 เต็ม 30, ข้อ 3 เต็ม 20, ข้อ 4 เต็ม 10, ข้อ 5 เต็ม 10)
+              แล้วนำคะแนนทั้ง 5 ช่องมารวมกันเป็น <strong>คะแนนรวมสุทธิเต็ม 100 คะแนน</strong>
+              <br/>
+              <span style="font-size:10.5px; color:#475569;">เกณฑ์การให้คะแนน (5 ข้อ): 1. ความสามารถและทักษะ (30) • 2. ความคิดสร้างสรรค์และการนำเสนอ (30) • 3. บุคลิกภาพและความมั่นใจบนเวที (20) • 4. เสน่ห์และความโดดเด่น (10) • 5. การตอบคำถามของคณะกรรมการ (10)</span>
+            </div>
+
+            <div class="section-heading">1. ตารางสรุปคะแนนรวมแยกตามเกณฑ์ 5 ข้อ (แต่ละช่อง = รวม 3 กรรมการ ÷ 3 แล้วนำทั้ง 5 ช่องมารวมกัน เต็ม 100 คะแนน)</div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:5%;">อันดับ</th>
+                  <th style="width:6%;">รหัส</th>
+                  <th style="width:22%;" class="text-left">ชื่อ - นามสกุล</th>
+                  <th style="width:10%;">ข้อ 1<div class="th-sub">ความสามารถฯ (30)</div></th>
+                  <th style="width:10%;">ข้อ 2<div class="th-sub">สร้างสรรค์ฯ (30)</div></th>
+                  <th style="width:10%;">ข้อ 3<div class="th-sub">บุคลิกฯ (20)</div></th>
+                  <th style="width:8.5%;">ข้อ 4<div class="th-sub">เสน่ห์ฯ (10)</div></th>
+                  <th style="width:8.5%;">ข้อ 5<div class="th-sub">ตอบคำถาม (10)</div></th>
+                  <th style="width:9.5%;" class="th-final">รวมสุทธิ<div class="th-sub">(เต็ม 100)</div></th>
+                  <th style="width:10.5%;">รางวัล</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${criteriaRowsHtml}
+              </tbody>
+            </table>
+
+            <div class="section-heading">2. ตารางอ้างอิงคะแนนดิบแยกตามกรรมการทั้ง 3 ท่าน (ก.1 – ก.3 รวมเต็ม 300 คะแนน)</div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:6%;">อันดับ</th>
+                  <th style="width:7%;">รหัส</th>
+                  <th style="width:37%;" class="text-left">ชื่อ - นามสกุล</th>
+                  <th style="width:9%;">ก.1<div class="th-sub">(100)</div></th>
+                  <th style="width:9%;">ก.2<div class="th-sub">(100)</div></th>
+                  <th style="width:9%;">ก.3<div class="th-sub">(100)</div></th>
+                  <th style="width:11%;">รวม 3 ก.<div class="th-sub">(เต็ม 300)</div></th>
+                  <th style="width:12%;" class="th-final">รวมสุทธิ<div class="th-sub">(เต็ม 100)</div></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${summaryRowsHtml}
+              </tbody>
+            </table>
+
+            <div class="signature-box">
+              <div class="sign-col">
+                ลงชื่อ ....................................................................<br/>
+                ( .................................................................... )<br/>
+                <span class="sign-role">เจ้าหน้าที่ผู้บันทึกคะแนน</span>
+              </div>
+              <div class="sign-col">
+                ลงชื่อ ....................................................................<br/>
+                ( .................................................................... )<br/>
+                <span class="sign-role">ประธานคณะกรรมการตัดสิน</span>
+              </div>
+            </div>
+
+            <div class="page-foot-meta">
+              <span>RMUTK FRESHY 2026 Scoring System • ใบสรุปคะแนนรวม Miss Congeniality</span>
+              <span>พิมพ์เมื่อ: ${escapePrintHtml(printedAt)}</span>
+            </div>
+          </section>
+
+          <script>
+            window.onload = function() {
+              setTimeout(function() { window.print(); }, 350);
+            };
+          <\/script>
+        </body>
+        </html>`;
+
+        printWindow.document.open();
+        printWindow.document.write(docHtml);
+        printWindow.document.close();
       }
     </script>
   </body>
