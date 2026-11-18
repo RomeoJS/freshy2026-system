@@ -3991,15 +3991,16 @@
             .row-winner { background: #fefce8; }
 
             .signature-box {
-              margin-top: 24px;
-              display: flex;
-              justify-content: space-around;
-              gap: 16px;
+              margin-top: 26px;
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 12px;
             }
             .sign-col {
               text-align: center;
-              font-size: 11.5px;
-              line-height: 1.75;
+              font-size: 11px;
+              line-height: 1.8;
+              white-space: nowrap;
             }
             .sign-role { font-weight: 700; }
             .page-foot-meta {
@@ -4103,14 +4104,19 @@
 
             <div class="signature-box">
               <div class="sign-col">
-                ลงชื่อ ....................................................................<br/>
-                ( .................................................................... )<br/>
-                <span class="sign-role">เจ้าหน้าที่ผู้บันทึกคะแนน</span>
+                ลงชื่อ ...........................................<br/>
+                ( ........................................... )<br/>
+                <span class="sign-role">กรรมการท่านที่ 1</span>
               </div>
               <div class="sign-col">
-                ลงชื่อ ....................................................................<br/>
-                ( .................................................................... )<br/>
-                <span class="sign-role">ประธานคณะกรรมการตัดสิน</span>
+                ลงชื่อ ...........................................<br/>
+                ( ........................................... )<br/>
+                <span class="sign-role">กรรมการท่านที่ 2</span>
+              </div>
+              <div class="sign-col">
+                ลงชื่อ ...........................................<br/>
+                ( ........................................... )<br/>
+                <span class="sign-role">กรรมการท่านที่ 3</span>
               </div>
             </div>
 
