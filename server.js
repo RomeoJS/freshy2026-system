@@ -411,8 +411,9 @@ async function calculateSummary() {
             let preTotal = 0;
 
             if (catKey === 'congeniality') {
+                const conJudges = ['judge1', 'judge2', 'judge3'];
                 rounds.congeniality = { judges: {}, total: 0 };
-                judges.forEach(jId => {
+                conJudges.forEach(jId => {
                     const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'congeniality')
                              || contestantScores.find(s => s.judge_id === jId && s.round_id === 'blackroom');
                     const score = rec ? rec.total_score : 0;
