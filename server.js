@@ -491,13 +491,20 @@ app.post('/api/scores', async (req, res) => {
         return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
     }
 
+    // ตรวจสอบสิทธิ์รอบ Popular Vote: กรรมการไม่มีสิทธิ์กรอกคะแนน ให้ได้เฉพาะแอดมินเท่านั้น (ไม่จำกัดเพดานคะแนน)
+    if (round_id === 'popular') {
+        if (judge_id !== 'admin' && judge_id !== 'admin2') {
+            return res.status(403).json({ success: false, message: 'กรรมการไม่มีสิทธิ์กรอกคะแนน Popular Vote (เฉพาะแอดมินเท่านั้น)' });
+        }
+    }
+
     const c1 = Math.max(0, parseInt(score_c1) || 0);
     const c2 = Math.max(0, parseInt(score_c2) || 0);
     const c3 = Math.max(0, parseInt(score_c3) || 0);
     const c4 = Math.max(0, parseInt(score_c4) || 0);
     const c5 = Math.max(0, parseInt(score_c5) || 0);
     const c6 = Math.max(0, parseInt(score_c6) || 0);
-    const total = c1 + c2 + c3 + c4 + c5 + c6;
+    const total = (round_id === 'popular') ? c1 : (c1 + c2 + c3 + c4 + c5 + c6);
 
     try {
         const query = `
@@ -551,16 +558,32 @@ async function calculateSummary() {
             const rounds = {};
             let preTotal = 0;
 
-            ROUNDS_PRE.forEach(rId => {
-                rounds[rId] = { judges: {}, total: 0 };
-                judges.forEach(jId => {
-                    const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === rId);
-                    const score = rec ? rec.total_score : 0;
-                    rounds[rId].judges[jId] = score;
-                    rounds[rId].total += score;
-                    preTotal += score;
-                });
+            // 1. รอบห้องดำ (5 กรรมการ รวมเต็ม 125)
+            rounds.blackroom = { judges: {}, total: 0 };
+            judges.forEach(jId => {
+                const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'blackroom');
+                const score = rec ? rec.total_score : 0;
+                rounds.blackroom.judges[jId] = score;
+                rounds.blackroom.total += score;
+                preTotal += score;
             });
+
+            // 2. รอบ Grand Opening (5 กรรมการ รวมเต็ม 250)
+            rounds.grand = { judges: {}, total: 0 };
+            judges.forEach(jId => {
+                const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'grand');
+                const score = rec ? rec.total_score : 0;
+                rounds.grand.judges[jId] = score;
+                rounds.grand.total += score;
+                preTotal += score;
+            });
+
+            // 3. รอบ Popular Vote (แอดมินกรอกคนเดียว ไม่จำกัดคะแนน กรรมการไม่มีสิทธิ์กรอก)
+            const popRec = contestantScores.find(s => s.round_id === 'popular' && (s.judge_id === 'admin' || s.judge_id === 'admin2')) ||
+                           contestantScores.find(s => s.round_id === 'popular');
+            const popScore = popRec ? (popRec.total_score || 0) : 0;
+            rounds.popular = { judges: { admin: popScore }, total: popScore, score: popScore };
+            preTotal += popScore;
 
             return {
                 id: c.id,
