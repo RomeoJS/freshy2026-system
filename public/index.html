@@ -1498,6 +1498,8 @@
       }
 
       async function initSessionOnLoad() {
+        // Pre-fetch contestants in background immediately on page load
+        loadContestants();
         try {
           const savedUser = localStorage.getItem('freshy_user');
           const savedToken = localStorage.getItem('freshy_token');
@@ -1562,16 +1564,40 @@
         });
       }
 
-      async function loadContestants() {
-        try {
-          const res = await fetch('/api/contestants');
-          const data = await res.json();
-          allContestants = sortContestants(Array.isArray(data) ? data : []);
-          const countEl = document.getElementById('stat-contestants-count');
-          if (countEl) countEl.innerText = `${allContestants.length} คน`;
-        } catch (e) {
-          console.error('Failed to load contestants');
+      let contestantsLoadingPromise = null;
+      async function loadContestants(forceRefresh = false) {
+        if (!forceRefresh && contestantsLoadingPromise) {
+          return contestantsLoadingPromise;
         }
+        contestantsLoadingPromise = (async () => {
+          try {
+            const res = await fetch('/api/contestants');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            allContestants = sortContestants(Array.isArray(data) ? data : []);
+            const countEl = document.getElementById('stat-contestants-count');
+            if (countEl) countEl.innerText = `${allContestants.length} คน`;
+
+            // เมื่อโหลดข้อมูลเสร็จสิ้น อัปเดตมุมมองที่ต้องใช้ allContestants ทันที
+            if (currentUser === 'admin') {
+              renderContestantManageTable();
+              if (adminCurrentView === 'con') renderAdminConResultsTable();
+            } else if (currentUser === 'admin2') {
+              renderContestantManageTable();
+              renderJudgeCards();
+              if (adminCurrentView === 'con') renderAdminConResultsTable();
+            } else if (currentUser && currentUser.startsWith('judge')) {
+              renderJudgeCards();
+            }
+            return allContestants;
+          } catch (e) {
+            console.error('Failed to load contestants:', e);
+            return allContestants;
+          } finally {
+            contestantsLoadingPromise = null;
+          }
+        })();
+        return contestantsLoadingPromise;
       }
 
       async function fetchScores(forceRender = false) {
@@ -1873,7 +1899,7 @@
           }
           const emptyMsg = isQa
             ? 'ยังไม่มีข้อมูลสำหรับรอบ TOP 3 (กรุณารอการบันทึกคะแนนรอบ Speed เพื่อคัดเลือก 3 คนสุดท้าย)'
-            : (isSpeed ? 'ยังไม่มีข้อมูลสำหรับรอบ TOP 5 (กรุณารอการบันทึกคะแนนรอบห้องดำและ Grand Opening เพื่อคัดเลือก 5 คนสุดท้าย)' : (allContestants.length === 0 ? 'กำลังโหลดข้อมูลผู้เข้าประกวด...' : 'ยังไม่มีข้อมูลในหมวดหมู่นี้'));
+            : (isSpeed ? 'ยังไม่มีข้อมูลสำหรับรอบ TOP 5 (กรุณารอการบันทึกคะแนนรอบห้องดำและ Grand Opening เพื่อคัดเลือก 5 คนสุดท้าย)' : (allContestants.length === 0 ? '<i class="fas fa-spinner fa-spin mr-2 text-[#FFDE42]"></i>กำลังโหลดข้อมูลผู้เข้าประกวด...' : 'ยังไม่มีข้อมูลในหมวดหมู่นี้'));
           container.innerHTML = `<div class="col-span-2 text-center text-gray-300 py-12 glass-panel rounded-3xl view-animated">${emptyMsg}</div>`;
           return;
         }
@@ -2329,6 +2355,11 @@
               : (allContestants || []).filter(c => c.category === 'congeniality'));
 
         if (!conList || conList.length === 0) {
+          if (!allContestants || allContestants.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-gray-300"><i class="fas fa-spinner fa-spin mr-2 text-[#FFDE42]"></i>กำลังโหลดข้อมูล Miss Congeniality...</td></tr>';
+            loadContestants();
+            return;
+          }
           tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลผู้เข้าประกวดหมวด Miss Congeniality</td></tr>';
           if (detailThead) detailThead.innerHTML = '';
           if (detailTbody) detailTbody.innerHTML = '<tr><td colspan="24" class="text-center py-6 text-gray-400">ยังไม่มีข้อมูลผู้เข้าประกวดหมวด Miss Congeniality</td></tr>';
@@ -2597,7 +2628,13 @@
       function renderAdminPreTable() {
         const tbody = document.getElementById('pre-table-body');
         const thead = document.getElementById('pre-thead');
-        if (!tbody || !thead || !summaryData || !summaryData.categories) return;
+        if (!tbody || !thead) return;
+
+        if (!summaryData || !summaryData.categories) {
+          thead.innerHTML = '';
+          tbody.innerHTML = '<tr><td colspan="16" class="text-center py-8 text-gray-300"><i class="fas fa-spinner fa-spin mr-2 text-[#FFDE42]"></i>กำลังโหลดข้อมูลผู้เข้าประกวดและคะแนนรอบคัดเลือก...</td></tr>';
+          return;
+        }
 
         const selectedCat = document.getElementById('admin-category-filter')?.value || 'all';
         let list = [];
@@ -2770,6 +2807,12 @@
       function renderContestantManageTable() {
         const tbody = document.getElementById('manage-contestants-tbody');
         if (!tbody) return;
+
+        if (!allContestants || allContestants.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-300"><i class="fas fa-spinner fa-spin mr-2 text-[#FFDE42]"></i>กำลังโหลดรายชื่อผู้เข้าประกวด...</td></tr>';
+          loadContestants();
+          return;
+        }
 
         const catFilter = document.getElementById('manage-filter-cat')?.value || 'all';
         const statusFilter = document.getElementById('manage-filter-status')?.value || 'all';

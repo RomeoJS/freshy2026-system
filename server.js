@@ -280,7 +280,8 @@ app.get('/api/contestants', async (req, res) => {
         contestantsCache = { data: rows, timestamp: now };
         res.json(rows);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch contestants' });
+        console.error('❌ Error fetching contestants:', error.message);
+        res.status(500).json({ error: 'Failed to fetch contestants', details: error.message });
     }
 });
 
@@ -519,7 +520,13 @@ async function calculateSummary() {
                 preTotal
             };
         });
-        list.sort((a, b) => b.preTotal - a.preTotal);
+        list.sort((a, b) => {
+            if (b.preTotal !== a.preTotal) return b.preTotal - a.preTotal;
+            const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+            const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return (a.id || '').localeCompare(b.id || '');
+        });
         categoriesData[catKey] = list;
     }
 
@@ -550,7 +557,13 @@ async function calculateSummary() {
                 avg: Number((total / 3).toFixed(2))
             };
         })
-        .sort((a, b) => b.total - a.total);
+        .sort((a, b) => {
+            if (b.total !== a.total) return b.total - a.total;
+            const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+            const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return (a.id || '').localeCompare(b.id || '');
+        });
 
     const allCalculatedContestants = [];
     for (const [catKey, catList] of Object.entries(categoriesData)) {
