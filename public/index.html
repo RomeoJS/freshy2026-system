@@ -181,7 +181,7 @@
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-[#FFDE42] animate-ping"></span>
             <h4 class="text-sm font-bold text-[#FFDE42] uppercase tracking-wider flex items-center gap-1.5">
-              <i class="fas fa-layer-group"></i> เลือกรอบการตัดสิน (4 รอบการประกวด)
+              <i class="fas fa-layer-group"></i> เลือกรอบการตัดสิน (5 รอบการประกวด)
             </h4>
           </div>
           <div id="round-criteria-info"
@@ -191,7 +191,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           <button onclick="switchRound('blackroom')" id="tab-round-blackroom"
             class="round-nav-btn p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#FFDE42] text-[#111FA2] text-center transition-all duration-300 font-bold scale-105 shadow-[0_0_20px_rgba(255,222,66,0.5)] group">
             <i class="fas fa-user-secret text-xl mb-1 text-[#111FA2]"></i>
@@ -206,27 +206,34 @@
             <div class="text-[11px] text-gray-300">รอบแนะนำตัว (50 คะแนน)</div>
           </button>
 
+          <button onclick="switchRound('popular')" id="tab-round-popular"
+            class="round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group">
+            <i class="fas fa-heart text-xl mb-1 text-[#5478FF] group-hover:text-rose-400 transition"></i>
+            <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">3. Popular Vote</div>
+            <div class="text-[11px] text-rose-300">คะแนนความนิยม (50 คะแนน)</div>
+          </button>
+
           <button onclick="switchRound('speed')" id="tab-round-speed"
             class="round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group">
             <i class="fas fa-bolt text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
-            <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">3. TOP 5 (Speed)</div>
+            <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">4. TOP 5 (Speed)</div>
             <div class="text-[11px] text-amber-300">⚡ คัดเหลือ 3 คน (50 คะแนน)</div>
           </button>
 
           <button onclick="switchRound('qa')" id="tab-round-qa"
             class="round-nav-btn p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#111FA2]/80 text-center transition-all duration-300 shadow-[0_0_15px_rgba(255,222,66,0.3)] hover:scale-105 group">
             <i class="fas fa-crown text-xl mb-1 text-[#FFDE42] gold-glow animate-bounce"></i>
-            <div class="text-sm font-bold text-[#FFDE42]">4. TOP 3 ตอบคำถาม</div>
+            <div class="text-sm font-bold text-[#FFDE42]">5. TOP 3 ตอบคำถาม</div>
             <div class="text-[11px] text-amber-200">👑 ชิงชนะเลิศ (100 คะแนน)</div>
           </button>
         </div>
       </div>
 
-      <!-- 🌟 แถบกรองหมวดหมู่ (สำหรับรอบคัดเลือก ห้องดำ & Grand Opening) -->
+      <!-- 🌟 แถบกรองหมวดหมู่ (สำหรับรอบคัดเลือก ห้องดำ, Grand Opening, Popular Vote) -->
       <div id="category-filter-bar" class="flex flex-wrap justify-center gap-2 md:gap-3 mb-6">
         <button onclick="switchCategory('all')" id="tab-cat-all"
           class="cat-nav-btn px-5 py-2 rounded-full border-2 border-[#FFDE42] text-[#111FA2] font-bold bg-[#FFDE42] shadow-[0_0_15px_rgba(255,222,66,0.4)] text-sm transition">
-          ทั้งหมด (29 คน)
+          ทั้งหมด (23 คน)
         </button>
         <button onclick="switchCategory('miss')" id="tab-cat-miss"
           class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
@@ -480,18 +487,16 @@
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
             <div>
               <h3 class="text-xl font-bold text-[#FFDE42] flex items-center gap-2">
-                <i class="fas fa-list-ol"></i> ตารางคะแนนรอบคัดเลือก (2 รอบแรก)
+                <i class="fas fa-list-ol"></i> ตารางคะแนนรอบคัดเลือก (ห้องดำ + Grand Opening + Popular Vote)
               </h3>
-              <p class="text-xs text-gray-300 mt-0.5">รอบห้องดำ (25 คะแนน) และรอบ Grand Opening (50 คะแนน) รวม 75
-                คะแนนต่อกรรมการ เพื่อคัดหา TOP 5</p>
+              <p class="text-xs text-gray-300 mt-0.5">รอบห้องดำ (25 คะแนน), รอบ Grand Opening (50 คะแนน) และรอบ Popular Vote (50 คะแนน) รวมเพื่อคัดหา TOP 5</p>
             </div>
             <select id="admin-category-filter" onchange="renderAdminPreTable()"
               class="input-dark p-2 rounded-xl text-xs font-semibold shrink-0">
-              <option value="all">ทุกหมวดหมู่ (29 คน)</option>
+              <option value="all">ทุกหมวดหมู่รอบคัดเลือก (23 คน)</option>
               <option value="miss">Miss</option>
               <option value="mister">Mister</option>
               <option value="queen">Miss Queen</option>
-              <option value="congeniality">Miss Congeniality</option>
               <option value="jumbo">Miss Jumbo</option>
             </select>
           </div>
@@ -505,9 +510,13 @@
               class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
               <i class="fas fa-star"></i> 2. Grand Opening (50)
             </button>
+            <button onclick="switchAdminPreRound('popular')" id="admin-pre-tab-popular"
+              class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
+              <i class="fas fa-heart text-rose-400"></i> 3. Popular Vote (50)
+            </button>
             <button onclick="switchAdminPreRound('all')" id="admin-pre-tab-all"
               class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white border border-[#5478FF]/40">
-              <i class="fas fa-table"></i> สรุปรวม 2 รอบแรก (375) คัด TOP 5
+              <i class="fas fa-table"></i> สรุปรวม 3 รอบคัดเลือก คัด TOP 5
             </button>
             <button type="button" onclick="printCurrentPreRoundScoreSheet()"
               class="ml-auto px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] shadow-md hover:-translate-y-0.5 active:scale-95">
@@ -641,6 +650,50 @@
               <i class="fas fa-save"></i> บันทึกข้อมูล
             </button>
           </form>
+        </div>
+
+        <!-- รายชื่อผู้เข้าประกวดและปุ่มจัดการผู้สละสิทธิ์ -->
+        <div class="glass-panel p-6 rounded-3xl border border-[#5478FF]/30 space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <h3 class="text-lg font-bold text-[#FFDE42] flex items-center gap-2">
+                <i class="fas fa-user-slash text-rose-400"></i> รายชื่อผู้เข้าประกวด & ปุ่มเลือกผู้สละสิทธิ์
+              </h3>
+              <p class="text-xs text-gray-300 mt-0.5">กดปุ่ม <b>"สละสิทธิ์"</b> เพื่อตัดสิทธิ์จากการแข่งขัน (ผู้สละสิทธิ์จะไม่ถูกนำไปคิดในรอบ TOP 5 และ TOP 3) หรือกด <b>"คืนสิทธิ์"</b> เพื่อนำกลับมาแข่งขันตามปกติ</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="manage-filter-cat" onchange="renderContestantManageTable()" class="input-dark p-2 rounded-xl text-xs font-semibold">
+                <option value="all">ทุกหมวดหมู่</option>
+                <option value="miss">Miss</option>
+                <option value="mister">Mister</option>
+                <option value="queen">Miss Queen</option>
+                <option value="congeniality">Miss Congeniality</option>
+                <option value="jumbo">Miss Jumbo</option>
+              </select>
+              <select id="manage-filter-status" onchange="renderContestantManageTable()" class="input-dark p-2 rounded-xl text-xs font-semibold">
+                <option value="all">ทุกสถานะ</option>
+                <option value="active">ปกติ (แข่งขัน)</option>
+                <option value="resigned">สละสิทธิ์แล้ว</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
+              <thead class="bg-[#111FA2] text-[#FFDE42] text-xs uppercase">
+                <tr>
+                  <th class="px-3 py-3 rounded-tl-xl text-center">รหัส</th>
+                  <th class="px-3 py-3 text-center">รูปภาพ</th>
+                  <th class="px-3 py-3">ชื่อ - นามสกุล / ชื่อเล่น</th>
+                  <th class="px-3 py-3 text-center">หมวดหมู่</th>
+                  <th class="px-3 py-3">คณะ / สาขา</th>
+                  <th class="px-3 py-3 text-center">สถานะ</th>
+                  <th class="px-3 py-3 rounded-tr-xl text-center">จัดการ (สละสิทธิ์ / คืนสิทธิ์)</th>
+                </tr>
+              </thead>
+              <tbody id="manage-contestants-tbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -799,11 +852,11 @@
               <div class="flex flex-wrap gap-1.5">
                 <button type="button" onclick="setPrintRoundPreset('all')"
                   class="px-2.5 py-1 rounded-lg bg-[#FFDE42]/20 hover:bg-[#FFDE42]/40 text-[#FFDE42] border border-[#FFDE42]/40 text-[11px] font-bold transition active:scale-95">
-                  รวมทุกรอบ (4 รอบ)
+                  รวมทุกรอบ (5 รอบ)
                 </button>
                 <button type="button" onclick="setPrintRoundPreset('pre')"
                   class="px-2.5 py-1 rounded-lg bg-blue-500/20 hover:bg-blue-500/40 text-blue-200 border border-blue-400/30 text-[11px] font-semibold transition active:scale-95">
-                  2 รอบคัดเลือก
+                  3 รอบคัดเลือก
                 </button>
                 <button type="button" onclick="setPrintRoundPreset('final')"
                   class="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/40 text-purple-200 border border-purple-400/30 text-[11px] font-semibold transition active:scale-95">
@@ -828,16 +881,23 @@
                 </div>
               </label>
               <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#091054]/80 border border-[#5478FF]/40 hover:border-[#FFDE42] cursor-pointer transition select-none">
+                <input type="checkbox" class="print-round-cb w-4 h-4 accent-[#FFDE42] rounded cursor-pointer" value="popular" onchange="updatePrintCriteriaPreviewInfo()" checked />
+                <div class="leading-tight">
+                  <div class="text-xs font-bold text-white">3. รอบ Popular Vote</div>
+                  <div class="text-[10px] text-rose-300">เต็ม 50 คะแนน (คะแนนความนิยม)</div>
+                </div>
+              </label>
+              <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#091054]/80 border border-[#5478FF]/40 hover:border-[#FFDE42] cursor-pointer transition select-none">
                 <input type="checkbox" class="print-round-cb w-4 h-4 accent-[#FFDE42] rounded cursor-pointer" value="speed" onchange="updatePrintCriteriaPreviewInfo()" />
                 <div class="leading-tight">
-                  <div class="text-xs font-bold text-white">3. รอบ TOP 5 - Speed</div>
+                  <div class="text-xs font-bold text-white">4. รอบ TOP 5 - Speed</div>
                   <div class="text-[10px] text-amber-200">เต็ม 50 คะแนน (4 เกณฑ์)</div>
                 </div>
               </label>
               <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#091054]/80 border border-[#5478FF]/40 hover:border-[#FFDE42] cursor-pointer transition select-none">
                 <input type="checkbox" class="print-round-cb w-4 h-4 accent-[#FFDE42] rounded cursor-pointer" value="qa" onchange="updatePrintCriteriaPreviewInfo()" />
                 <div class="leading-tight">
-                  <div class="text-xs font-bold text-white">4. รอบ TOP 3 - ตอบคำถาม</div>
+                  <div class="text-xs font-bold text-white">5. รอบ TOP 3 - ตอบคำถาม</div>
                   <div class="text-[10px] text-amber-200">เต็ม 100 คะแนน (6 เกณฑ์)</div>
                 </div>
               </label>
@@ -925,12 +985,13 @@
             <select id="print-score-scope" onchange="updatePrintScorePreviewInfo()"
               class="w-full input-dark p-3 rounded-xl text-sm text-white font-semibold border border-[#5478FF]/40 focus:border-[#FFDE42] focus:outline-none">
               <option value="overall">🏆 ใบสรุปคะแนนรวมจากรอบทั้งหมด (Official All-Rounds Summary)</option>
-              <option value="pre_summary">📊 ใบคะแนนรวม 2 รอบคัดเลือก (ห้องดำ 25 + Grand 50 = เต็ม 75 • คัด TOP 5)</option>
+              <option value="pre_summary">📊 ใบคะแนนรวม 3 รอบคัดเลือก (ห้องดำ 25 + Grand 50 + Popular 50 • คัด TOP 5)</option>
               <option value="blackroom">1️⃣ ใบคะแนนรอบที่ 1: รอบห้องดำ (4 เกณฑ์ เต็ม 25 • ก.1–ก.5)</option>
               <option value="grand">2️⃣ ใบคะแนนรอบที่ 2: Grand Opening (4 เกณฑ์ เต็ม 50 • ก.1–ก.5)</option>
-              <option value="speed">3️⃣ ใบคะแนนรอบที่ 3: TOP 5 Speed (4 เกณฑ์ เต็ม 50 • ก.1–ก.5)</option>
-              <option value="qa">4️⃣ ใบคะแนนรอบที่ 4: TOP 3 ตอบคำถามชี้ขาด (6 เกณฑ์ เต็ม 100 • ก.1–ก.5)</option>
-              <option value="all_pack">📚 พิมพ์ครบชุดทั้งหมด (ทั้ง 4 รอบ + รวม 2 รอบแรก + ใบสรุปรวมทุกรอบ)</option>
+              <option value="popular">3️⃣ ใบคะแนนรอบที่ 3: Popular Vote (คะแนนความนิยม เต็ม 50 • ก.1–ก.5)</option>
+              <option value="speed">4️⃣ ใบคะแนนรอบที่ 4: TOP 5 Speed (4 เกณฑ์ เต็ม 50 • ก.1–ก.5)</option>
+              <option value="qa">5️⃣ ใบคะแนนรอบที่ 5: TOP 3 ตอบคำถามชี้ขาด (6 เกณฑ์ เต็ม 100 • ก.1–ก.5)</option>
+              <option value="all_pack">📚 พิมพ์ครบชุดทั้งหมด (ทั้ง 5 รอบ + รวม 3 รอบแรก + ใบสรุปรวมทุกรอบ)</option>
             </select>
           </div>
 
@@ -1083,12 +1144,12 @@
       function adminQuickEditContestant(cId, roundId, judgeId) {
         if (currentUser !== 'admin2') return;
         switchAdmin2Mode('scoring');
-        if (roundId === 'congeniality') {
+        const cat = getContestantCategory(cId);
+        if (cat === 'congeniality' || roundId === 'congeniality') {
           switchRound('congeniality');
         } else {
           if (roundId) switchRound(roundId);
-          if (roundId === 'blackroom' || roundId === 'grand') {
-            const cat = getContestantCategory(cId);
+          if (roundId === 'blackroom' || roundId === 'grand' || roundId === 'popular') {
             if (cat && currentCategory !== 'all' && currentCategory !== cat) {
               switchCategory('all');
             }
@@ -1110,10 +1171,10 @@
         }, 200);
       }
 
-      let currentRound = 'blackroom'; // 'blackroom', 'grand', 'speed', 'qa'
+      let currentRound = 'blackroom'; // 'blackroom', 'grand', 'popular', 'speed', 'qa'
       let currentCategory = 'all'; // 'all', 'miss', 'mister', 'queen', 'congeniality', 'jumbo'
       let adminCurrentView = 'top3'; // 'top3', 'speed', 'pre', 'manage'
-      let adminPreRoundView = 'blackroom'; // 'blackroom', 'grand', 'all'
+      let adminPreRoundView = 'blackroom'; // 'blackroom', 'grand', 'popular', 'all'
 
       let allScores = [];
       let allContestants = [];
@@ -1121,10 +1182,11 @@
       let pendingSubmitData = null;
 
       const ROUNDS = [
-        { id: 'blackroom', name: '1. รอบห้องดำ', fullTitle: 'รอบห้องดำ (รอบคัดเลือก 29 คน)', max: 25 },
-        { id: 'grand', name: '2. Grand Opening', fullTitle: 'รอบ Grand Opening รอบแนะนำตัว (29 คน)', max: 50 },
-        { id: 'speed', name: '3. TOP 5 (Speed)', fullTitle: 'รอบ 5 คนสุดท้าย (Speed คัดเหลือ 3 คน)', max: 50 },
-        { id: 'qa', name: '4. TOP 3 ตอบคำถาม', fullTitle: 'รอบ 3 คนสุดท้าย ตัดสินชี้ขาด (ล้างคะแนนเดิม)', max: 100 }
+        { id: 'blackroom', name: '1. รอบห้องดำ', fullTitle: 'รอบห้องดำ (รอบคัดเลือก 23 คน)', max: 25 },
+        { id: 'grand', name: '2. Grand Opening', fullTitle: 'รอบ Grand Opening รอบแนะนำตัว (23 คน)', max: 50 },
+        { id: 'popular', name: '3. Popular Vote', fullTitle: 'รอบ Popular Vote คะแนนความนิยม (23 คน)', max: 50 },
+        { id: 'speed', name: '4. TOP 5 (Speed)', fullTitle: 'รอบ 5 คนสุดท้าย (Speed คัดเหลือ 3 คน)', max: 50 },
+        { id: 'qa', name: '5. TOP 3 ตอบคำถาม', fullTitle: 'รอบ 3 คนสุดท้าย ตัดสินชี้ขาด (ล้างคะแนนเดิม)', max: 100 }
       ];
 
       const CRITERIA_MAP = {
@@ -1139,6 +1201,9 @@
           { id: 'c2', name: '2. บุคลิกภาพ / ความมั่นใจ', max: 10, short: 'บุคลิกฯ' },
           { id: 'c3', name: '3. ความสวยงามของเครื่องแต่งกาย', max: 10, short: 'เครื่องแต่งกาย' },
           { id: 'c4', name: '4. การแนะนำตัว / ภาษากาย / บุคลิกภาพ', max: 10, short: 'แนะนำตัว' }
+        ],
+        popular: [
+          { id: 'c1', name: '1. คะแนนความนิยม (Popular Vote)', max: 50, short: 'Popular Vote', desc: 'คะแนนความนิยมจากการโหวตของผู้ชมและคะแนนพิเศษรอบความนิยม' }
         ],
         speed: [
           { id: 'c1', name: '1. ภาษากาย / บุคลิกภาพ', max: 10, short: 'ภาษากาย' },
@@ -1171,16 +1236,15 @@
       function getMissConTalentRecord(judgeId, contestantId) {
         const list = allScores || [];
         return list.find(s => s.judge_id === judgeId && s.contestant_id === contestantId && s.round_id === 'congeniality')
-          || list.find(s => s.judge_id === judgeId && s.contestant_id === contestantId && isLegacyConTalentBlackroomRec(s))
           || null;
       }
 
       function getMainRoundRecord(judgeId, contestantId, roundId, category) {
+        if (category === 'congeniality' && roundId !== 'congeniality') {
+          return null; // Miss Con แยกเฉพาะรอบความสามารถพิเศษ ไม่ปนกับรอบคัดเลือก/วันจริง
+        }
         const rec = (allScores || []).find(s => s.judge_id === judgeId && s.contestant_id === contestantId && s.round_id === roundId);
         if (!rec) return null;
-        if (category === 'congeniality' && roundId === 'blackroom' && isLegacyConTalentBlackroomRec(rec)) {
-          return null;
-        }
         return rec;
       }
 
@@ -1617,7 +1681,7 @@
           if (speedBanner) speedBanner.classList.add('hidden');
           if (top3Banner) top3Banner.classList.add('hidden');
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบห้องดำ (25 คะแนน):</span> First Impression (10) | บุคลิกภาพ/มั่นใจ (5) | เครื่องแต่งกาย (5) | เสน่ห์/มั่นใจ (5)';
-          switchCategory(currentCategory || 'all');
+          switchCategory(currentCategory === 'congeniality' ? 'all' : (currentCategory || 'all'));
           return;
         } else if (rId === 'grand') {
           if (roundsBar) roundsBar.classList.remove('hidden');
@@ -1628,7 +1692,18 @@
           if (speedBanner) speedBanner.classList.add('hidden');
           if (top3Banner) top3Banner.classList.add('hidden');
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ Grand Opening (50 คะแนน):</span> หน้าตา/ผิวพรรณ/รูปร่าง (20) | บุคลิกภาพ/มั่นใจ (10) | เครื่องแต่งกาย (10) | แนะนำตัว/ภาษากาย (10)';
-          switchCategory(currentCategory || 'all');
+          switchCategory(currentCategory === 'congeniality' ? 'all' : (currentCategory || 'all'));
+          return;
+        } else if (rId === 'popular') {
+          if (roundsBar) roundsBar.classList.remove('hidden');
+          if (conBanner) conBanner.classList.add('hidden');
+          document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
+          document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
+          catBar.classList.remove('hidden');
+          if (speedBanner) speedBanner.classList.add('hidden');
+          if (top3Banner) top3Banner.classList.add('hidden');
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ Popular Vote (50 คะแนน):</span> คะแนนความนิยมจากการโหวตของผู้ชม (50 คะแนน)';
+          switchCategory(currentCategory === 'congeniality' ? 'all' : (currentCategory || 'all'));
           return;
         } else if (rId === 'speed') {
           if (roundsBar) roundsBar.classList.remove('hidden');
@@ -1672,6 +1747,8 @@
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบห้องดำ (25 คะแนน):</span> First Impression (10) | บุคลิกภาพ/มั่นใจ (5) | เครื่องแต่งกาย (5) | เสน่ห์/มั่นใจ (5)';
         } else if (currentRound === 'grand') {
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ Grand Opening (50 คะแนน):</span> หน้าตา/ผิวพรรณ/รูปร่าง (20) | บุคลิกภาพ/มั่นใจ (10) | เครื่องแต่งกาย (10) | แนะนำตัว/ภาษากาย (10)';
+        } else if (currentRound === 'popular') {
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ Popular Vote (50 คะแนน):</span> คะแนนความนิยมจากการโหวตของผู้ชม (50 คะแนน)';
         } else if (currentRound === 'speed') {
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5 Speed (50 คะแนน):</span> ภาษากาย (10) | ไหวพริบ/พูด (20) | มั่นใจ/แก้ปัญหา (10) | ชุดนักศึกษา (10)';
         } else if (currentRound === 'qa') {
@@ -1680,6 +1757,11 @@
       }
 
       function switchCategory(cat) {
+        if (cat === 'congeniality') {
+          switchRound('congeniality');
+          return;
+        }
+
         currentCategory = cat;
         const allCats = ['all', 'miss', 'mister', 'queen', 'congeniality', 'jumbo'];
 
@@ -1694,7 +1776,11 @@
           }
         });
 
-        // วันจริงทุกหมวด (รวม Miss Congeniality) แข่ง 4 รอบหลักตามปกติด้วยกรรมการ 5 ท่าน
+        // หากอยู่ในรอบ congeniality แต่คลิกหมวดอื่น ให้กลับมายังรอบห้องดำ
+        if (currentRound === 'congeniality') {
+          currentRound = 'blackroom';
+        }
+
         const roundsBar = document.getElementById('judge-rounds-bar');
         const conBanner = document.getElementById('congeniality-banner');
         const btnJ4 = document.getElementById('btn-admin-judge-4');
@@ -1709,10 +1795,11 @@
       }
 
       function getAutoTop5Local() {
-        let allWithScores = allContestants.map(c => {
+        const eligible = (allContestants || []).filter(c => c.category !== 'congeniality' && c.status !== 'resigned');
+        let allWithScores = eligible.map(c => {
           let sum = 0;
           for (let i = 1; i <= 5; i++) {
-            ['blackroom', 'grand'].forEach(rId => {
+            ['blackroom', 'grand', 'popular'].forEach(rId => {
               const rec = getMainRoundRecord(`judge${i}`, c.id, rId, c.category);
               if (rec) sum += (rec.total_score || 0);
             });
@@ -1725,7 +1812,8 @@
 
       function getAutoTop3Local() {
         const top5 = (summaryData && summaryData.top5 && summaryData.top5.length > 0) ? summaryData.top5 : getAutoTop5Local();
-        let withSpeed = top5.map(c => {
+        const eligibleTop5 = (top5 || []).filter(c => c.status !== 'resigned');
+        let withSpeed = eligibleTop5.map(c => {
           let sum = 0;
           for (let i = 1; i <= 5; i++) {
             const rec = (allScores || []).find(s => s.judge_id === `judge${i}` && s.contestant_id === c.id && s.round_id === 'speed');
@@ -1753,7 +1841,7 @@
         const isConTalent = currentRound === 'congeniality';
 
         if (isConTalent) {
-          targetList = allContestants.filter(c => c.category === 'congeniality');
+          targetList = (allContestants || []).filter(c => c.category === 'congeniality');
         } else if (isQa) {
           if (summaryData && summaryData.top3 && summaryData.top3.length > 0) {
             targetList = summaryData.top3;
@@ -1767,10 +1855,15 @@
             targetList = getAutoTop5Local();
           }
         } else {
+          // รอบคัดเลือกหลัก (ห้องดำ, Grand Opening, Popular Vote) แสดงเฉพาะ 4 หมวดหลัก (Miss, Mister, Queen, Jumbo)
+          const mainContestants = (allContestants || []).filter(c => c.category !== 'congeniality');
           if (currentCategory === 'all') {
-            targetList = allContestants;
+            targetList = mainContestants;
+          } else if (currentCategory === 'congeniality') {
+            switchRound('congeniality');
+            return;
           } else {
-            targetList = allContestants.filter(c => c.category === currentCategory);
+            targetList = mainContestants.filter(c => c.category === currentCategory);
           }
         }
 
@@ -1797,6 +1890,7 @@
           const catTitle = CATEGORIES[cCat] || cCat;
           const criteriaList = getCriteriaForContestant(currentRound, cCat);
           const maxScore = getMaxScoreForContestant(currentRound, cCat);
+          const isResigned = contestant.status === 'resigned';
           const cardRoundTitle = isCon ? 'รอบความสามารถพิเศษ Miss Congeniality' : roundName;
 
           const effectiveJudge = (currentUser === 'admin2') ? adminSelectedJudge : currentUser;
@@ -1817,12 +1911,12 @@
                 const judgeTitle = (currentUser === 'admin2') ? ` (ในนาม ก.${adminSelectedJudge.replace('judge', '')})` : '';
 
                 let cardHtml = `
-            <div class="contestant-card glass-panel p-5 md:p-6 rounded-3xl border-t-2 ${hasVoted ? 'border-emerald-400' : 'border-[#FFDE42]'} relative transition-all duration-300 hover:shadow-[0_20px_45px_rgba(84,120,255,0.35)] flex flex-col md:flex-row gap-5 items-stretch" style="animation-delay: ${animDelay}s;">
+            <div class="contestant-card glass-panel p-5 md:p-6 rounded-3xl border-t-2 ${isResigned ? 'border-rose-500/60 opacity-75' : (hasVoted ? 'border-emerald-400' : 'border-[#FFDE42]')} relative transition-all duration-300 hover:shadow-[0_20px_45px_rgba(84,120,255,0.35)] flex flex-col md:flex-row gap-5 items-stretch" style="animation-delay: ${animDelay}s;">
               <!-- ฝั่งซ้าย: รูปภาพและข้อมูล -->
               <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-5 md:pb-0 md:pr-5">
                 <div class="w-full flex flex-col items-center">
-                  <div class="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden border-2 ${hasVoted ? 'border-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'border-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.25)]'} bg-[#111FA2] group mb-2 cursor-pointer transition-all duration-300 hover:border-[#FFDE42]" onclick="openImageModal('${cId}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
-                    <img src="${imagePath}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${cId}');" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out">
+                  <div class="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden border-2 ${isResigned ? 'border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.4)]' : (hasVoted ? 'border-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'border-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.25)]')} bg-[#111FA2] group mb-2 cursor-pointer transition-all duration-300 hover:border-[#FFDE42]" onclick="openImageModal('${cId}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
+                    <img src="${imagePath}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${cId}');" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out ${isResigned ? 'grayscale-[50%]' : ''}">
                     
                     <!-- ป้ายรหัสและหมวดหมู่ (มุมซ้ายล่าง ไม่บังรูปผู้เข้าประกวด) -->
                     <div class="absolute bottom-2 left-2 bg-[#111FA2]/95 backdrop-blur-sm border border-[#FFDE42] text-[#FFDE42] rounded-xl px-2.5 py-1.5 shadow-md z-10 pointer-events-none flex flex-col items-center text-center">
@@ -1830,7 +1924,8 @@
                       <span class="text-[9px] text-amber-200 font-bold leading-tight mt-1 max-w-[70px]">${catTitle}</span>
                     </div>
 
-                    ${hasVoted ? '<div class="absolute top-2 right-2 bg-emerald-600 border border-emerald-300 text-white font-bold text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1 z-10 pointer-events-none"><i class="fas fa-check-circle"></i> บันทึกแล้ว</div>' : ''}
+                    ${isResigned ? '<div class="absolute top-2 left-2 bg-rose-600 border border-rose-300 text-white font-bold text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1 z-10 pointer-events-none"><i class="fas fa-ban"></i> สละสิทธิ์</div>' : ''}
+                    ${hasVoted && !isResigned ? '<div class="absolute top-2 right-2 bg-emerald-600 border border-emerald-300 text-white font-bold text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1 z-10 pointer-events-none"><i class="fas fa-check-circle"></i> บันทึกแล้ว</div>' : ''}
 
                     <!-- Hover Overlay & Tooltip Hint -->
                     <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3 pointer-events-none z-10">
@@ -1849,7 +1944,11 @@
                   ${contestant.nickname ? `<div class="text-sm text-[#FFDE42] font-bold mt-0.5">"${contestant.nickname}"</div>` : ''}
                   ${contestant.faculty ? `<div class="text-xs text-blue-300 mt-0.5 font-medium"><i class="fas fa-graduation-cap mr-1 opacity-70"></i>${contestant.faculty}</div>` : ''}
                   
-                  ${isQa ? `
+                  ${isResigned ? `
+                    <div class="mt-1 px-3 py-1 bg-rose-500/20 rounded-lg text-rose-300 text-xs border border-rose-500/40 font-bold">
+                      <i class="fas fa-ban mr-1"></i> ผู้เข้าประกวดท่านนี้สละสิทธิ์แล้ว
+                    </div>
+                  ` : (isQa ? `
                     <div class="mt-1 px-3 py-1 bg-yellow-500/20 rounded-lg text-amber-300 text-xs border border-yellow-500/30 font-medium">
                       👑 ผู้ผ่านเข้ารอบ TOP 3 ตัดสิน (ล้างคะแนนเดิม)
                     </div>
@@ -1857,7 +1956,7 @@
                     <div class="mt-1 px-3 py-1 bg-yellow-500/20 rounded-lg text-amber-300 text-xs border border-yellow-500/30 font-medium">
                       ⚡ ผู้ผ่านเข้ารอบ TOP 5 (คะแนนสะสมรอบแรก: <strong>${contestant.preTotal || 0}</strong>)
                     </div>
-                  ` : '')}
+                  ` : ''))}
 
                   <div class="mt-2.5 px-4 py-1.5 bg-[#111FA2]/80 rounded-full text-[#FFDE42] font-bold text-sm border border-[#5478FF]/40 shadow-inner flex items-center justify-center gap-1.5">
                     <span>${isCon ? 'คะแนนรวม' : 'รอบนี้'}</span>
@@ -1866,10 +1965,16 @@
                   </div>
                 </div>
 
-                <button onclick="openSubmitModal('${cId}', '${cName}')" class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 active:scale-95 ${hasVoted ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white hover:shadow-[0_0_20px_rgba(52,211,153,0.5)]' : 'bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] hover:shadow-[0_0_25px_rgba(255,222,66,0.65)] hover:scale-[1.02]'}">
-                  <i class="fas ${hasVoted ? 'fa-check' : 'fa-gavel'}"></i>
-                  <span>${hasVoted ? (isCon ? 'แก้ไขคะแนน' : 'แก้ไขคะแนนรอบนี้') : (isCon ? 'บันทึกคะแนน' : 'บันทึกคะแนนรอบนี้')}${judgeTitle}</span>
-                </button>
+                ${isResigned ? `
+                  <button type="button" disabled class="w-full mt-4 py-3 rounded-2xl font-bold bg-rose-950/60 border border-rose-500/40 text-rose-300 cursor-not-allowed flex items-center justify-center gap-2">
+                    <i class="fas fa-ban"></i> <span>สละสิทธิ์แล้ว</span>
+                  </button>
+                ` : `
+                  <button onclick="openSubmitModal('${cId}', '${cName}')" class="w-full mt-4 py-3 rounded-2xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 active:scale-95 ${hasVoted ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white hover:shadow-[0_0_20px_rgba(52,211,153,0.5)]' : 'bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] hover:shadow-[0_0_25px_rgba(255,222,66,0.65)] hover:scale-[1.02]'}">
+                    <i class="fas ${hasVoted ? 'fa-check' : 'fa-gavel'}"></i>
+                    <span>${hasVoted ? (isCon ? 'แก้ไขคะแนน' : 'แก้ไขคะแนนรอบนี้') : (isCon ? 'บันทึกคะแนน' : 'บันทึกคะแนนรอบนี้')}${judgeTitle}</span>
+                  </button>
+                `}
               </div>
 
               <!-- ฝั่งขวา: ช่องกรอกเกณฑ์ย่อย -->
@@ -1888,7 +1993,7 @@
             const val = record ? (record[`score_${crit.id}`] || 0) : 0;
             const pct = crit.max > 0 ? (val / crit.max) * 100 : 0;
             cardHtml += `
-              <div class="p-3 rounded-2xl bg-[#050a30]/60 border border-[#5478FF]/30 hover:border-[#FFDE42]/60 transition-all duration-200">
+              <div class="p-3 rounded-2xl bg-[#050a30]/60 border border-[#5478FF]/30 hover:border-[#FFDE42]/60 transition-all duration-200 ${isResigned ? 'opacity-60' : ''}">
                 <div class="flex justify-between items-center mb-1">
                   <span class="text-sm font-semibold text-gray-200">${crit.name}</span>
                   <span class="text-xs font-bold text-[#FFDE42] bg-[#FFDE42]/10 px-2.5 py-0.5 rounded-full border border-[#FFDE42]/20 shrink-0">เต็ม ${crit.max}</span>
@@ -1903,6 +2008,7 @@
                     id="slider-${crit.id}-${cId}"
                     class="score-slider"
                     style="--pct: ${pct}%;"
+                    ${isResigned ? 'disabled' : ''}
                     oninput="onScoreSliderChange('${cId}', '${crit.id}', ${crit.max}, this.value)"
                   >
                   <input
@@ -1912,6 +2018,7 @@
                     value="${val}"
                     id="input-${crit.id}-${cId}"
                     class="w-16 h-9 input-dark rounded-xl text-center font-bold text-base text-[#FFDE42] border border-[#5478FF]/40 focus:scale-105 transition-transform"
+                    ${isResigned ? 'disabled' : ''}
                     oninput="onScoreInputChange('${cId}', '${crit.id}', ${crit.max}, this.value)"
                   >
                 </div>
@@ -2205,6 +2312,7 @@
         renderAdminConResultsTable();
         renderAdminSpeedTable();
         renderAdminPreTable();
+        renderContestantManageTable();
       }
 
       // วิว 3.5: ⭐ ผลการตัดสินรอบความสามารถพิเศษ Miss Congeniality (กรรมการ 3 ท่าน • แยกเก็บต่างหาก)
@@ -2462,11 +2570,11 @@
       }
 
       // ==================================================
-      // สลับ Tab รอบใน Admin Pre View (ห้องดำ, Grand, สรุป 2 รอบ)
+      // สลับ Tab รอบใน Admin Pre View (ห้องดำ, Grand, Popular, สรุป 3 รอบ)
       // ==================================================
       function switchAdminPreRound(roundId) {
         adminPreRoundView = roundId;
-        const roundIds = ['blackroom', 'grand', 'all'];
+        const roundIds = ['blackroom', 'grand', 'popular', 'all'];
         roundIds.forEach(r => {
           const btn = document.getElementById(`admin-pre-tab-${r}`);
           if (!btn) return;
@@ -2485,7 +2593,7 @@
         renderAdminPreTable();
       }
 
-      // วิว 3: ตารางรอบคัดเลือก 2 รอบแรก
+      // วิว 3: ตารางรอบคัดเลือก (ห้องดำ, Grand, Popular, สรุป 3 รอบ)
       function renderAdminPreTable() {
         const tbody = document.getElementById('pre-table-body');
         const thead = document.getElementById('pre-thead');
@@ -2514,10 +2622,11 @@
         ];
 
         const topBadge = '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-0.5"></i> ผ่านเข้ารอบ TOP 5</span>';
+        const resignedBadge = '<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-ban mr-0.5"></i> สละสิทธิ์</span>';
         const noBadge = '<span class="text-[10px] text-gray-500">-</span>';
 
         if (adminPreRoundView === 'all') {
-          // สรุปรวม 2 รอบแรก (วันจริงทุกหมวด 5 กรรมการ)
+          // สรุปรวม 3 รอบคัดเลือก (วันจริงทุกหมวด 5 กรรมการ)
           thead.innerHTML = `
           <tr class="bg-[#111FA2] text-[#FFDE42] text-xs uppercase">
             <th class="px-3 py-3 text-center">รหัส</th>
@@ -2526,33 +2635,42 @@
             <th class="px-3 py-3 text-center">หมวด</th>
             <th class="px-3 py-3 text-center">1. รอบห้องดำ<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 125)</span></th>
             <th class="px-3 py-3 text-center">2. Grand Opening<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 250)</span></th>
-            <th class="px-3 py-3 text-center bg-blue-900/60 text-white font-bold">รวม 2 รอบแรก<br><span class="text-amber-200 text-[9px] font-normal normal-case">(เต็ม 375)</span></th>
+            <th class="px-3 py-3 text-center">3. Popular Vote<br><span class="text-gray-400 text-[9px] font-normal normal-case">(รวม 5 ก. เต็ม 250)</span></th>
+            <th class="px-3 py-3 text-center bg-blue-900/60 text-white font-bold">รวม 3 รอบคัดเลือก<br><span class="text-amber-200 text-[9px] font-normal normal-case">(เต็ม 625)</span></th>
             <th class="px-3 py-3 text-center">สถานะ TOP 5</th>
+            <th class="px-3 py-3 text-center">สละสิทธิ์</th>
           </tr>`;
 
           const rows = [];
           list.forEach(c => {
-            const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
+            const isResigned = c.status === 'resigned';
+            const isTop5 = !isResigned && summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
             const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
+            const toggleBtn = isResigned
+              ? `<button type="button" onclick="confirmToggleStatus('${c.id}', 'active', '${escapeHtml(c.name)}')" class="px-2 py-0.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold transition flex items-center gap-1 mx-auto active:scale-95"><i class="fas fa-undo"></i> คืนสิทธิ์</button>`
+              : `<button type="button" onclick="confirmToggleStatus('${c.id}', 'resigned', '${escapeHtml(c.name)}')" class="px-2 py-0.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/30 text-[10px] font-bold transition flex items-center gap-1 mx-auto active:scale-95"><i class="fas fa-ban"></i> สละสิทธิ์</button>`;
+
             rows.push(`
-            <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
+            <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isResigned ? 'bg-rose-950/20 opacity-75' : (isTop5 ? 'bg-[#FFDE42]/5' : '')}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
               <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 whitespace-nowrap">
-                <div class="font-semibold text-white text-sm">${c.name}</div>
+                <div class="font-semibold text-white text-sm ${isResigned ? 'line-through text-gray-400' : ''}">${escapeHtml(c.name)}</div>
                 ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', 'blackroom')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบคัดเลือก</button>` : ''}
               </td>
               <td class="px-3 py-3 text-center text-[11px] text-gray-300">${c.categoryName}</td>
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.blackroom?.total || 0}</td>
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.grand?.total || 0}</td>
+              <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.popular?.total || 0}</td>
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/50">${c.preTotal || 0}</td>
-              <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
+              <td class="px-3 py-3 text-center">${isResigned ? resignedBadge : (isTop5 ? topBadge : noBadge)}</td>
+              <td class="px-3 py-3 text-center">${toggleBtn}</td>
             </tr>`);
           });
           tbody.innerHTML = rows.join('');
 
         } else {
-          // มุมมองเกณฑ์ย่อยรายรอบ (blackroom หรือ grand)
+          // มุมมองเกณฑ์ย่อยรายรอบ (blackroom, grand หรือ popular)
           const roundId = adminPreRoundView;
           const criteriaList = CRITERIA_MAP[roundId] || [];
           const roundObj = ROUNDS.find(r => r.id === roundId);
@@ -2579,6 +2697,7 @@
             ${judgeGroupHeaders}
             <th rowspan="2" class="px-3 py-3 text-center align-middle bg-[#FFDE42]/10 text-[#FFDE42] border-l-2 border-[#FFDE42]/50 whitespace-nowrap">รวมรอบ<br><span class="text-[9px] text-amber-200 font-normal normal-case">(เต็ม ${maxAllJudges})</span></th>
             <th rowspan="2" class="px-3 py-3 text-center align-middle">สถานะ</th>
+            <th rowspan="2" class="px-3 py-3 text-center align-middle">สละสิทธิ์</th>
           </tr>
           <tr class="bg-[#091054] border-b-2 border-[#5478FF]/40">
             ${criteriaSubHeaders}
@@ -2586,8 +2705,12 @@
 
           const rows = [];
           list.forEach(c => {
-            const isTop5 = summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
+            const isResigned = c.status === 'resigned';
+            const isTop5 = !isResigned && summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
             const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
+            const toggleBtn = isResigned
+              ? `<button type="button" onclick="confirmToggleStatus('${c.id}', 'active', '${escapeHtml(c.name)}')" class="px-2 py-0.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold transition flex items-center gap-1 mx-auto active:scale-95"><i class="fas fa-undo"></i> คืนสิทธิ์</button>`
+              : `<button type="button" onclick="confirmToggleStatus('${c.id}', 'resigned', '${escapeHtml(c.name)}')" class="px-2 py-0.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/30 text-[10px] font-bold transition flex items-center gap-1 mx-auto active:scale-95"><i class="fas fa-ban"></i> สละสิทธิ์</button>`;
 
             let judeCells = '';
             let roundTotal = 0;
@@ -2607,17 +2730,18 @@
             });
 
             rows.push(`
-            <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop5 ? 'bg-[#FFDE42]/5' : ''}">
+            <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isResigned ? 'bg-rose-950/20 opacity-75' : (isTop5 ? 'bg-[#FFDE42]/5' : '')}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] whitespace-nowrap">${c.id}</td>
               <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 whitespace-nowrap">
-                <div class="font-semibold text-white text-sm">${c.name}</div>
+                <div class="font-semibold text-white text-sm ${isResigned ? 'line-through text-gray-400' : ''}">${escapeHtml(c.name)}</div>
                 ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', '${roundId}')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบนี้</button>` : ''}
               </td>
               <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}</td>
               ${judeCells}
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/60 border-l-2 border-[#FFDE42]/30">${roundTotal || '-'}</td>
-              <td class="px-3 py-3 text-center">${isTop5 ? topBadge : noBadge}</td>
+              <td class="px-3 py-3 text-center">${isResigned ? resignedBadge : (isTop5 ? topBadge : noBadge)}</td>
+              <td class="px-3 py-3 text-center">${toggleBtn}</td>
             </tr>`);
           });
           tbody.innerHTML = rows.join('');
@@ -2628,6 +2752,142 @@
         await loadContestants();
         await fetchScores(true);
         showToast('อัปเดตข้อมูลคะแนนและสรุปผลล่าสุดเรียบร้อย');
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      // ==========================================
+      // จัดการรายชื่อผู้เข้าประกวด & ปุ่มสละสิทธิ์ / คืนสิทธิ์
+      // ==========================================
+      function renderContestantManageTable() {
+        const tbody = document.getElementById('manage-contestants-tbody');
+        if (!tbody) return;
+
+        const catFilter = document.getElementById('manage-filter-cat')?.value || 'all';
+        const statusFilter = document.getElementById('manage-filter-status')?.value || 'all';
+
+        let list = (allContestants || []).slice();
+        if (catFilter !== 'all') {
+          list = list.filter(c => c.category === catFilter);
+        }
+        if (statusFilter !== 'all') {
+          list = list.filter(c => (c.status || 'active') === statusFilter);
+        }
+
+        // เรียงลำดับตามหมวดหมู่แล้วตามรหัส
+        list.sort((a, b) => {
+          const ordA = categoryOrder[a.category] || 99;
+          const ordB = categoryOrder[b.category] || 99;
+          if (ordA !== ordB) return ordA - ordB;
+          const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+          const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+          if (numA !== numB) return numA - numB;
+          return (a.id || '').localeCompare(b.id || '');
+        });
+
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-400">ไม่พบข้อมูลผู้เข้าประกวดตามเงื่อนไขที่เลือก</td></tr>';
+          return;
+        }
+
+        const rows = list.map(c => {
+          const isResigned = c.status === 'resigned';
+          const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
+          const rawName = c.name || '';
+          const nick = c.nickname ? ` (${c.nickname})` : '';
+          const catLabel = CATEGORIES[c.category] || c.category || '';
+          const statusBadge = isResigned
+            ? '<span class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-bold inline-flex items-center gap-1"><i class="fas fa-ban"></i> สละสิทธิ์แล้ว</span>'
+            : '<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold inline-flex items-center gap-1"><i class="fas fa-check-circle"></i> ปกติ (แข่งขัน)</span>';
+
+          const actionBtn = isResigned
+            ? `<button type="button" onclick="confirmToggleStatus('${c.id}', 'active', '${escapeHtml(rawName)}')" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition flex items-center gap-1.5 mx-auto active:scale-95"><i class="fas fa-undo"></i> คืนสิทธิ์การแข่งขัน</button>`
+            : `<button type="button" onclick="confirmToggleStatus('${c.id}', 'resigned', '${escapeHtml(rawName)}')" class="px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/40 text-xs font-bold transition flex items-center gap-1.5 mx-auto active:scale-95"><i class="fas fa-user-slash"></i> สละสิทธิ์</button>`;
+
+          return `
+            <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isResigned ? 'bg-rose-950/20' : ''}">
+              <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
+              <td class="px-3 py-3 text-center">
+                <img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="ดูรูปภาพ">
+              </td>
+              <td class="px-3 py-3">
+                <div class="font-bold text-white text-sm ${isResigned ? 'line-through text-gray-400' : ''}">${escapeHtml(rawName + nick)}</div>
+                <div class="text-[11px] text-gray-400">${escapeHtml(c.faculty || '-')}</div>
+              </td>
+              <td class="px-3 py-3 text-center">
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-900/60 text-blue-200 border border-blue-500/30">${escapeHtml(catLabel)}</span>
+              </td>
+              <td class="px-3 py-3 text-xs text-gray-300">${escapeHtml(c.faculty || '-')}</td>
+              <td class="px-3 py-3 text-center">${statusBadge}</td>
+              <td class="px-3 py-3 text-center">
+                <div class="flex items-center justify-center gap-2">
+                  ${actionBtn}
+                  <button type="button" onclick="populateEditContestant('${c.id}')" class="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 text-xs font-bold transition flex items-center gap-1 active:scale-95" title="แก้ไขข้อมูล"><i class="fas fa-edit"></i> แก้ไข</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+
+        tbody.innerHTML = rows.join('');
+      }
+
+      async function confirmToggleStatus(contestantId, newStatus, contestantName) {
+        const actionText = newStatus === 'resigned' ? 'สละสิทธิ์' : 'คืนสิทธิ์การแข่งขัน';
+        const confirmMsg = newStatus === 'resigned'
+          ? `คุณต้องการตั้งสถานะให้ "${contestantName || contestantId}" (${contestantId}) เป็น "สละสิทธิ์" หรือไม่?\n\n* ผู้ที่สละสิทธิ์จะไม่ถูกนำไปคำนวณเข้ารอบ TOP 5 และ TOP 3`
+          : `คุณต้องการ "คืนสิทธิ์การแข่งขัน" ให้ "${contestantName || contestantId}" (${contestantId}) กลับเข้าสู่การแข่งขันตามปกติหรือไม่?`;
+
+        if (!confirm(confirmMsg)) return;
+
+        try {
+          const res = await fetch(`/api/contestants/${encodeURIComponent(contestantId)}/status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus, role: currentUser, token: sessionToken })
+          });
+          const data = await res.json();
+          if (data.success) {
+            showToast(`ดำเนินการ${actionText} "${contestantId}" เรียบร้อยแล้ว`);
+            await refreshAdminData();
+          } else {
+            alert(data.message || `ไม่สามารถดำเนินการ${actionText}ได้`);
+          }
+        } catch (err) {
+          console.error(err);
+          alert(`เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์: ${err.message}`);
+        }
+      }
+
+      function populateEditContestant(contestantId) {
+        const c = (allContestants || []).find(x => x.id === contestantId);
+        if (!c) return;
+        const idEl = document.getElementById('add-id');
+        const nameEl = document.getElementById('add-name');
+        const nickEl = document.getElementById('add-nickname');
+        const facEl = document.getElementById('add-faculty');
+        const catEl = document.getElementById('add-category');
+
+        if (idEl) idEl.value = c.id || '';
+        if (nameEl) nameEl.value = c.name || '';
+        if (nickEl) nickEl.value = c.nickname || '';
+        if (facEl) facEl.value = c.faculty || '';
+        if (catEl) catEl.value = c.category || 'miss';
+
+        const form = document.getElementById('add-contestant-form');
+        if (form) {
+          form.scrollIntoView({ behavior: 'smooth' });
+          idEl?.focus();
+        }
+        showToast(`โหลดข้อมูล "${c.name}" พร้อมแก้ไขแล้ว`);
       }
 
       // ฟังก์ชันช่วยบีบอัดและปรับขนาดรูปภาพอัตโนมัติ (ป้องกันข้อจำกัด 6MB ของ TiDB / Cloud Database)
@@ -2804,7 +3064,7 @@
         const hintEl = document.getElementById('print-score-summary-hint');
         const btnLabel = document.getElementById('print-score-btn-label');
 
-        const needsCat = ['blackroom', 'grand', 'pre_summary', 'all_pack'].includes(scope);
+        const needsCat = ['blackroom', 'grand', 'popular', 'pre_summary', 'all_pack'].includes(scope);
         if (catWrap) catWrap.classList.toggle('hidden', !needsCat);
 
         const activeCats = Object.keys(CATEGORIES).filter(k => (allContestants || []).some(c => c.category === k));
@@ -2814,23 +3074,26 @@
         let desc = '';
         if (scope === 'overall') {
           pages = 1;
-          desc = 'พิมพ์ <b>ใบสรุปคะแนนรวมจากรอบทั้งหมด</b> (ตารางตัดสิน TOP 3 / TOP 5 + ตารางสรุปคะแนนรวม 4 รอบของผู้เข้าประกวดทั้งหมด) พร้อมช่องลงนามกรรมการ 5 ท่าน';
+          desc = 'พิมพ์ <b>ใบสรุปคะแนนรวมจากรอบทั้งหมด</b> (ตารางตัดสิน TOP 3 / TOP 5 + ตารางสรุปคะแนนรวมทุกรอบของผู้เข้าประกวดทั้งหมด) พร้อมช่องลงนามกรรมการ 5 ท่าน';
         } else if (scope === 'pre_summary') {
           pages = catPageCount;
-          desc = `พิมพ์ <b>ใบคะแนนรวม 2 รอบคัดเลือก (ห้องดำ + Grand Opening = เต็ม 75)</b> จำนวน <b>${pages} ชุด</b> พร้อมตารางคะแนนรายรอบและตารางกรรมการ ก.1–ก.5`;
-        } else if (scope === 'blackroom' || scope === 'grand') {
+          desc = `พิมพ์ <b>ใบคะแนนรวม 3 รอบคัดเลือก (ห้องดำ + Grand Opening + Popular Vote = เต็ม 125)</b> จำนวน <b>${pages} ชุด</b> พร้อมตารางคะแนนรายรอบและตารางกรรมการ ก.1–ก.5`;
+        } else if (scope === 'blackroom' || scope === 'grand' || scope === 'popular') {
           pages = catPageCount;
-          const rName = scope === 'blackroom' ? 'รอบที่ 1: รอบห้องดำ (เต็ม 25)' : 'รอบที่ 2: Grand Opening (เต็ม 50)';
+          let rName = '';
+          if (scope === 'blackroom') rName = 'รอบที่ 1: รอบห้องดำ (เต็ม 25)';
+          else if (scope === 'grand') rName = 'รอบที่ 2: Grand Opening (เต็ม 50)';
+          else rName = 'รอบที่ 3: Popular Vote (เต็ม 50)';
           desc = `พิมพ์ <b>ใบคะแนน${rName}</b> จำนวน <b>${pages} ชุด</b> แยกตารางเกณฑ์ย่อย (÷5) และตารางอ้างอิงกรรมการ ก.1–ก.5`;
         } else if (scope === 'speed') {
           pages = 1;
-          desc = 'พิมพ์ <b>ใบคะแนนรอบที่ 3: TOP 5 Speed (เต็ม 50)</b> พร้อมตารางเกณฑ์ย่อย 4 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และสถานะผ่านเข้า TOP 3';
+          desc = 'พิมพ์ <b>ใบคะแนนรอบที่ 4: TOP 5 Speed (เต็ม 50)</b> พร้อมตารางเกณฑ์ย่อย 4 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และสถานะผ่านเข้า TOP 3';
         } else if (scope === 'qa') {
           pages = 1;
-          desc = 'พิมพ์ <b>ใบคะแนนรอบที่ 4: TOP 3 ตอบคำถามชี้ขาด (เต็ม 100)</b> พร้อมตารางเกณฑ์ย่อย 6 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และรางวัลเกียรติยศ';
+          desc = 'พิมพ์ <b>ใบคะแนนรอบที่ 5: TOP 3 ตอบคำถามชี้ขาด (เต็ม 100)</b> พร้อมตารางเกณฑ์ย่อย 6 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และรางวัลเกียรติยศ';
         } else if (scope === 'all_pack') {
-          pages = (catPageCount * 3) + 3;
-          desc = `พิมพ์ <b>ครบชุดทั้งหมด (${pages} ชุด)</b> — รอบห้องดำ, Grand Opening, รวม 2 รอบคัดเลือก, รอบ TOP 5 Speed, รอบ TOP 3 ตอบคำถาม และใบสรุปคะแนนรวมทุกรอบอย่างเป็นทางการ`;
+          pages = (catPageCount * 4) + 3;
+          desc = `พิมพ์ <b>ครบชุดทั้งหมด (${pages} ชุด)</b> — รอบห้องดำ, Grand Opening, Popular Vote, รวม 3 รอบคัดเลือก, รอบ TOP 5 Speed, รอบ TOP 3 ตอบคำถาม และใบสรุปคะแนนรวมทุกรอบอย่างเป็นทางการ`;
         }
 
         if (hintEl) hintEl.innerHTML = desc;
@@ -2953,15 +3216,22 @@
             formulaDesc: 'นำคะแนนรวมของกรรมการทั้ง 5 ท่านในแต่ละเกณฑ์มา<strong>หาร 5</strong> แล้วนำทุกช่องมารวมกันเป็น <strong>คะแนนรวมสุทธิเต็ม 50 คะแนน</strong> (คะแนนดิบรวม 5 ก. เต็ม 250 คะแนน)',
             statusTitle: 'สถานะ'
           },
+          popular: {
+            pill: 'รอบที่ 3: Popular Vote',
+            maxPerJudge: 50,
+            maxAll5: 250,
+            formulaDesc: 'นำคะแนนรวมของกรรมการทั้ง 5 ท่านมา<strong>หาร 5</strong> เป็น <strong>คะแนนรวมสุทธิเต็ม 50 คะแนน</strong> (คะแนนดิบรวม 5 ก. เต็ม 250 คะแนน)',
+            statusTitle: 'สถานะ'
+          },
           speed: {
-            pill: 'รอบที่ 3: TOP 5 Speed',
+            pill: 'รอบที่ 4: TOP 5 Speed',
             maxPerJudge: 50,
             maxAll5: 250,
             formulaDesc: 'รอบ 5 คนสุดท้ายคัดเลือกเหลือ 3 คนสุดท้าย (TOP 3) — นำคะแนนรวมของกรรมการทั้ง 5 ท่านในแต่ละเกณฑ์มา<strong>หาร 5</strong> รวมเป็น <strong>คะแนนสุทธิเต็ม 50 คะแนน</strong> (ดิบรวม 5 ก. เต็ม 250 คะแนน)',
             statusTitle: 'ผลคัดเลือก'
           },
           qa: {
-            pill: 'รอบที่ 4: TOP 3 ตอบคำถามชี้ขาด',
+            pill: 'รอบที่ 5: TOP 3 ตอบคำถามชี้ขาด',
             maxPerJudge: 100,
             maxAll5: 500,
             formulaDesc: 'รอบ 3 คนสุดท้ายตัดสินชี้ขาด (ล้างคะแนนรอบก่อนหน้าทั้งหมด) — นำคะแนนรวมของกรรมการทั้ง 5 ท่านในแต่ละเกณฑ์มา<strong>หาร 5</strong> รวม 6 ช่องเป็น <strong>คะแนนรวมสุทธิเต็ม 100 คะแนน</strong> (ดิบรวม 5 ก. เต็ม 500 คะแนน)',
@@ -3193,29 +3463,35 @@
           };
         }
 
-        // 2) สร้างหน้าใบคะแนนรวม 2 รอบคัดเลือก (ห้องดำ 25 + Grand 50 = 75)
+        // 2) สร้างหน้าใบคะแนนรวม 3 รอบคัดเลือก (ห้องดำ 25 + Grand 50 + Popular 50 = 125)
         function buildPreSummarySheet(contestants, groupBadge, showCatCol) {
           const isCompact = (contestants || []).length > 10;
           const computed = (contestants || []).map(c => {
             let blackSum = 0;
             let grandSum = 0;
+            let popularSum = 0;
             const jCombined = {};
             judges.forEach(jId => {
               const rB = getMainRoundRecord(jId, c.id, 'blackroom', c.category);
               const rG = getMainRoundRecord(jId, c.id, 'grand', c.category);
+              const rP = getMainRoundRecord(jId, c.id, 'popular', c.category);
               const bVal = rB ? (rB.total_score || 0) : null;
               const gVal = rG ? (rG.total_score || 0) : null;
+              const pVal = rP ? (rP.total_score || 0) : null;
               if (bVal !== null) blackSum += bVal;
               if (gVal !== null) grandSum += gVal;
-              jCombined[jId] = (bVal !== null || gVal !== null) ? ((bVal || 0) + (gVal || 0)) : null;
+              if (pVal !== null) popularSum += pVal;
+              jCombined[jId] = (bVal !== null || gVal !== null || pVal !== null) ? ((bVal || 0) + (gVal || 0) + (pVal || 0)) : null;
             });
-            const preTotal = blackSum + grandSum;
+            const preTotal = blackSum + grandSum + popularSum;
             return {
               c,
               blackSum,
               blackAvg: Number((blackSum / 5).toFixed(2)),
               grandSum,
               grandAvg: Number((grandSum / 5).toFixed(2)),
+              popularSum,
+              popularAvg: Number((popularSum / 5).toFixed(2)),
               preTotal,
               preAvg: Number((preTotal / 5).toFixed(2)),
               jCombined
@@ -3225,7 +3501,7 @@
           computed.sort((a, b) => b.preTotal !== a.preTotal ? b.preTotal - a.preTotal : (a.c.id || '').localeCompare(b.c.id || ''));
 
           const t1Filled = computed.map((item, idx) => {
-            const { c, blackSum, blackAvg, grandSum, grandAvg, preTotal, preAvg } = item;
+            const { c, blackSum, blackAvg, grandSum, grandAvg, popularSum, popularAvg, preTotal, preAvg } = item;
             const hasScore = preTotal > 0;
             const isTop5 = hasScore && top5IdSet.has(c.id);
             const rawName = c.name || '';
@@ -3239,6 +3515,7 @@
                 ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
                 <td>${formatAvgCell(blackSum > 0, blackAvg, blackSum)}</td>
                 <td>${formatAvgCell(grandSum > 0, grandAvg, grandSum)}</td>
+                <td>${formatAvgCell(popularSum > 0, popularAvg, popularSum)}</td>
                 <td class="bold">${hasScore ? preTotal : '-'}</td>
                 <td class="col-final">${hasScore ? preAvg.toFixed(2) : '-'}</td>
                 <td class="col-award">${isTop5 ? '👑 ผ่าน TOP 5' : '-'}</td>
@@ -3276,7 +3553,7 @@
                 <td></td><td class="col-id">${escapePrintHtml(c.id)}</td>
                 <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
                 ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
-                <td></td><td></td><td></td><td class="col-final"></td><td></td>
+                <td></td><td></td><td></td><td></td><td class="col-final"></td><td></td>
               </tr>
             `;
           }).join('');
@@ -3297,37 +3574,38 @@
 
           const blankCnt = Math.max(6, listForBlank.length);
           const t1BlankAll = Array.from({ length: blankCnt }, () => `
-            <tr class="row-blank"><td></td><td></td><td class="text-left"></td>${showCatCol ? '<td></td>' : ''}<td></td><td></td><td></td><td class="col-final"></td><td></td></tr>
+            <tr class="row-blank"><td></td><td></td><td class="text-left"></td>${showCatCol ? '<td></td>' : ''}<td></td><td></td><td></td><td></td><td class="col-final"></td><td></td></tr>
           `).join('');
           const t2BlankAll = Array.from({ length: blankCnt }, () => `
             <tr class="row-blank"><td></td><td></td><td class="text-left"></td>${showCatCol ? '<td></td>' : ''}<td></td><td></td><td></td><td></td><td></td><td></td><td class="col-final"></td></tr>
           `).join('');
 
           return {
-            title: `ใบคะแนนรวม 2 รอบคัดเลือก — ${groupBadge}`,
-            badgeHtml: `<span class="cat-pill">สรุปรวม 2 รอบคัดเลือก (คัด TOP 5)</span><span class="cat-pill cat-pill-sub">${escapePrintHtml(groupBadge)}</span>`,
-            subFilled: 'สรุปคะแนนสะสมรอบห้องดำ (25) + Grand Opening (50) • กรรมการ 5 ท่าน เต็ม 375 (เฉลี่ยสุทธิเต็ม 75)',
-            subBlank: 'แบบฟอร์มใบคะแนนรวม 2 รอบคัดเลือก — ใบคะแนนเปล่าสำหรับกรอกด้วยมือ (เต็ม 75 คะแนน)',
+            title: `ใบคะแนนรวม 3 รอบคัดเลือก — ${groupBadge}`,
+            badgeHtml: `<span class="cat-pill">สรุปรวม 3 รอบคัดเลือก (คัด TOP 5)</span><span class="cat-pill cat-pill-sub">${escapePrintHtml(groupBadge)}</span>`,
+            subFilled: 'สรุปคะแนนสะสมรอบห้องดำ (25) + Grand Opening (50) + Popular Vote (50) • กรรมการ 5 ท่าน เต็ม 625 (เฉลี่ยสุทธิเต็ม 125)',
+            subBlank: 'แบบฟอร์มใบคะแนนรวม 3 รอบคัดเลือก — ใบคะแนนเปล่าสำหรับกรอกด้วยมือ (เต็ม 125 คะแนน)',
             bodyHtml: `
               <div class="formula-box">
-                <strong>วิธีคำนวณคะแนนสะสม 2 รอบคัดเลือก (คัดเข้า TOP 5):</strong>
-                นำคะแนนรอบที่ 1 <strong>รอบห้องดำ</strong> (เต็ม 25/ก., รวม 5 ก. เต็ม 125) บวกกับรอบที่ 2 <strong>Grand Opening</strong> (เต็ม 50/ก., รวม 5 ก. เต็ม 250)
-                = <strong>คะแนนสะสมรวม 375 คะแนน (เฉลี่ยสุทธิ ÷ 5 เต็ม 75 คะแนน)</strong>
+                <strong>วิธีคำนวณคะแนนสะสม 3 รอบคัดเลือก (คัดเข้า TOP 5):</strong>
+                นำคะแนนรอบที่ 1 <strong>รอบห้องดำ</strong> (เต็ม 25/ก., รวม 5 ก. เต็ม 125) บวกกับรอบที่ 2 <strong>Grand Opening</strong> (เต็ม 50/ก., รวม 5 ก. เต็ม 250) บวกกับรอบที่ 3 <strong>Popular Vote</strong> (เต็ม 50/ก., รวม 5 ก. เต็ม 250)
+                = <strong>คะแนนสะสมรวม 625 คะแนน (เฉลี่ยสุทธิ ÷ 5 เต็ม 125 คะแนน)</strong>
               </div>
 
-              <div class="section-heading">1. ตารางสรุปคะแนนรวม 2 รอบแรก (รอบห้องดำ + Grand Opening)</div>
+              <div class="section-heading">1. ตารางสรุปคะแนนรวม 3 รอบคัดเลือก (ห้องดำ + Grand Opening + Popular Vote)</div>
               <table class="${isCompact ? 'table-compact' : ''}">
                 <thead>
                   <tr>
-                    <th style="width:5%;">อันดับ</th>
-                    <th style="width:7%;">รหัส</th>
-                    <th style="width:${showCatCol ? 24 : 33}%;" class="text-left">ชื่อ - นามสกุล</th>
-                    ${showCatCol ? '<th style="width:9%;">หมวด</th>' : ''}
-                    <th style="width:13%;">1. รอบห้องดำ<div class="th-sub">(เฉลี่ย 25 / ดิบ 125)</div></th>
-                    <th style="width:13%;">2. Grand Opening<div class="th-sub">(เฉลี่ย 50 / ดิบ 250)</div></th>
-                    <th style="width:9.5%;">รวม 2 รอบ<div class="th-sub">(เต็ม 375)</div></th>
-                    <th style="width:9.5%;" class="th-final">เฉลี่ยสุทธิ<div class="th-sub">(เต็ม 75)</div></th>
-                    <th style="width:10%;">สถานะ</th>
+                    <th style="width:4.5%;">อันดับ</th>
+                    <th style="width:6%;">รหัส</th>
+                    <th style="width:${showCatCol ? 20 : 26}%;" class="text-left">ชื่อ - นามสกุล</th>
+                    ${showCatCol ? '<th style="width:7.5%;">หมวด</th>' : ''}
+                    <th style="width:11%;">1. ห้องดำ<div class="th-sub">(เฉลี่ย 25 / ดิบ 125)</div></th>
+                    <th style="width:11%;">2. Grand<div class="th-sub">(เฉลี่ย 50 / ดิบ 250)</div></th>
+                    <th style="width:11%;">3. Popular<div class="th-sub">(เฉลี่ย 50 / ดิบ 250)</div></th>
+                    <th style="width:9%;">รวม 3 รอบ<div class="th-sub">(เต็ม 625)</div></th>
+                    <th style="width:8.5%;" class="th-final">เฉลี่ยสุทธิ<div class="th-sub">(เต็ม 125)</div></th>
+                    <th style="width:11.5%;">สถานะ</th>
                   </tr>
                 </thead>
                 <tbody data-mode="filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${t1Filled}</tbody>
@@ -3335,7 +3613,7 @@
                 <tbody data-mode="blank_all" class="${safeMode !== 'blank_all' ? 'hidden' : ''}">${t1BlankAll}</tbody>
               </table>
 
-              <div class="section-heading">2. ตารางอ้างอิงคะแนนรวม 2 รอบแรกแยกตามกรรมการ 5 ท่าน (ก.1–ก.5 แต่ละท่านเต็ม 75 คะแนน)</div>
+              <div class="section-heading">2. ตารางอ้างอิงคะแนนรวม 3 รอบคัดเลือกแยกตามกรรมการ 5 ท่าน (ก.1–ก.5 แต่ละท่านเต็ม 125 คะแนน)</div>
               <table class="${isCompact ? 'table-compact' : ''}">
                 <thead>
                   <tr>
@@ -3343,13 +3621,13 @@
                     <th style="width:7%;">รหัส</th>
                     <th style="width:${showCatCol ? 24 : 33}%;" class="text-left">ชื่อ - นามสกุล</th>
                     ${showCatCol ? '<th style="width:9%;">หมวด</th>' : ''}
-                    <th style="width:7.5%;">ก.1<div class="th-sub">(75)</div></th>
-                    <th style="width:7.5%;">ก.2<div class="th-sub">(75)</div></th>
-                    <th style="width:7.5%;">ก.3<div class="th-sub">(75)</div></th>
-                    <th style="width:7.5%;">ก.4<div class="th-sub">(75)</div></th>
-                    <th style="width:7.5%;">ก.5<div class="th-sub">(75)</div></th>
-                    <th style="width:9%;">รวม 5 ก.<div class="th-sub">(เต็ม 375)</div></th>
-                    <th style="width:8.5%;" class="th-final">เฉลี่ยสุทธิ<div class="th-sub">(เต็ม 75)</div></th>
+                    <th style="width:7.5%;">ก.1<div class="th-sub">(125)</div></th>
+                    <th style="width:7.5%;">ก.2<div class="th-sub">(125)</div></th>
+                    <th style="width:7.5%;">ก.3<div class="th-sub">(125)</div></th>
+                    <th style="width:7.5%;">ก.4<div class="th-sub">(125)</div></th>
+                    <th style="width:7.5%;">ก.5<div class="th-sub">(125)</div></th>
+                    <th style="width:9%;">รวม 5 ก.<div class="th-sub">(เต็ม 625)</div></th>
+                    <th style="width:8.5%;" class="th-final">เฉลี่ยสุทธิ<div class="th-sub">(เต็ม 125)</div></th>
                   </tr>
                 </thead>
                 <tbody data-mode="filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${t2Filled}</tbody>
@@ -3419,24 +3697,27 @@
 
           // ตารางที่ 2: ภาพรวมคะแนนทุกรอบของผู้เข้าประกวดทั้งหมด (29 คน)
           const allOverview = (allContestants || []).map(c => {
-            let blackSum = 0, grandSum = 0, speedSum = 0, qaSum = 0;
+            let blackSum = 0, grandSum = 0, popularSum = 0, speedSum = 0, qaSum = 0;
             let hasSpeed = false, hasQa = false;
             judges.forEach(jId => {
               const rB = getMainRoundRecord(jId, c.id, 'blackroom', c.category);
               const rG = getMainRoundRecord(jId, c.id, 'grand', c.category);
+              const rP = getMainRoundRecord(jId, c.id, 'popular', c.category);
               const rS = getMainRoundRecord(jId, c.id, 'speed', c.category);
               const rQ = getMainRoundRecord(jId, c.id, 'qa', c.category);
               if (rB) blackSum += (rB.total_score || 0);
               if (rG) grandSum += (rG.total_score || 0);
+              if (rP) popularSum += (rP.total_score || 0);
               if (rS) { speedSum += (rS.total_score || 0); hasSpeed = true; }
               if (rQ) { qaSum += (rQ.total_score || 0); hasQa = true; }
             });
-            const preTotal = blackSum + grandSum;
+            const preTotal = blackSum + grandSum + popularSum;
             const fin = finalRankMap.get(c.id);
             return {
               c,
               blackSum,
               grandSum,
+              popularSum,
               preTotal,
               speedSum,
               hasSpeed,
@@ -3455,7 +3736,7 @@
           });
 
           const t2Filled = allOverview.map((item, idx) => {
-            const { c, blackSum, grandSum, preTotal, speedSum, hasSpeed, qaSum, hasQa, qaAvg, finalRank, award } = item;
+            const { c, blackSum, grandSum, popularSum, preTotal, speedSum, hasSpeed, qaSum, hasQa, qaAvg, finalRank, award } = item;
             const rawName = c.name || '';
             const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
             const catLabel = CATEGORIES[c.category] || c.category || '';
@@ -3470,6 +3751,7 @@
                 <td class="cat-mini">${escapePrintHtml(catLabel)}</td>
                 <td>${blackSum || '-'}</td>
                 <td>${grandSum || '-'}</td>
+                <td>${popularSum || '-'}</td>
                 <td class="bold">${preTotal || '-'}</td>
                 <td>${hasSpeed ? speedSum : '-'}</td>
                 <td>${hasQa ? qaSum : '-'}</td>
@@ -3490,7 +3772,7 @@
                 <td class="col-id">${escapePrintHtml(c.id)}</td>
                 <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
                 <td class="cat-mini">${escapePrintHtml(catLabel)}</td>
-                <td></td><td></td><td></td><td></td><td></td><td class="col-final"></td><td></td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td class="col-final"></td><td></td>
               </tr>
             `;
           }).join('');
@@ -3498,19 +3780,19 @@
           const t2BlankAll = Array.from({ length: Math.max(10, allById.length) }, (_, idx) => `
             <tr class="row-blank">
               <td>${idx + 1}</td><td></td><td class="text-left"></td><td></td>
-              <td></td><td></td><td></td><td></td><td></td><td class="col-final"></td><td></td>
+              <td></td><td></td><td></td><td></td><td></td><td></td><td class="col-final"></td><td></td>
             </tr>
           `).join('');
 
           return {
             title: 'ใบสรุปผลคะแนนรวมทุกรอบอย่างเป็นทางการ — RMUTK FRESHY 2026',
-            badgeHtml: `<span class="cat-pill">สรุปคะแนนรวมทุกรอบ (4 รอบหลัก)</span><span class="cat-pill cat-pill-sub">Official Final Summary</span>`,
+            badgeHtml: `<span class="cat-pill">สรุปคะแนนรวมทุกรอบ (5 รอบหลัก)</span><span class="cat-pill cat-pill-sub">Official Final Summary</span>`,
             subFilled: 'รายงานสรุปผลคะแนนรวมทุกรอบและผลการตัดสินชี้ขาดอย่างเป็นทางการ (กรรมการ 5 ท่าน ก.1–ก.5)',
             subBlank: 'แบบฟอร์มใบสรุปคะแนนรวมทุกรอบ — ใบคะแนนเปล่าสำหรับกรอกด้วยมือ (กรรมการ 5 ท่าน ก.1–ก.5)',
             bodyHtml: `
               <div class="formula-box">
-                <strong>โครงสร้างคะแนน 4 รอบหลัก (กรรมการ 5 ท่าน ก.1–ก.5):</strong>
-                <strong>รอบคัดเลือก</strong> = ห้องดำ (25×5 = 125) + Grand Opening (50×5 = 250) ➔ รวม <strong>375</strong> คัด <strong>TOP 5</strong>
+                <strong>โครงสร้างคะแนน 5 รอบหลัก (กรรมการ 5 ท่าน ก.1–ก.5):</strong>
+                <strong>รอบคัดเลือก</strong> = ห้องดำ (25×5 = 125) + Grand Opening (50×5 = 250) + Popular Vote (50×5 = 250) ➔ รวม <strong>625</strong> คัด <strong>TOP 5</strong>
                 • <strong>รอบ Speed</strong> (50×5 = 250) คัด <strong>TOP 3</strong>
                 • <strong>รอบชิง TOP 3 ตอบคำถาม</strong> (ล้างคะแนนเดิม • 100×5 = 500 ➔ ÷ 5 = <strong>คะแนนสุทธิเต็ม 100</strong> ตัดสิน The Winner)
               </div>
@@ -3523,7 +3805,7 @@
                     <th style="width:5.5%;">รหัส</th>
                     <th style="width:17%;" class="text-left">ชื่อ - นามสกุล</th>
                     <th style="width:7.5%;">หมวด</th>
-                    <th style="width:6.5%;">คัดเลือก<div class="th-sub">(375)</div></th>
+                    <th style="width:6.5%;">คัดเลือก<div class="th-sub">(625)</div></th>
                     <th style="width:6.5%;">Speed<div class="th-sub">(250)</div></th>
                     <th style="width:5.2%;">ก.1<div class="th-sub">(100)</div></th>
                     <th style="width:5.2%;">ก.2<div class="th-sub">(100)</div></th>
@@ -3540,21 +3822,22 @@
                 <tbody data-mode="blank_all" class="${safeMode !== 'blank_all' ? 'hidden' : ''}">${t1BlankAll}</tbody>
               </table>
 
-              <div class="section-heading">2. ตารางสรุปคะแนนรวมทุกรอบของผู้เข้าประกวดทั้งหมด (ภาพรวมครบทั้ง 4 รอบการประกวด)</div>
+              <div class="section-heading">2. ตารางสรุปคะแนนรวมทุกรอบของผู้เข้าประกวดทั้งหมด (ภาพรวมครบทั้ง 5 รอบการประกวด)</div>
               <table class="table-compact">
                 <thead>
                   <tr>
                     <th style="width:4.5%;">ที่</th>
-                    <th style="width:6%;">รหัส</th>
-                    <th style="width:23.5%;" class="text-left">ชื่อ - นามสกุล</th>
-                    <th style="width:9%;">หมวด</th>
-                    <th style="width:7.5%;">1. ห้องดำ<div class="th-sub">(125)</div></th>
-                    <th style="width:7.5%;">2. Grand<div class="th-sub">(250)</div></th>
-                    <th style="width:8%;">รวมคัดเลือก<div class="th-sub">(375)</div></th>
-                    <th style="width:7.5%;">3. Speed<div class="th-sub">(250)</div></th>
-                    <th style="width:7.5%;">4. ชิงฯ<div class="th-sub">(500)</div></th>
-                    <th style="width:8%;" class="th-final">เฉลี่ยชิง<div class="th-sub">(100)</div></th>
-                    <th style="width:11%;">สถานะ / รางวัล</th>
+                    <th style="width:5.5%;">รหัส</th>
+                    <th style="width:20%;" class="text-left">ชื่อ - นามสกุล</th>
+                    <th style="width:8%;">หมวด</th>
+                    <th style="width:7%;">1. ห้องดำ<div class="th-sub">(125)</div></th>
+                    <th style="width:7%;">2. Grand<div class="th-sub">(250)</div></th>
+                    <th style="width:7%;">3. Popular<div class="th-sub">(250)</div></th>
+                    <th style="width:7.5%;">รวมคัดเลือก<div class="th-sub">(625)</div></th>
+                    <th style="width:7%;">4. Speed<div class="th-sub">(250)</div></th>
+                    <th style="width:7%;">5. ชิงฯ<div class="th-sub">(500)</div></th>
+                    <th style="width:7.5%;" class="th-final">เฉลี่ยชิง<div class="th-sub">(100)</div></th>
+                    <th style="width:10%;">สถานะ / รางวัล</th>
                   </tr>
                 </thead>
                 <tbody data-mode="filled" class="${safeMode !== 'filled' ? 'hidden' : ''}">${t2Filled}</tbody>
@@ -3569,7 +3852,7 @@
         const sheets = [];
         const catGroups = getCategoryGroups();
 
-        if (scope === 'blackroom' || scope === 'grand') {
+        if (scope === 'blackroom' || scope === 'grand' || scope === 'popular') {
           catGroups.forEach(g => sheets.push(buildSingleRoundSheet(scope, g.contestants, g.badge, g.showCatCol)));
         } else if (scope === 'pre_summary') {
           catGroups.forEach(g => sheets.push(buildPreSummarySheet(g.contestants, g.badge, g.showCatCol)));
@@ -3582,6 +3865,7 @@
         } else if (scope === 'all_pack') {
           catGroups.forEach(g => sheets.push(buildSingleRoundSheet('blackroom', g.contestants, g.badge, g.showCatCol)));
           catGroups.forEach(g => sheets.push(buildSingleRoundSheet('grand', g.contestants, g.badge, g.showCatCol)));
+          catGroups.forEach(g => sheets.push(buildSingleRoundSheet('popular', g.contestants, g.badge, g.showCatCol)));
           catGroups.forEach(g => sheets.push(buildPreSummarySheet(g.contestants, g.badge, g.showCatCol)));
           sheets.push(buildSingleRoundSheet('speed', top5List, 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย (TOP 5)', true));
           sheets.push(buildSingleRoundSheet('qa', top3List, 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย (TOP 3)', true));
@@ -3901,7 +4185,7 @@
       // ==========================================
       // Print Criteria Sheet by Category (A4 Portrait)
       // ==========================================
-      const PRINT_ROUND_ORDER = ['blackroom', 'grand', 'speed', 'qa'];
+      const PRINT_ROUND_ORDER = ['blackroom', 'grand', 'popular', 'speed', 'qa'];
 
       function getSelectedPrintRounds() {
         const checked = Array.from(document.querySelectorAll('.print-round-cb:checked')).map(cb => cb.value);
@@ -3917,8 +4201,8 @@
       }
 
       function setPrintRoundPreset(preset) {
-        if (preset === 'all') setPrintRoundsChecked(['blackroom', 'grand', 'speed', 'qa']);
-        else if (preset === 'pre') setPrintRoundsChecked(['blackroom', 'grand']);
+        if (preset === 'all') setPrintRoundsChecked(['blackroom', 'grand', 'popular', 'speed', 'qa']);
+        else if (preset === 'pre') setPrintRoundsChecked(['blackroom', 'grand', 'popular']);
         else if (preset === 'final') setPrintRoundsChecked(['speed', 'qa']);
       }
 
@@ -4157,14 +4441,16 @@
         const roundTitleMap = {
           blackroom: 'รอบที่ 1: รอบห้องดำ (เต็ม 25)',
           grand: 'รอบที่ 2: Grand Opening (เต็ม 50)',
-          speed: 'รอบที่ 3: TOP 5 Speed (เต็ม 50)',
-          qa: 'รอบที่ 4: TOP 3 ตอบคำถามชี้ขาด (เต็ม 100)'
+          popular: 'รอบที่ 3: Popular Vote (เต็ม 50)',
+          speed: 'รอบที่ 4: TOP 5 Speed (เต็ม 50)',
+          qa: 'รอบที่ 5: TOP 3 ตอบคำถามชี้ขาด (เต็ม 100)'
         };
         const roundShortMap = {
           blackroom: '1. ห้องดำ',
-          grand: '2. Grand Opening',
-          speed: '3. TOP 5 Speed',
-          qa: '4. TOP 3 ตอบคำถาม'
+          grand: '2. Grand',
+          popular: '3. Popular',
+          speed: '4. Speed',
+          qa: '5. ตอบคำถาม'
         };
 
         const judgeNum = fillMode.startsWith('judge') ? fillMode.replace('judge', '') : null;
@@ -4302,8 +4588,10 @@
           rounds.forEach(rId => {
             const maxVal = getMaxScoreForContestant(rId, catKey);
             colDefs.push({ type: 'round', rId, label: roundShortMap[rId] || rId, max: maxVal });
-            if (rId === 'grand' && hasBothPre) {
-              colDefs.push({ type: 'pre_sum', label: 'รวมคัดเลือก', max: isCon ? 200 : 75 });
+            const lastPre = rounds.includes('popular') ? 'popular' : 'grand';
+            if (rId === lastPre && hasBothPre) {
+              const preSumMax = rounds.includes('popular') ? 125 : 75;
+              colDefs.push({ type: 'pre_sum', label: 'รวมคัดเลือก', max: isCon ? 200 : preSumMax });
             }
           });
 
@@ -4340,7 +4628,10 @@
               if (col.type === 'pre_sum') {
                 const b = getRoundTotal('blackroom');
                 const g = getRoundTotal('grand');
-                const sum = (b !== null || g !== null) ? ((b || 0) + (g || 0)) : '';
+                const p = rounds.includes('popular') ? getRoundTotal('popular') : null;
+                const sum = (b !== null || g !== null || p !== null)
+                  ? ((b || 0) + (g || 0) + (p || 0))
+                  : '';
                 return `<td class="col-total">${sum !== '' ? sum : ''}</td>`;
               }
               const val = getRoundTotal(col.rId);

@@ -44,7 +44,7 @@ const CATEGORIES = {
     jumbo: 'Miss Jumbo'
 };
 
-const ROUNDS_PRE = ['blackroom', 'grand'];
+const ROUNDS_PRE = ['blackroom', 'grand', 'popular'];
 
 async function initDB() {
     try {
@@ -88,6 +88,7 @@ async function initDB() {
             if (!colMap['image_type']) await connection.execute("ALTER TABLE contestants ADD COLUMN image_type VARCHAR(50) DEFAULT 'image/jpeg'");
             if (!colMap['faculty']) await connection.execute("ALTER TABLE contestants ADD COLUMN faculty VARCHAR(150) DEFAULT ''");
             if (!colMap['nickname']) await connection.execute("ALTER TABLE contestants ADD COLUMN nickname VARCHAR(50) DEFAULT ''");
+            if (!colMap['status']) await connection.execute("ALTER TABLE contestants ADD COLUMN status VARCHAR(20) DEFAULT 'active'");
 
             const [scoreCols] = await connection.execute(`
                 SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
@@ -143,7 +144,7 @@ async function initDB() {
                 )
             `);
 
-            // ย้ายคะแนนรอบความสามารถพิเศษของ Miss Congeniality (เกณฑ์ 5 ข้อ เต็ม 100) ที่อาจเคยบันทึกค้างใน round_id='blackroom' ไปเก็บแยกที่ round_id='congeniality' อย่างปลอดภัย
+            // ย้ายคะแนนทั้งหมดของ Miss Congeniality ที่อาจเคยบันทึกค้างใน round_id='blackroom' ไปเก็บแยกที่ round_id='congeniality'
             try {
                 await connection.execute(`
                     INSERT IGNORE INTO scores (judge_id, contestant_id, round_id, score_c1, score_c2, score_c3, score_c4, score_c5, score_c6, total_score, updated_at)
@@ -152,18 +153,15 @@ async function initDB() {
                     INNER JOIN contestants c ON c.id = s.contestant_id
                     WHERE c.category = 'congeniality'
                       AND s.round_id = 'blackroom'
-                      AND (s.score_c5 > 0 OR s.total_score > 25)
                 `);
                 await connection.execute(`
                     DELETE s FROM scores s
                     INNER JOIN contestants c ON c.id = s.contestant_id
-                    INNER JOIN scores s2 ON s2.judge_id = s.judge_id AND s2.contestant_id = s.contestant_id AND s2.round_id = 'congeniality'
                     WHERE c.category = 'congeniality'
                       AND s.round_id = 'blackroom'
-                      AND (s.score_c5 > 0 OR s.total_score > 25)
                 `);
             } catch (migErr) {
-                console.warn('⚠️ Miss Con legacy talent score migration note:', migErr.message);
+                console.warn('⚠️ Miss Con legacy score cleanup note:', migErr.message);
             }
         } finally {
             connection.release();
@@ -275,7 +273,7 @@ app.get('/api/contestants', async (req, res) => {
             return res.json(contestantsCache.data);
         }
         const [rows] = await pool.execute(
-            `SELECT id, name, nickname, category, faculty, image, IF(image_data IS NOT NULL, 1, 0) AS has_image 
+            `SELECT id, name, nickname, category, faculty, image, COALESCE(status, 'active') AS status, IF(image_data IS NOT NULL, 1, 0) AS has_image 
              FROM contestants 
              ORDER BY FIELD(category, 'miss', 'mister', 'queen', 'congeniality', 'jumbo'), CAST(SUBSTRING(id, 2) AS UNSIGNED), id ASC`
         );
@@ -283,6 +281,68 @@ app.get('/api/contestants', async (req, res) => {
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch contestants' });
+    }
+});
+
+// เปลี่ยนสถานะผู้เข้าประกวด (ปกติ / สละสิทธิ์)
+app.post('/api/contestants/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const targetStatus = status === 'resigned' ? 'resigned' : 'active';
+        await pool.execute('UPDATE contestants SET status = ? WHERE id = ?', [targetStatus, id]);
+        contestantsCache.timestamp = 0;
+        summaryCache.timestamp = 0;
+        res.json({ success: true, message: `เปลี่ยนสถานะเป็น ${targetStatus === 'resigned' ? 'สละสิทธิ์' : 'ปกติ'} เรียบร้อย`, status: targetStatus });
+    } catch (error) {
+        console.error('Error updating status:', error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// เพิ่ม / อัปเดตข้อมูลผู้เข้าประกวด
+app.post('/api/contestants', upload.single('image'), async (req, res) => {
+    try {
+        const { id, name, nickname, category, faculty, status } = req.body;
+        if (!id || !name || !category) {
+            return res.status(400).json({ success: false, message: 'กรุณากรอกรหัส ชื่อ และหมวดหมู่' });
+        }
+        const cleanId = id.trim().toUpperCase();
+        const cleanStatus = status === 'resigned' ? 'resigned' : 'active';
+
+        if (req.file && req.file.buffer) {
+            await pool.execute(`
+                INSERT INTO contestants (id, name, nickname, category, faculty, image_data, image_type, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE 
+                    name = VALUES(name),
+                    nickname = VALUES(nickname),
+                    category = VALUES(category),
+                    faculty = VALUES(faculty),
+                    image_data = VALUES(image_data),
+                    image_type = VALUES(image_type),
+                    status = VALUES(status)
+            `, [cleanId, name, nickname || '', category, faculty || '', req.file.buffer, req.file.mimetype || 'image/jpeg', cleanStatus]);
+        } else {
+            await pool.execute(`
+                INSERT INTO contestants (id, name, nickname, category, faculty, status)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE 
+                    name = VALUES(name),
+                    nickname = VALUES(nickname),
+                    category = VALUES(category),
+                    faculty = VALUES(faculty),
+                    status = VALUES(status)
+            `, [cleanId, name, nickname || '', category, faculty || '', cleanStatus]);
+        }
+
+        contestantsCache.timestamp = 0;
+        contestantImageCache.delete(cleanId);
+        summaryCache.timestamp = 0;
+        res.json({ success: true, message: 'บันทึกข้อมูลผู้เข้าประกวดสำเร็จ' });
+    } catch (error) {
+        console.error('Error saving contestant:', error.message);
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -420,18 +480,15 @@ app.post('/api/scores', async (req, res) => {
 });
 
 async function calculateSummary() {
-    const [contestants] = await pool.execute('SELECT id, name, nickname, faculty, category, image FROM contestants');
+    const [contestants] = await pool.execute('SELECT id, name, nickname, faculty, category, image, COALESCE(status, ' + "'active'" + ') AS status FROM contestants');
     const [scores] = await pool.execute('SELECT * FROM scores');
 
     const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
     const conTalentJudges = ['judge1', 'judge2', 'judge3'];
     const categoriesData = {};
 
-    const isLegacyConTalentBlackroom = (rec) => {
-        return !!(rec && rec.round_id === 'blackroom' && ((rec.score_c5 || 0) > 0 || (rec.total_score || 0) > 25));
-    };
-
     for (const [catKey, catName] of Object.entries(CATEGORIES)) {
+        if (catKey === 'congeniality') continue; // Miss Con แยกเฉพาะรอบความสามารถพิเศษ ไม่นำมารวมในรอบคัดเลือกวันจริง
         const catContestants = contestants.filter(c => c.category === catKey);
         const list = catContestants.map(c => {
             const contestantScores = scores.filter(s => s.contestant_id === c.id);
@@ -442,8 +499,7 @@ async function calculateSummary() {
                 rounds[rId] = { judges: {}, total: 0 };
                 judges.forEach(jId => {
                     const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === rId);
-                    const isLegacyTalent = catKey === 'congeniality' && rId === 'blackroom' && isLegacyConTalentBlackroom(rec);
-                    const score = (rec && !isLegacyTalent) ? rec.total_score : 0;
+                    const score = rec ? rec.total_score : 0;
                     rounds[rId].judges[jId] = score;
                     rounds[rId].total += score;
                     preTotal += score;
@@ -457,6 +513,7 @@ async function calculateSummary() {
                 faculty: c.faculty || '',
                 category: c.category,
                 categoryName: catName,
+                status: c.status || 'active',
                 image: c.image || 'default.jpg',
                 rounds,
                 preTotal
@@ -474,8 +531,7 @@ async function calculateSummary() {
             const talentJudges = {};
             let total = 0;
             conTalentJudges.forEach(jId => {
-                const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'congeniality')
-                         || contestantScores.find(s => s.judge_id === jId && isLegacyConTalentBlackroom(s));
+                const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'congeniality');
                 const score = rec ? rec.total_score : 0;
                 talentJudges[jId] = rec ? score : null;
                 total += score;
@@ -487,6 +543,7 @@ async function calculateSummary() {
                 faculty: c.faculty || '',
                 category: c.category,
                 categoryName: CATEGORIES.congeniality,
+                status: c.status || 'active',
                 image: c.image || 'default.jpg',
                 judges: talentJudges,
                 total,
@@ -500,7 +557,10 @@ async function calculateSummary() {
         allCalculatedContestants.push(...catList);
     }
     allCalculatedContestants.sort((a, b) => b.preTotal - a.preTotal);
-    const top5Selected = allCalculatedContestants.slice(0, 5);
+
+    // ผู้เข้าประกวดที่สละสิทธิ์ (status === 'resigned') จะไม่ได้รับคัดเลือกเข้าสู่รอบ TOP 5
+    const eligibleForTop5 = allCalculatedContestants.filter(c => c.status !== 'resigned');
+    const top5Selected = eligibleForTop5.slice(0, 5);
 
     const top5Finalists = top5Selected.map(finalist => {
         const contestantScores = scores.filter(s => s.contestant_id === finalist.id);
@@ -518,7 +578,9 @@ async function calculateSummary() {
     top5Finalists.sort((a, b) => b.speedTotal !== a.speedTotal ? b.speedTotal - a.speedTotal : b.preTotal - a.preTotal);
     top5Finalists.forEach((f, idx) => { f.speedRank = idx + 1; f.isTop3 = idx < 3; });
 
-    const top3Selected = top5Finalists.slice(0, 3);
+    // ผู้เข้าประกวดที่สละสิทธิ์จะไม่ได้รับคัดเลือกเข้าสู่รอบ TOP 3
+    const eligibleForTop3 = top5Finalists.filter(f => f.status !== 'resigned');
+    const top3Selected = eligibleForTop3.slice(0, 3);
     const top3Finalists = top3Selected.map(finalist => {
         const contestantScores = scores.filter(s => s.contestant_id === finalist.id);
         const qaJudges = {};
