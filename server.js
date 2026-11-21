@@ -47,16 +47,24 @@ const CATEGORIES = {
 const ROUNDS_PRE = ['blackroom', 'grand', 'popular'];
 
 async function initDB() {
+    // 1. ลองเชื่อมต่อเพื่อ CREATE DATABASE หากเป็นไปได้ (เช่นบน localhost)
     try {
         const rootConn = await mysql.createConnection({
             host: dbConfig.host,
             user: dbConfig.user,
             password: dbConfig.password,
-            port: dbConfig.port
+            port: dbConfig.port,
+            ssl: dbConfig.ssl
         });
         await rootConn.execute(`CREATE DATABASE IF NOT EXISTS \`${dbConfig.database}\``);
         await rootConn.end();
+    } catch (e) {
+        // บน Cloud Database (TiDB / Aiven / Render) database มักถูกสร้างไว้แล้ว หรือผู้ใช้ไม่มีสิทธิ์ root CREATE DATABASE
+        console.log('ℹ️ Note on CREATE DATABASE (safe to ignore on cloud):', e.message);
+    }
 
+    // 2. เชื่อมต่อผ่าน Connection Pool โดยตรง เพื่อสร้างตารางและ Migration คอลัมน์ที่จำเป็น
+    try {
         const connection = await pool.getConnection();
         try {
             await connection.execute(`
@@ -68,27 +76,28 @@ async function initDB() {
                     faculty VARCHAR(150) DEFAULT '',
                     image VARCHAR(255) DEFAULT 'default.jpg',
                     image_data LONGBLOB NULL,
-                    image_type VARCHAR(50) DEFAULT 'image/jpeg'
+                    image_type VARCHAR(50) DEFAULT 'image/jpeg',
+                    status VARCHAR(20) DEFAULT 'active'
                 )
             `);
 
-            const [contestantCols] = await connection.execute(`
-                SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS 
-                WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'contestants'
-            `);
-            const colMap = {};
-            contestantCols.forEach(c => { colMap[c.COLUMN_NAME] = (c.DATA_TYPE || '').toLowerCase(); });
+            // Helper function ในการเพิ่มคอลัมน์ใหม่อย่างปลอดภัย (ข้ามได้ถ้ามีอยู่แล้ว)
+            const safeAddColumn = async (table, colDef) => {
+                try {
+                    await connection.execute(`ALTER TABLE ${table} ADD COLUMN ${colDef}`);
+                    console.log(`✅ Added column to ${table}: ${colDef}`);
+                } catch (colErr) {
+                    if (!colErr.message.includes('Duplicate column') && !colErr.message.includes('already exists')) {
+                        console.warn(`⚠️ Migration note for ${table}:`, colErr.message);
+                    }
+                }
+            };
 
-            if (!colMap['image_data']) {
-                await connection.execute('ALTER TABLE contestants ADD COLUMN image_data LONGBLOB NULL');
-            } else if (colMap['image_data'] !== 'longblob') {
-                await connection.execute('ALTER TABLE contestants DROP COLUMN image_data');
-                await connection.execute('ALTER TABLE contestants ADD COLUMN image_data LONGBLOB NULL');
-            }
-            if (!colMap['image_type']) await connection.execute("ALTER TABLE contestants ADD COLUMN image_type VARCHAR(50) DEFAULT 'image/jpeg'");
-            if (!colMap['faculty']) await connection.execute("ALTER TABLE contestants ADD COLUMN faculty VARCHAR(150) DEFAULT ''");
-            if (!colMap['nickname']) await connection.execute("ALTER TABLE contestants ADD COLUMN nickname VARCHAR(50) DEFAULT ''");
-            if (!colMap['status']) await connection.execute("ALTER TABLE contestants ADD COLUMN status VARCHAR(20) DEFAULT 'active'");
+            await safeAddColumn('contestants', "image_data LONGBLOB NULL");
+            await safeAddColumn('contestants', "image_type VARCHAR(50) DEFAULT 'image/jpeg'");
+            await safeAddColumn('contestants', "faculty VARCHAR(150) DEFAULT ''");
+            await safeAddColumn('contestants', "nickname VARCHAR(50) DEFAULT ''");
+            await safeAddColumn('contestants', "status VARCHAR(20) DEFAULT 'active'");
 
             const [scoreCols] = await connection.execute(`
                 SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
@@ -114,10 +123,10 @@ async function initDB() {
                     )
                 `);
             } else {
-                if (!colNames.includes('round_id')) await connection.execute(`ALTER TABLE scores ADD COLUMN round_id VARCHAR(30) NOT NULL DEFAULT 'blackroom'`);
-                if (!colNames.includes('score_c4')) await connection.execute(`ALTER TABLE scores ADD COLUMN score_c4 INT DEFAULT 0`);
-                if (!colNames.includes('score_c5')) await connection.execute(`ALTER TABLE scores ADD COLUMN score_c5 INT DEFAULT 0`);
-                if (!colNames.includes('score_c6')) await connection.execute(`ALTER TABLE scores ADD COLUMN score_c6 INT DEFAULT 0`);
+                await safeAddColumn('scores', "round_id VARCHAR(30) NOT NULL DEFAULT 'blackroom'");
+                await safeAddColumn('scores', "score_c4 INT DEFAULT 0");
+                await safeAddColumn('scores', "score_c5 INT DEFAULT 0");
+                await safeAddColumn('scores', "score_c6 INT DEFAULT 0");
             }
 
             await connection.execute(`
@@ -272,11 +281,25 @@ app.get('/api/contestants', async (req, res) => {
         if (contestantsCache.data && now - contestantsCache.timestamp < CONTESTANTS_CACHE_TTL) {
             return res.json(contestantsCache.data);
         }
-        const [rows] = await pool.execute(
-            `SELECT id, name, nickname, category, faculty, image, COALESCE(status, 'active') AS status, IF(image_data IS NOT NULL, 1, 0) AS has_image 
-             FROM contestants 
-             ORDER BY FIELD(category, 'miss', 'mister', 'queen', 'congeniality', 'jumbo'), CAST(SUBSTRING(id, 2) AS UNSIGNED), id ASC`
-        );
+        let rows;
+        try {
+            [rows] = await pool.execute(
+                `SELECT id, name, nickname, category, faculty, image, COALESCE(status, 'active') AS status, IF(image_data IS NOT NULL, 1, 0) AS has_image 
+                 FROM contestants 
+                 ORDER BY FIELD(category, 'miss', 'mister', 'queen', 'congeniality', 'jumbo'), CAST(SUBSTRING(id, 2) AS UNSIGNED), id ASC`
+            );
+        } catch (queryErr) {
+            if (queryErr.message.includes("Unknown column 'status'")) {
+                try { await pool.execute("ALTER TABLE contestants ADD COLUMN status VARCHAR(20) DEFAULT 'active'"); } catch (e) {}
+                [rows] = await pool.execute(
+                    `SELECT id, name, nickname, category, faculty, image, 'active' AS status, IF(image_data IS NOT NULL, 1, 0) AS has_image 
+                     FROM contestants 
+                     ORDER BY FIELD(category, 'miss', 'mister', 'queen', 'congeniality', 'jumbo'), CAST(SUBSTRING(id, 2) AS UNSIGNED), id ASC`
+                );
+            } else {
+                throw queryErr;
+            }
+        }
         contestantsCache = { data: rows, timestamp: now };
         res.json(rows);
     } catch (error) {
@@ -291,7 +314,16 @@ app.post('/api/contestants/:id/status', async (req, res) => {
         const { id } = req.params;
         const { status } = req.body;
         const targetStatus = status === 'resigned' ? 'resigned' : 'active';
-        await pool.execute('UPDATE contestants SET status = ? WHERE id = ?', [targetStatus, id]);
+        try {
+            await pool.execute('UPDATE contestants SET status = ? WHERE id = ?', [targetStatus, id]);
+        } catch (updateErr) {
+            if (updateErr.message.includes("Unknown column 'status'")) {
+                try { await pool.execute("ALTER TABLE contestants ADD COLUMN status VARCHAR(20) DEFAULT 'active'"); } catch (e) {}
+                await pool.execute('UPDATE contestants SET status = ? WHERE id = ?', [targetStatus, id]);
+            } else {
+                throw updateErr;
+            }
+        }
         contestantsCache.timestamp = 0;
         summaryCache.timestamp = 0;
         res.json({ success: true, message: `เปลี่ยนสถานะเป็น ${targetStatus === 'resigned' ? 'สละสิทธิ์' : 'ปกติ'} เรียบร้อย`, status: targetStatus });
@@ -311,30 +343,43 @@ app.post('/api/contestants', upload.single('image'), async (req, res) => {
         const cleanId = id.trim().toUpperCase();
         const cleanStatus = status === 'resigned' ? 'resigned' : 'active';
 
-        if (req.file && req.file.buffer) {
-            await pool.execute(`
-                INSERT INTO contestants (id, name, nickname, category, faculty, image_data, image_type, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE 
-                    name = VALUES(name),
-                    nickname = VALUES(nickname),
-                    category = VALUES(category),
-                    faculty = VALUES(faculty),
-                    image_data = VALUES(image_data),
-                    image_type = VALUES(image_type),
-                    status = VALUES(status)
-            `, [cleanId, name, nickname || '', category, faculty || '', req.file.buffer, req.file.mimetype || 'image/jpeg', cleanStatus]);
-        } else {
-            await pool.execute(`
-                INSERT INTO contestants (id, name, nickname, category, faculty, status)
-                VALUES (?, ?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE 
-                    name = VALUES(name),
-                    nickname = VALUES(nickname),
-                    category = VALUES(category),
-                    faculty = VALUES(faculty),
-                    status = VALUES(status)
-            `, [cleanId, name, nickname || '', category, faculty || '', cleanStatus]);
+        const runSave = async () => {
+            if (req.file && req.file.buffer) {
+                await pool.execute(`
+                    INSERT INTO contestants (id, name, nickname, category, faculty, image_data, image_type, status)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE 
+                        name = VALUES(name),
+                        nickname = VALUES(nickname),
+                        category = VALUES(category),
+                        faculty = VALUES(faculty),
+                        image_data = VALUES(image_data),
+                        image_type = VALUES(image_type),
+                        status = VALUES(status)
+                `, [cleanId, name, nickname || '', category, faculty || '', req.file.buffer, req.file.mimetype || 'image/jpeg', cleanStatus]);
+            } else {
+                await pool.execute(`
+                    INSERT INTO contestants (id, name, nickname, category, faculty, status)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE 
+                        name = VALUES(name),
+                        nickname = VALUES(nickname),
+                        category = VALUES(category),
+                        faculty = VALUES(faculty),
+                        status = VALUES(status)
+                `, [cleanId, name, nickname || '', category, faculty || '', cleanStatus]);
+            }
+        };
+
+        try {
+            await runSave();
+        } catch (saveErr) {
+            if (saveErr.message.includes("Unknown column 'status'")) {
+                try { await pool.execute("ALTER TABLE contestants ADD COLUMN status VARCHAR(20) DEFAULT 'active'"); } catch (e) {}
+                await runSave();
+            } else {
+                throw saveErr;
+            }
         }
 
         contestantsCache.timestamp = 0;
@@ -481,7 +526,17 @@ app.post('/api/scores', async (req, res) => {
 });
 
 async function calculateSummary() {
-    const [contestants] = await pool.execute('SELECT id, name, nickname, faculty, category, image, COALESCE(status, ' + "'active'" + ') AS status FROM contestants');
+    let contestants;
+    try {
+        [contestants] = await pool.execute('SELECT id, name, nickname, faculty, category, image, COALESCE(status, \'active\') AS status FROM contestants');
+    } catch (err) {
+        if (err.message.includes("Unknown column 'status'")) {
+            try { await pool.execute("ALTER TABLE contestants ADD COLUMN status VARCHAR(20) DEFAULT 'active'"); } catch (e) {}
+            [contestants] = await pool.execute('SELECT id, name, nickname, faculty, category, image, \'active\' AS status FROM contestants');
+        } else {
+            throw err;
+        }
+    }
     const [scores] = await pool.execute('SELECT * FROM scores');
 
     const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
