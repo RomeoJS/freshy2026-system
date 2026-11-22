@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>RMUTK FRESHY 2026 - STAFF QUICK TALLY</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="shortcut icon" type="image/png" href="images/logo.png" />
+
+  <style>
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: "Prompt", sans-serif;
+      background-color: #050a30;
+      background-image:
+        radial-gradient(circle at 50% 5%, rgba(84, 120, 255, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 10% 85%, rgba(244, 63, 94, 0.2) 0%, transparent 45%),
+        radial-gradient(circle at 90% 85%, rgba(255, 222, 66, 0.15) 0%, transparent 45%);
+      background-attachment: fixed;
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .glass-panel {
+      background: rgba(13, 24, 120, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(84, 120, 255, 0.35);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .input-dark {
+      background: rgba(9, 16, 84, 0.85);
+      border: 1px solid rgba(84, 120, 255, 0.4);
+      color: white;
+    }
+
+    .input-dark:focus {
+      outline: none;
+      border-color: #FFDE42;
+      box-shadow: 0 0 15px rgba(255, 222, 66, 0.3);
+    }
+
+    @keyframes bumpScale {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.12); filter: brightness(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    .score-bump {
+      animation: bumpScale 0.4s ease-out;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between pb-24">
+
+  <!-- PASSCODE MODAL (Shown once if not authenticated) -->
+  <div id="passcode-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-panel max-w-sm w-full rounded-3xl p-6 border-2 border-[#FFDE42] text-center shadow-[0_0_50px_rgba(255,222,66,0.3)]">
+      <div class="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 flex items-center justify-center mx-auto mb-3 text-2xl">
+        <i class="fas fa-lock"></i>
+      </div>
+      <h2 class="text-xl font-black text-[#FFDE42] mb-1">เข้าสู่ระบบทีมงานนับคะแนน</h2>
+      <p class="text-xs text-gray-300 mb-4">กรุณากรอกรหัสผ่านทีมงาน (Passcode) เพื่อเริ่มการนับคะแนน</p>
+      
+      <input type="password" id="input-passcode" placeholder="กรอกรหัสผ่าน (เช่น 2026)"
+        class="input-dark w-full p-3 rounded-xl text-center text-xl font-bold tracking-widest text-[#FFDE42] mb-4" />
+
+      <div class="mb-4 text-left">
+        <label class="block text-xs font-semibold text-gray-300 mb-1">ชื่อโต๊ะ / จุดนับคะแนนของคุณ:</label>
+        <input type="text" id="input-station-name" placeholder="เช่น โต๊ะนับ 1, ซุ้มดอกไม้, จุด A"
+          class="input-dark w-full p-2.5 rounded-xl text-sm" value="โต๊ะนับ 1" />
+      </div>
+
+      <button type="button" onclick="submitPasscode()"
+        class="w-full py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#050A30] font-black text-sm shadow-lg active:scale-95 transition">
+        <i class="fas fa-sign-in-alt mr-1"></i> ยืนยันเข้าใช้งาน
+      </button>
+      <div id="passcode-error" class="text-xs text-rose-400 font-semibold mt-3 hidden">
+        รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT STATION MODAL -->
+  <div id="station-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="glass-panel max-w-xs w-full rounded-2xl p-5 border border-[#5478FF]/50 text-center">
+      <h3 class="text-sm font-bold text-[#FFDE42] mb-2">เปลี่ยนชื่อจุดนับคะแนน</h3>
+      <input type="text" id="edit-station-input" class="input-dark w-full p-2 rounded-xl text-xs mb-3 text-center" />
+      <div class="flex gap-2">
+        <button type="button" onclick="closeStationModal()" class="flex-1 py-1.5 rounded-lg bg-gray-700 text-xs font-bold">ยกเลิก</button>
+        <button type="button" onclick="saveStationName()" class="flex-1 py-1.5 rounded-lg bg-[#FFDE42] text-[#050A30] text-xs font-bold">บันทึก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STICKY TOP BAR -->
+  <header class="sticky top-0 z-40 bg-[#050A30]/95 backdrop-blur-md border-b border-[#5478FF]/30 p-3 shadow-lg">
+    <div class="flex items-center justify-between gap-2">
+      <!-- Brand & Station Name -->
+      <div class="flex items-center gap-2">
+        <img src="images/logo.png" class="h-9 w-9 object-contain drop-shadow" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('T');">
+        <div>
+          <div class="text-[10px] uppercase font-black tracking-widest text-[#FFDE42]">RMUTK FRESHY 2026</div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-xs font-black text-white">STAFF TALLY</h1>
+            <span class="text-gray-400 text-xs">•</span>
+            <button type="button" onclick="openStationModal()" class="text-xs font-bold text-amber-300 hover:text-white flex items-center gap-1 bg-[#111FA2]/60 px-2 py-0.5 rounded-md border border-[#5478FF]/40">
+              <span id="current-station-badge">โต๊ะนับ 1</span>
+              <i class="fas fa-pencil-alt text-[9px]"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Live Indicator & Link to Stage Monitor -->
+      <div class="flex items-center gap-1.5">
+        <a href="/live-popular" target="_blank"
+          class="px-2.5 py-1 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white text-[11px] font-bold shadow flex items-center gap-1 active:scale-95"
+          title="ดูหน้าจอเวที">
+          <i class="fas fa-tv text-amber-300 text-xs"></i>
+          <span class="hidden sm:inline">ดูจอเวที</span>
+        </a>
+        <button type="button" onclick="logoutStaff()" class="p-1.5 text-gray-400 hover:text-rose-300 text-xs" title="ออกจากระบบ">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Search & Filter Controls -->
+    <div class="mt-2.5 space-y-2">
+      <!-- Search Box -->
+      <div class="relative">
+        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+        <input type="text" id="tally-search-input" oninput="onSearchChange()"
+          placeholder="ค้นหาหมายเลข (เช่น M1, W1, Q1, J1) หรือชื่อ..."
+          class="input-dark w-full pl-8 pr-8 py-2 rounded-xl text-xs" />
+        <button type="button" id="clear-search-btn" onclick="clearSearch()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs hidden">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+        <button onclick="setFilter('all')" id="tab-all" class="filter-tab px-3 py-1.5 rounded-xl font-black bg-[#FFDE42] text-[#050A30] shrink-0 shadow">
+          ทั้งหมด
+        </button>
+        <button onclick="setFilter('miss')" id="tab-miss" class="filter-tab px-3 py-1.5 rounded-xl font-bold bg-[#091054] text-gray-300 hover:text-white shrink-0 border border-[#5478FF]/30">
+          Miss
+        </button>
+        <button onclick="setFilter('mister')" id="tab-mister" class="filter-tab px-3 py-1.5 rounded-xl font-bold bg-[#091054] text-gray-300 hover:text-white shrink-0 border border-[#5478FF]/30">
+          Mister
+        </button>
+        <button onclick="setFilter('queen')" id="tab-queen" class="filter-tab px-3 py-1.5 rounded-xl font-bold bg-[#091054] text-gray-300 hover:text-white shrink-0 border border-[#5478FF]/30">
+          Queen
+        </button>
+        <button onclick="setFilter('jumbo')" id="tab-jumbo" class="filter-tab px-3 py-1.5 rounded-xl font-bold bg-[#091054] text-gray-300 hover:text-white shrink-0 border border-[#5478FF]/30">
+          Jumbo
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTESTANT LIST -->
+  <main class="p-3 max-w-xl mx-auto w-full space-y-3" id="contestants-container">
+    <div class="text-center py-12 text-gray-400">
+      <i class="fas fa-spinner fa-spin text-3xl text-[#FFDE42] mb-2"></i>
+      <p class="text-xs">กำลังโหลดรายชื่อผู้เข้าประกวด...</p>
+    </div>
+  </main>
+
+  <!-- FLOATING BOTTOM SUMMARY & RECENT LOG BAR -->
+  <aside class="fixed bottom-0 inset-x-0 bg-[#091054]/95 backdrop-blur-md border-t border-[#5478FF]/40 p-2.5 z-30">
+    <div class="max-w-xl mx-auto flex items-center justify-between text-xs px-1">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-gray-300 text-[11px]" id="last-sync-text">เชื่อมต่อสด</span>
+      </div>
+      <button type="button" onclick="toggleLogModal()" class="text-amber-300 hover:text-white text-[11px] font-bold flex items-center gap-1">
+        <i class="fas fa-history"></i>
+        <span>ประวัติการกดบวก (<span id="log-count">0</span>)</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- RECENT LOG MODAL -->
+  <div id="log-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-3 hidden">
+    <div class="glass-panel max-w-md w-full rounded-3xl p-5 border border-[#5478FF]/40 max-h-[80vh] flex flex-col">
+      <div class="flex justify-between items-center pb-2.5 border-b border-white/10 mb-3">
+        <h3 class="text-sm font-black text-[#FFDE42] flex items-center gap-1.5">
+          <i class="fas fa-history text-rose-400"></i> ประวัติการกดบวกคะแนนของเครื่องนี้
+        </h3>
+        <button type="button" onclick="toggleLogModal()" class="text-gray-400 hover:text-white p-1">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div id="log-items-container" class="flex-1 overflow-y-auto space-y-1.5 pr-1 text-xs">
+        <div class="text-center py-8 text-gray-400">ยังไม่มีประวัติการกดเพิ่มคะแนน</div>
+      </div>
+      <div class="pt-3 border-t border-white/10 text-right">
+        <button type="button" onclick="clearLogHistory()" class="text-[11px] text-gray-400 hover:text-rose-400">
+          <i class="fas fa-trash-alt mr-1"></i> ล้างประวัติในเครื่องนี้
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-4 py-2.5 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 pointer-events-none transition-all duration-300 opacity-0 translate-y-[-10px]">
+    <i class="fas fa-check-circle text-sm text-yellow-300"></i>
+    <span id="toast-message">บันทึกคะแนนเรียบร้อย</span>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    let summaryData = null;
+    let allContestants = [];
+    let currentCategory = 'all';
+    let searchQuery = '';
+    let staffPasscode = localStorage.getItem('staff_passcode') || '';
+    let stationName = localStorage.getItem('staff_station') || 'โต๊ะนับ 1';
+    let localLogs = JSON.parse(localStorage.getItem('staff_logs') || '[]');
+    let isSubmitting = false;
+
+    const CATEGORIES = {
+      miss: 'Miss RMUTK',
+      mister: 'Mister RMUTK',
+      queen: 'Miss Queen RMUTK',
+      jumbo: 'Miss Jumbo RMUTK'
+    };
+
+    function getPlaceholderSvgUri(text) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="100%" height="100%" fill="#091054"/>
+        <circle cx="100" cy="80" r="32" fill="#5478FF" opacity="0.35"/>
+        <circle cx="100" cy="72" r="18" fill="#FFDE42" opacity="0.85"/>
+        <path d="M65 125 Q100 95 135 125" fill="none" stroke="#FFDE42" stroke-width="4.5" stroke-linecap="round" opacity="0.85"/>
+        <text x="50%" y="165" dominant-baseline="middle" text-anchor="middle" fill="#FFDE42" font-family="sans-serif" font-weight="900" font-size="22">${text}</text>
+      </svg>`;
+      return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+    }
+
+    // ==========================================
+    // Passcode Authentication
+    // ==========================================
+    function checkAuth() {
+      if (!staffPasscode) {
+        document.getElementById('passcode-modal').classList.remove('hidden');
+        document.getElementById('input-station-name').value = stationName;
+        setTimeout(() => document.getElementById('input-passcode')?.focus(), 100);
+      } else {
+        document.getElementById('passcode-modal').classList.add('hidden');
+        document.getElementById('current-station-badge').innerText = stationName;
+        fetchData();
+      }
+    }
+
+    async function submitPasscode() {
+      const input = document.getElementById('input-passcode').value.trim();
+      const station = document.getElementById('input-station-name').value.trim() || 'โต๊ะนับ 1';
+      const errEl = document.getElementById('passcode-error');
+
+      // Test passcode against API increment with delta = 0 or check valid list
+      const validCodes = ['admin2026', '2026', 'freshy2026'];
+      if (!validCodes.includes(input)) {
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      staffPasscode = input;
+      stationName = station;
+      localStorage.setItem('staff_passcode', input);
+      localStorage.setItem('staff_station', station);
+
+      errEl.classList.add('hidden');
+      document.getElementById('passcode-modal').classList.add('hidden');
+      document.getElementById('current-station-badge').innerText = stationName;
+      showToast(`เข้าสู่ระบบในนาม "${stationName}" เรียบร้อย`);
+      fetchData();
+    }
+
+    function logoutStaff() {
+      if (confirm('คุณต้องการออกจากระบบทีมงานนับคะแนนหรือไม่?')) {
+        localStorage.removeItem('staff_passcode');
+        staffPasscode = '';
+        checkAuth();
+      }
+    }
+
+    function openStationModal() {
+      document.getElementById('edit-station-input').value = stationName;
+      document.getElementById('station-modal').classList.remove('hidden');
+    }
+
+    function closeStationModal() {
+      document.getElementById('station-modal').classList.add('hidden');
+    }
+
+    function saveStationName() {
+      const val = document.getElementById('edit-station-input').value.trim() || 'โต๊ะนับ 1';
+      stationName = val;
+      localStorage.setItem('staff_station', val);
+      document.getElementById('current-station-badge').innerText = val;
+      closeStationModal();
+      showToast(`เปลี่ยนชื่อเป็น "${val}" เรียบร้อย`);
+    }
+
+    // ==========================================
+    // Data Fetching & Sync
+    // ==========================================
+    async function fetchData() {
+      try {
+        const res = await fetch('/api/summary?t=' + Date.now());
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        summaryData = data;
+
+        // Flatten all contestants
+        const list = [];
+        for (const cat in data.categories || {}) {
+          (data.categories[cat] || []).forEach(c => list.push(c));
+        }
+        allContestants = list;
+
+        document.getElementById('last-sync-text').innerText = `อัปเดต ${new Date().toLocaleTimeString('th-TH')}`;
+        renderList();
+      } catch (err) {
+        console.error('Fetch data error:', err);
+        document.getElementById('last-sync-text').innerText = 'กำลังลองเชื่อมต่อใหม่...';
+      }
+    }
+
+    // ==========================================
+    // Filter & Search Controls
+    // ==========================================
+    function setFilter(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.filter-tab').forEach(b => {
+        b.className = 'filter-tab px-3 py-1.5 rounded-xl font-bold bg-[#091054] text-gray-300 hover:text-white shrink-0 border border-[#5478FF]/30';
+      });
+      const active = document.getElementById(`tab-${cat}`);
+      if (active) {
+        active.className = 'filter-tab px-3 py-1.5 rounded-xl font-black bg-[#FFDE42] text-[#050A30] shrink-0 shadow';
+      }
+      renderList();
+    }
+
+    function onSearchChange() {
+      searchQuery = (document.getElementById('tally-search-input').value || '').trim().toLowerCase();
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (clearBtn) {
+        if (searchQuery) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderList();
+    }
+
+    function clearSearch() {
+      document.getElementById('tally-search-input').value = '';
+      onSearchChange();
+    }
+
+    // ==========================================
+    // Render Contestants List
+    // ==========================================
+    function renderList() {
+      const container = document.getElementById('contestants-container');
+      if (!container) return;
+
+      if (!allContestants || allContestants.length === 0) {
+        container.innerHTML = `<div class="text-center py-12 text-gray-400 text-xs">ไม่พบรายชื่อผู้เข้าประกวด</div>`;
+        return;
+      }
+
+      let filtered = allContestants.filter(c => {
+        if (currentCategory !== 'all' && c.category !== currentCategory) return false;
+        if (searchQuery) {
+          const idMatch = (c.id || '').toLowerCase().includes(searchQuery);
+          const nameMatch = (c.name || '').toLowerCase().includes(searchQuery);
+          const nickMatch = (c.nickname || '').toLowerCase().includes(searchQuery);
+          const facMatch = (c.faculty || '').toLowerCase().includes(searchQuery);
+          return idMatch || nameMatch || nickMatch || facMatch;
+        }
+        return true;
+      });
+
+      // Sort by Contestant ID (e.g. M1, M2, W1, W2)
+      filtered.sort((a, b) => {
+        return (a.id || '').localeCompare(b.id || '', undefined, { numeric: true, sensitivity: 'base' });
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="text-center py-12 text-gray-400 text-xs">ไม่พบผู้เข้าประกวดที่ค้นหา</div>`;
+        return;
+      }
+
+      const cardsHtml = filtered.map(c => {
+        const isResigned = c.status === 'resigned';
+        const popScore = c.rounds?.popular?.total || 0;
+        const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
+
+        return `
+          <div class="glass-panel rounded-2xl p-3 border border-[#5478FF]/30 transition ${isResigned ? 'opacity-60 bg-rose-950/20' : ''}">
+            <!-- Top Row: Photo + Info + Current Score -->
+            <div class="flex items-center justify-between gap-2.5">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <!-- Contestant Face-Focused Image -->
+                <div class="w-14 h-16 rounded-xl overflow-hidden border-2 border-[#FFDE42] shrink-0 bg-[#050A30] shadow">
+                  <img src="${img}" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');"
+                    class="w-full h-full object-cover"
+                    style="object-position: center 10%;">
+                </div>
+
+                <!-- Info -->
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="px-2 py-0.5 rounded-lg bg-[#FFDE42] text-[#050A30] text-xs font-black shadow-sm">
+                      ${c.id}
+                    </span>
+                    <span class="text-xs font-bold text-white truncate ${isResigned ? 'line-through text-gray-400' : ''}">
+                      ${c.name}
+                    </span>
+                  </div>
+                  <div class="text-[11px] text-amber-300 font-semibold truncate mt-0.5">
+                    ${c.nickname ? `"${c.nickname}" • ` : ''}${CATEGORIES[c.category] || c.category}
+                  </div>
+                  <div class="text-[10px] text-gray-400 truncate">${c.faculty || ''}</div>
+                </div>
+              </div>
+
+              <!-- Current Total Score Box -->
+              <div class="text-right shrink-0 bg-[#091054]/90 px-3 py-1.5 rounded-xl border border-[#5478FF]/40 min-w-[70px]">
+                <div class="text-[9px] uppercase font-bold text-rose-300">คะแนนรวม</div>
+                <div id="score-${c.id}" class="text-xl font-black text-[#FFDE42] tracking-tight">
+                  ${popScore.toLocaleString()}
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Add Buttons Row -->
+            <div class="mt-3 pt-2.5 border-t border-white/10">
+              <div class="text-[10px] font-bold text-gray-300 mb-1.5 flex items-center justify-between">
+                <span>แตะเพื่อบวกคะแนนเพิ่มทันที:</span>
+                <span class="text-emerald-400 text-[10px]"><i class="fas fa-bolt"></i> ซิงก์ขึ้นจอเวทีสด</span>
+              </div>
+              <div class="grid grid-cols-6 gap-1.5">
+                <button type="button" onclick="quickAddScore('${c.id}', 1, '${c.name}')"
+                  class="py-2 rounded-xl bg-blue-900/60 hover:bg-blue-800 text-white font-black text-xs border border-blue-500/40 active:scale-95 transition shadow-sm">
+                  +1
+                </button>
+                <button type="button" onclick="quickAddScore('${c.id}', 5, '${c.name}')"
+                  class="py-2 rounded-xl bg-blue-900/60 hover:bg-blue-800 text-white font-black text-xs border border-blue-500/40 active:scale-95 transition shadow-sm">
+                  +5
+                </button>
+                <button type="button" onclick="quickAddScore('${c.id}', 10, '${c.name}')"
+                  class="py-2 rounded-xl bg-blue-900/60 hover:bg-blue-800 text-white font-black text-xs border border-blue-500/40 active:scale-95 transition shadow-sm">
+                  +10
+                </button>
+                <button type="button" onclick="quickAddScore('${c.id}', 20, '${c.name}')"
+                  class="py-2 rounded-xl bg-indigo-900/60 hover:bg-indigo-800 text-amber-200 font-black text-xs border border-indigo-500/40 active:scale-95 transition shadow-sm">
+                  +20
+                </button>
+                <button type="button" onclick="quickAddScore('${c.id}', 50, '${c.name}')"
+                  class="py-2 rounded-xl bg-purple-900/60 hover:bg-purple-800 text-pink-200 font-black text-xs border border-purple-500/40 active:scale-95 transition shadow-sm">
+                  +50
+                </button>
+                <button type="button" onclick="quickAddScore('${c.id}', 100, '${c.name}')"
+                  class="py-2 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 text-white font-black text-xs border border-rose-400 active:scale-95 transition shadow-sm">
+                  +100
+                </button>
+              </div>
+
+              <!-- Custom Amount Row -->
+              <div class="mt-2 flex items-center gap-1.5">
+                <input type="number" id="custom-add-${c.id}" min="1" step="1" placeholder="หรือใส่ยอดบวกเอง..."
+                  class="input-dark flex-1 px-3 py-1.5 rounded-xl text-xs font-bold text-center" />
+                <button type="button" onclick="submitCustomAdd('${c.id}', '${c.name}')"
+                  class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 active:scale-95 transition flex items-center gap-1 shadow">
+                  <i class="fas fa-plus"></i> บวกเพิ่ม
+                </button>
+                <!-- Adjust Button -->
+                <button type="button" onclick="quickAddScore('${c.id}', -1, '${c.name}')"
+                  class="px-2 py-1.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-300 font-bold text-xs border border-rose-500/30 active:scale-95"
+                  title="ลด 1 คะแนนกรณีแตะผิด">
+                  -1
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = cardsHtml;
+    }
+
+    // ==========================================
+    // Quick Add & Score Increment Logic
+    // ==========================================
+    async function quickAddScore(contestantId, delta, contestantName) {
+      if (isSubmitting) return;
+      isSubmitting = true;
+
+      // Haptic feedback for tactile feel on mobile
+      if (navigator.vibrate) {
+        navigator.vibrate(35);
+      }
+
+      try {
+        const res = await fetch('/api/scores/increment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contestant_id: contestantId,
+            delta: delta,
+            staff_name: stationName,
+            passcode: staffPasscode
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          // Update local display immediately
+          const scoreEl = document.getElementById(`score-${contestantId}`);
+          if (scoreEl) {
+            scoreEl.innerText = Number(data.new_total).toLocaleString();
+            scoreEl.classList.add('score-bump');
+            setTimeout(() => scoreEl.classList.remove('score-bump'), 400);
+          }
+
+          // Add to local logs
+          const logEntry = {
+            id: Date.now(),
+            time: new Date().toLocaleTimeString('th-TH'),
+            contestantId: contestantId,
+            delta: delta,
+            newTotal: data.new_total,
+            station: stationName
+          };
+          localLogs.unshift(logEntry);
+          if (localLogs.length > 50) localLogs.pop();
+          localStorage.setItem('staff_logs', JSON.stringify(localLogs));
+          updateLogCount();
+
+          showToast(`✓ ${stationName}: ${contestantId} (${delta > 0 ? '+' : ''}${delta}) ➔ รวม ${data.new_total} คะแนน`);
+        } else {
+          if (data.message && data.message.includes('Passcode')) {
+            alert('รหัสผ่านทีมงานไม่ถูกต้องหรือหมดอายุ');
+            logoutStaff();
+          } else {
+            alert('เกิดข้อผิดพลาด: ' + (data.message || 'ไม่สามารถบันทึกได้'));
+          }
+        }
+      } catch (err) {
+        console.error('Error submitting score:', err);
+        alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบสัญญาณเน็ต');
+      } finally {
+        isSubmitting = false;
+      }
+    }
+
+    function submitCustomAdd(contestantId, contestantName) {
+      const input = document.getElementById(`custom-add-${contestantId}`);
+      if (!input) return;
+      const val = parseInt(input.value);
+      if (!val || val <= 0) {
+        alert('กรุณาระบุจำนวนคะแนนที่ต้องการบวกเพิ่ม (มากกว่า 0)');
+        return;
+      }
+      quickAddScore(contestantId, val, contestantName);
+      input.value = '';
+    }
+
+    // ==========================================
+    // Toast Notification & Local Logs
+    // ==========================================
+    let toastTimeout = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-message');
+      if (!toast || !msgEl) return;
+
+      msgEl.innerText = msg;
+      toast.classList.remove('opacity-0', 'translate-y-[-10px]');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-[-10px]');
+      }, 2500);
+    }
+
+    function updateLogCount() {
+      const countEl = document.getElementById('log-count');
+      if (countEl) countEl.innerText = localLogs.length;
+    }
+
+    function toggleLogModal() {
+      const modal = document.getElementById('log-modal');
+      if (!modal) return;
+      const isHidden = modal.classList.contains('hidden');
+      if (isHidden) {
+        renderLogItems();
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function renderLogItems() {
+      const container = document.getElementById('log-items-container');
+      if (!container) return;
+
+      if (localLogs.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-gray-400">ยังไม่มีประวัติการกดเพิ่มคะแนน</div>`;
+        return;
+      }
+
+      container.innerHTML = localLogs.map(l => `
+        <div class="flex items-center justify-between p-2 rounded-xl bg-[#091054]/80 border border-white/5">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] text-gray-400 font-mono">${l.time}</span>
+            <span class="px-1.5 py-0.5 rounded bg-[#FFDE42] text-[#050A30] font-black text-[11px]">${l.contestantId}</span>
+            <span class="text-emerald-400 font-bold">${l.delta > 0 ? '+' : ''}${l.delta}</span>
+          </div>
+          <div class="text-[10px] text-gray-300">
+            ยอดรวม: <span class="font-bold text-[#FFDE42]">${l.newTotal}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function clearLogHistory() {
+      if (confirm('ล้างประวัติการทำรายการในเครื่องนี้หรือไม่? (คะแนนในเซิร์ฟเวอร์จะไม่ถูกลบ)')) {
+        localLogs = [];
+        localStorage.removeItem('staff_logs');
+        updateLogCount();
+        renderLogItems();
+      }
+    }
+
+    // ==========================================
+    // Init & Polling
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      updateLogCount();
+      checkAuth();
+      // Auto-poll to keep scores updated in real-time across staff phones
+      setInterval(() => {
+        if (!document.hidden && staffPasscode) {
+          fetchData();
+        }
+      }, 3000);
+    });
+  </script>
+</body>
+
+</html>

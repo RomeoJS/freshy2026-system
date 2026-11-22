@@ -15,6 +15,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'public/images/logo.png')));
 app.get('/live-popular', (req, res) => res.sendFile(path.join(__dirname, 'public/live-popular.html')));
+app.get('/tally', (req, res) => res.sendFile(path.join(__dirname, 'public/tally.html')));
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -530,6 +531,62 @@ app.post('/api/scores', async (req, res) => {
     } catch (error) {
         console.error('❌ Error saving score:', error.message);
         res.status(500).json({ success: false, error: 'Failed to save score' });
+    }
+});
+
+// API สำหรับทีมงานนับคะแนนหน้าร้าน/จุดนับคะแนน (Staff Quick-Tally Concurrency-Safe Increment)
+app.post('/api/scores/increment', async (req, res) => {
+    const { contestant_id, delta, staff_name, passcode } = req.body;
+    
+    // ตรวจสอบความถูกต้องของรหัสความปลอดภัย (Staff Passcode หรือ Admin Passcode)
+    const validCodes = ['admin2026', '2026', 'freshy2026', USERS.admin];
+    const pass = (passcode || '').trim();
+    if (!validCodes.includes(pass)) {
+        return res.status(403).json({ success: false, message: 'รหัสผ่านทีมงาน (Passcode) ไม่ถูกต้อง' });
+    }
+
+    if (!contestant_id) {
+        return res.status(400).json({ success: false, message: 'กรุณาระบุหมายเลขผู้เข้าประกวด' });
+    }
+
+    const amount = parseInt(delta) || 0;
+    if (amount === 0) {
+        return res.status(400).json({ success: false, message: 'คะแนนที่เพิ่มหรือลดต้องไม่เป็น 0' });
+    }
+
+    try {
+        const initialVal = Math.max(0, amount);
+        const query = `
+            INSERT INTO scores (judge_id, contestant_id, round_id, score_c1, total_score)
+            VALUES ('admin', ?, 'popular', ?, ?)
+            ON DUPLICATE KEY UPDATE
+                score_c1 = GREATEST(0, score_c1 + ?),
+                total_score = GREATEST(0, total_score + ?)
+        `;
+        await pool.execute(query, [contestant_id, initialVal, initialVal, amount, amount]);
+
+        // เคลียร์แคช
+        scoresCache.timestamp = 0;
+        summaryCache.timestamp = 0;
+
+        // ดึงคะแนนล่าสุดกลับไปตอบสนอง
+        const [rows] = await pool.execute(
+            `SELECT total_score FROM scores WHERE judge_id = 'admin' AND contestant_id = ? AND round_id = 'popular'`,
+            [contestant_id]
+        );
+        const newTotal = rows[0] ? rows[0].total_score : initialVal;
+
+        res.json({
+            success: true,
+            message: `อัปเดตคะแนน ${contestant_id} สำเร็จ (${amount > 0 ? '+' : ''}${amount})`,
+            contestant_id,
+            delta: amount,
+            new_total: newTotal,
+            staff_name: staff_name || 'Staff'
+        });
+    } catch (error) {
+        console.error('❌ Error incrementing score:', error.message);
+        res.status(500).json({ success: false, error: 'Failed to increment score' });
     }
 });
 
