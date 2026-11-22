@@ -318,7 +318,7 @@
     <!-- 3. ADMIN DASHBOARD -->
     <div id="admin-section" class="max-w-7xl w-full hidden my-2 space-y-6">
       <!-- Quick Stats Banner -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div id="admin-quick-stats-banner" class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
           <div class="text-xs text-gray-300 mb-1">ผู้เข้าประกวดทั้งหมด</div>
           <div class="text-2xl font-bold text-[#FFDE42]" id="stat-contestants-count">29 คน</div>
@@ -346,11 +346,11 @@
         class="flex flex-wrap items-center justify-between gap-4 glass-panel p-4 rounded-2xl border border-[#5478FF]/30">
         <div class="flex flex-wrap gap-2">
           <button onclick="switchAdminView('top3')" id="admin-tab-top3"
-            class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_15px_rgba(255,222,66,0.4)]">
+            class="admin-only-tab px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_15px_rgba(255,222,66,0.4)]">
             <i class="fas fa-crown"></i> 🏆 ผลตัดสินรอบชิง (TOP 3 Official)
           </button>
           <button onclick="switchAdminView('speed')" id="admin-tab-speed"
-            class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel">
+            class="admin-only-tab px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel">
             <i class="fas fa-bolt text-yellow-300"></i> ⚡ ผลรอบ TOP 5 (Speed)
           </button>
           <button onclick="switchAdminView('pre')" id="admin-tab-pre"
@@ -358,34 +358,34 @@
             <i class="fas fa-users"></i> ตารางรอบคัดเลือก (2 รอบแรก)
           </button>
           <button onclick="switchAdminView('con')" id="admin-tab-con"
-            class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white glass-panel border border-amber-400/40">
+            class="admin-only-tab px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-amber-200 hover:text-white glass-panel border border-amber-400/40">
             <i class="fas fa-star text-[#FFDE42]"></i> ⭐ รอบความสามารถ Miss Con (จบแล้ว)
           </button>
           <button onclick="switchAdminView('manage')" id="admin-tab-manage"
-            class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel">
+            class="admin-only-tab px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel">
             <i class="fas fa-user-edit"></i> จัดการผู้เข้าประกวด
           </button>
         </div>
 
         <div class="flex flex-wrap gap-2">
           <button onclick="openPrintCriteriaModal()"
-            class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-amber-400/30">
+            class="admin-only-btn px-4 py-2 bg-amber-500 hover:bg-amber-400 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-amber-400/30">
             <i class="fas fa-clipboard-list"></i> พิมพ์ใบเกณฑ์ (แนวตั้ง)
           </button>
           <button onclick="openPrintScoreModal('filled')"
-            class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-purple-500/30">
+            class="admin-only-btn px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-purple-500/30">
             <i class="fas fa-print"></i> พิมพ์ใบคะแนน
           </button>
           <button onclick="openPrintScoreModal('blank_names')"
-            class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-100 border border-slate-500/60 font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
+            class="admin-only-btn px-4 py-2 bg-slate-700 hover:bg-slate-600 text-gray-100 border border-slate-500/60 font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
             <i class="fas fa-file-alt"></i> ใบคะแนนเปล่า
           </button>
           <button onclick="printMissConScoreSheet('filled')"
-            class="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-pink-500/30">
+            class="admin-only-btn px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-pink-500/30">
             <i class="fas fa-star"></i> พิมพ์ใบคะแนนรวม Miss Con
           </button>
           <a href="/api/export"
-            class="btn-link px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-emerald-500/30">
+            class="admin-only-btn btn-link px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-emerald-500/30">
             <i class="fas fa-file-excel"></i> โหลด Excel
           </a>
           <a href="/live-popular" target="_blank"
@@ -591,10 +591,10 @@
         <div class="glass-panel p-5 rounded-2xl border border-[#5478FF]/30">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
             <div>
-              <h3 class="text-xl font-bold text-[#FFDE42] flex items-center gap-2">
+              <h3 id="admin-pre-header-title" class="text-xl font-bold text-[#FFDE42] flex items-center gap-2">
                 <i class="fas fa-list-ol"></i> ตารางคะแนนรอบคัดเลือก (ห้องดำ + Grand Opening + Popular Vote)
               </h3>
-              <p class="text-xs text-gray-300 mt-0.5">รอบห้องดำ (25 คะแนน), รอบ Grand Opening (50 คะแนน) และรอบ Popular Vote (ไม่จำกัดคะแนน • แอดมินเป็นผู้กรอก) รวมเพื่อคัดหา TOP 5</p>
+              <p id="admin-pre-header-desc" class="text-xs text-gray-300 mt-0.5">รอบห้องดำ (25 คะแนน), รอบ Grand Opening (50 คะแนน) และรอบ Popular Vote (ไม่จำกัดคะแนน • แอดมินเป็นผู้กรอก) รวมเพื่อคัดหา TOP 5</p>
             </div>
             <select id="admin-category-filter" onchange="renderAdminPreTable()"
               class="input-dark p-2 rounded-xl text-xs font-semibold shrink-0">
@@ -609,11 +609,11 @@
           <!-- Round Tabs -->
           <div id="admin-pre-round-tabs" class="flex flex-wrap gap-2">
             <button onclick="switchAdminPreRound('blackroom')" id="admin-pre-tab-blackroom"
-              class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]">
+              class="pre-tab-btn admin-only-tab px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#111FA2] shadow-[0_0_12px_rgba(255,222,66,0.4)]">
               <i class="fas fa-user-secret"></i> 1. รอบห้องดำ (25)
             </button>
             <button onclick="switchAdminPreRound('grand')" id="admin-pre-tab-grand"
-              class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
+              class="pre-tab-btn admin-only-tab px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
               <i class="fas fa-star"></i> 2. Grand Opening (50)
             </button>
             <button onclick="switchAdminPreRound('popular')" id="admin-pre-tab-popular"
@@ -621,11 +621,11 @@
               <i class="fas fa-heart text-rose-400"></i> 3. Popular Vote (รางวัลแยก • 3 ช่อง)
             </button>
             <button onclick="switchAdminPreRound('all')" id="admin-pre-tab-all"
-              class="pre-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white border border-[#5478FF]/40">
+              class="pre-tab-btn admin-only-tab px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white border border-[#5478FF]/40">
               <i class="fas fa-table"></i> สรุปรวมรอบคัดเลือก คัด TOP 5 (ห้องดำ+Grand เต็ม 375)
             </button>
             <button type="button" onclick="printCurrentPreRoundScoreSheet()"
-              class="ml-auto px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] shadow-md hover:-translate-y-0.5 active:scale-95">
+              class="admin-only-btn ml-auto px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] shadow-md hover:-translate-y-0.5 active:scale-95">
               <i class="fas fa-print"></i> พิมพ์ใบคะแนนรอบนี้
             </button>
             <a href="/live-popular" target="_blank"
@@ -1548,6 +1548,56 @@
         } catch (e) { }
       }
 
+      function applyRoleViewRestrictions(role) {
+        const isStaff = (role === 'staff');
+
+        // ควบคุมการแสดงผลแท็บของ Admin: สตาฟเข้าได้เฉพาะแท็บ Popular Vote
+        document.querySelectorAll('.admin-only-tab').forEach(el => {
+          if (isStaff) el.classList.add('hidden');
+          else el.classList.remove('hidden');
+        });
+
+        // ซ่อนปุ่มเฉพาะแอดมิน (เช่น พิมพ์ใบคะแนน, โหลด Excel)
+        document.querySelectorAll('.admin-only-btn').forEach(el => {
+          if (isStaff) el.classList.add('hidden');
+          else el.classList.remove('hidden');
+        });
+
+        // ซ่อน Quick Stats บอร์ดสรุปคะแนนรวมของแอดมินสำหรับสตาฟ
+        const quickStats = document.getElementById('admin-quick-stats-banner');
+        if (quickStats) {
+          if (isStaff) quickStats.classList.add('hidden');
+          else quickStats.classList.remove('hidden');
+        }
+
+        // ปรับแต่งข้อความแท็บรอบคัดเลือก / Popular Vote ให้สื่อความหมายชัดเจนสำหรับสตาฟ
+        const preTab = document.getElementById('admin-tab-pre');
+        if (preTab) {
+          if (isStaff) {
+            preTab.innerHTML = '<i class="fas fa-heart text-rose-400"></i> บันทึกคะแนน Popular Vote (3 ช่อง)';
+          } else {
+            preTab.innerHTML = '<i class="fas fa-users"></i> ตารางรอบคัดเลือก (2 รอบแรก)';
+          }
+        }
+
+        const preHeaderTitle = document.getElementById('admin-pre-header-title');
+        const preHeaderDesc = document.getElementById('admin-pre-header-desc');
+        if (preHeaderTitle) {
+          if (isStaff) {
+            preHeaderTitle.innerHTML = '<i class="fas fa-heart text-rose-400"></i> ตารางบันทึกคะแนน Popular Vote (3 ช่อง)';
+          } else {
+            preHeaderTitle.innerHTML = '<i class="fas fa-list-ol"></i> ตารางคะแนนรอบคัดเลือก (ห้องดำ + Grand Opening + Popular Vote)';
+          }
+        }
+        if (preHeaderDesc) {
+          if (isStaff) {
+            preHeaderDesc.innerText = 'สตาฟมีสิทธิ์กรอกคะแนน Popular Vote (ออนไลน์, รอบแรก, รอบสอง) คัดเลือกผู้ชนะอันดับ 1 ของแต่ละประเภท';
+          } else {
+            preHeaderDesc.innerText = 'รอบห้องดำ (25 คะแนน), รอบ Grand Opening (50 คะแนน) และรอบ Popular Vote (ไม่จำกัดคะแนน • แอดมินเป็นผู้กรอก) รวมเพื่อคัดหา TOP 5';
+          }
+        }
+      }
+
       async function activateSession(role, token) {
         currentUser = role;
         sessionToken = token;
@@ -1577,6 +1627,8 @@
         } else {
           if (popularNavBtn) popularNavBtn.classList.remove('hidden');
         }
+
+        applyRoleViewRestrictions(role);
 
         if (role === 'admin') {
           if (adminJudgeBar) adminJudgeBar.classList.add('hidden');
@@ -1727,6 +1779,8 @@
         if (adminJudgeBar) adminJudgeBar.classList.add('hidden');
         const admin2Switcher = document.getElementById('admin2-nav-switcher');
         if (admin2Switcher) admin2Switcher.classList.add('hidden');
+
+        applyRoleViewRestrictions('admin');
 
         if (reason === 'superseded') {
           showToast('บัญชีนี้ถูกเข้าสู่ระบบจากอุปกรณ์อื่น');
@@ -2496,6 +2550,11 @@
         const data = pendingSubmitData;
         closeModal();
 
+        if (currentUser === 'staff') {
+          showToast('บัญชีสตาฟมีสิทธิ์กรอกคะแนนได้เฉพาะรอบ Popular Vote เท่านั้น', 'error');
+          return;
+        }
+
         if (data.roundId === 'popular' && currentUser && currentUser.startsWith('judge')) {
           alert('กรรมการไม่มีสิทธิ์ลงคะแนนรอบ Popular Vote (สำหรับแอดมินเท่านั้น)');
           return;
@@ -2565,6 +2624,7 @@
       // Admin Dashboard Management
       // ==========================================
       function switchAdminView(view) {
+        if (currentUser === 'staff' && view !== 'pre') return;
         adminCurrentView = view;
         const views = ['top3', 'speed', 'pre', 'con', 'manage'];
 
@@ -2592,6 +2652,10 @@
       }
 
       function renderAdminViews() {
+        if (currentUser === 'staff') {
+          renderAdminPreTable();
+          return;
+        }
         renderAdminTop3Table();
         renderAdminConResultsTable();
         renderAdminSpeedTable();
@@ -2862,6 +2926,7 @@
       // สลับ Tab รอบใน Admin Pre View (ห้องดำ, Grand, Popular, สรุป 3 รอบ)
       // ==================================================
       function switchAdminPreRound(roundId) {
+        if (currentUser === 'staff' && roundId !== 'popular') return;
         adminPreRoundView = roundId;
         const roundIds = ['blackroom', 'grand', 'popular', 'all'];
         roundIds.forEach(r => {
@@ -3215,6 +3280,10 @@
       }
 
       async function confirmToggleStatus(contestantId, newStatus, contestantName) {
+        if (currentUser === 'staff') {
+          alert('บัญชีสตาฟไม่มีสิทธิ์เปลี่ยนสถานะผู้เข้าประกวด');
+          return;
+        }
         const actionText = newStatus === 'resigned' ? 'สละสิทธิ์' : 'คืนสิทธิ์การแข่งขัน';
         const confirmMsg = newStatus === 'resigned'
           ? `คุณต้องการตั้งสถานะให้ "${contestantName || contestantId}" (${contestantId}) เป็น "สละสิทธิ์" หรือไม่?\n\n* ผู้ที่สละสิทธิ์จะไม่ถูกนำไปคำนวณเข้ารอบ TOP 5 และ TOP 3`
@@ -3331,7 +3400,9 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              judge_id: 'admin',
+              judge_id: (currentUser === 'staff') ? 'staff' : 'admin',
+              user_role: currentUser,
+              session_token: sessionToken,
               contestant_id: currentPopEditContestantId,
               round_id: 'popular',
               score_c1: c1,

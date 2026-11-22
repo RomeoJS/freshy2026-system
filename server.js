@@ -174,6 +174,10 @@ async function initDB() {
             } catch (migErr) {
                 console.warn('⚠️ Miss Con legacy score cleanup note:', migErr.message);
             }
+            try {
+                await connection.execute("UPDATE IGNORE scores SET judge_id = 'admin' WHERE round_id = 'popular' AND judge_id = 'staff'");
+                await connection.execute("DELETE FROM scores WHERE round_id = 'popular' AND judge_id = 'staff'");
+            } catch (migStaffErr) {}
         } finally {
             connection.release();
         }
@@ -319,7 +323,10 @@ app.get('/api/contestants', async (req, res) => {
 app.post('/api/contestants/:id/status', async (req, res) => {
     try {
         const { id } = req.params;
-        const { status } = req.body;
+        const { status, role } = req.body;
+        if (role === 'staff') {
+            return res.status(403).json({ success: false, message: 'บัญชีสตาฟไม่มีสิทธิ์เปลี่ยนสถานะผู้เข้าประกวด' });
+        }
         const targetStatus = status === 'resigned' ? 'resigned' : 'active';
         try {
             await pool.execute('UPDATE contestants SET status = ? WHERE id = ?', [targetStatus, id]);
@@ -343,7 +350,10 @@ app.post('/api/contestants/:id/status', async (req, res) => {
 // เพิ่ม / อัปเดตข้อมูลผู้เข้าประกวด
 app.post('/api/contestants', upload.single('image'), async (req, res) => {
     try {
-        const { id, name, nickname, category, faculty, status } = req.body;
+        const { id, name, nickname, category, faculty, status, role } = req.body;
+        if (role === 'staff') {
+            return res.status(403).json({ success: false, message: 'บัญชีสตาฟไม่มีสิทธิ์จัดการข้อมูลผู้เข้าประกวด' });
+        }
         if (!id || !name || !category) {
             return res.status(400).json({ success: false, message: 'กรุณากรอกรหัส ชื่อ และหมวดหมู่' });
         }
@@ -513,10 +523,16 @@ app.get('/api/summary', async (req, res) => {
 
 // เมื่อมีการบันทึกคะแนน ให้เคลียร์ Cache ทันทีเพื่อให้ข้อมูลอัปเดต
 app.post('/api/scores', async (req, res) => {
-    const { judge_id, contestant_id, round_id, score_c1, score_c2, score_c3, score_c4, score_c5, score_c6 } = req.body;
+    const { judge_id, contestant_id, round_id, score_c1, score_c2, score_c3, score_c4, score_c5, score_c6, user_role } = req.body;
     
     if (!judge_id || !contestant_id || !round_id) {
         return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
+    }
+
+    // ตรวจสอบสิทธิ์บัญชีสตาฟ (staff): กรอกได้เฉพาะรอบ Popular Vote เท่านั้น
+    const isStaff = (judge_id === 'staff' || user_role === 'staff');
+    if (isStaff && round_id !== 'popular') {
+        return res.status(403).json({ success: false, message: 'บัญชีสตาฟมีสิทธิ์กรอกคะแนนได้เฉพาะรอบ Popular Vote เท่านั้น' });
     }
 
     // ตรวจสอบสิทธิ์รอบ Popular Vote: ให้ได้เฉพาะแอดมินและสตาฟเท่านั้น (ไม่จำกัดเพดานคะแนน)
@@ -534,6 +550,9 @@ app.post('/api/scores', async (req, res) => {
     const c6 = Math.max(0, parseInt(score_c6) || 0);
     const total = (round_id === 'popular') ? (c1 + c2 + c3) : (c1 + c2 + c3 + c4 + c5 + c6);
 
+    // สำหรับรอบ Popular Vote บันทึกภายใต้ judge_id 'admin' เสมอ เพื่อให้ฐานข้อมูลเป็นชุดเดียวกันทุกส่วน
+    const targetJudgeId = (round_id === 'popular') ? 'admin' : judge_id;
+
     try {
         const query = `
             INSERT INTO scores (judge_id, contestant_id, round_id, score_c1, score_c2, score_c3, score_c4, score_c5, score_c6, total_score) 
@@ -547,7 +566,7 @@ app.post('/api/scores', async (req, res) => {
                 score_c6 = VALUES(score_c6),
                 total_score = VALUES(total_score)
         `;
-        await pool.execute(query, [judge_id, contestant_id, round_id, c1, c2, c3, c4, c5, c6, total]);
+        await pool.execute(query, [targetJudgeId, contestant_id, round_id, c1, c2, c3, c4, c5, c6, total]);
         
         // เคลียร์ Cache เพื่อให้ API ดึงข้อมูลใหม่
         scoresCache.timestamp = 0;
@@ -565,7 +584,7 @@ app.post('/api/scores/increment', async (req, res) => {
     const { contestant_id, delta, staff_name, passcode, sub_round } = req.body;
     
     // ตรวจสอบความถูกต้องของรหัสความปลอดภัย (Staff Passcode หรือ Admin Passcode)
-    const validCodes = ['admin2026', '2026', 'freshy2026', USERS.admin];
+    const validCodes = ['admin2026', '2026', 'freshy2026', USERS.admin, USERS.staff, 'staff2026'];
     const pass = (passcode || '').trim();
     if (!validCodes.includes(pass)) {
         return res.status(403).json({ success: false, message: 'รหัสผ่านทีมงาน (Passcode) ไม่ถูกต้อง' });
