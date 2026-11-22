@@ -719,14 +719,21 @@
                   <div class="text-xs md:text-sm text-gray-300 mt-1">${leader.faculty || ''}</div>
 
                   <!-- Huge Score Display -->
-                  <div class="mt-5 bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/95 to-[#111FA2]/90 px-10 py-3.5 rounded-2xl border-2 border-[#FFDE42]/70 shadow-[0_0_35px_rgba(255,222,66,0.4)] min-w-[300px]">
+                  <div class="mt-5 bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/95 to-[#111FA2]/90 px-8 py-3.5 rounded-2xl border-2 border-[#FFDE42]/70 shadow-[0_0_35px_rgba(255,222,66,0.4)] min-w-[320px]">
                     <div class="text-[11px] uppercase font-bold tracking-widest text-rose-300 flex items-center justify-center gap-1.5">
-                      <i class="fas fa-heart text-rose-400"></i> คะแนน POPULAR VOTE รวม
+                      <i class="fas fa-heart text-rose-400"></i> คะแนน POPULAR VOTE รวม (3 รอบ)
                     </div>
                     <div id="winner-score-display" class="text-4xl md:text-5xl font-black text-[#FFDE42] gold-glow my-0.5">
                       ${leaderScore.toLocaleString()}
                     </div>
-                    <div class="text-xs text-gray-400">คะแนนโหวตอย่างเป็นทางการ</div>
+                    <!-- 3-Round Breakdown -->
+                    <div class="flex items-center justify-center gap-2.5 text-[11px] text-gray-300 mt-2 pt-2 border-t border-white/10 flex-wrap">
+                      <span class="text-blue-300"><i class="fas fa-globe text-blue-400"></i> ออนไลน์: <strong>${(leader?.rounds?.popular?.score_c1 || 0).toLocaleString()}</strong></span>
+                      <span class="text-gray-500">•</span>
+                      <span class="text-amber-300"><i class="fas fa-crown text-amber-400"></i> วันจริงรอบ 1: <strong>${(leader?.rounds?.popular?.score_c2 || 0).toLocaleString()}</strong></span>
+                      <span class="text-gray-500">•</span>
+                      <span class="text-purple-300"><i class="fas fa-star text-purple-400"></i> วันจริงรอบ 2: <strong>${(leader?.rounds?.popular?.score_c3 || 0).toLocaleString()}</strong></span>
+                    </div>
                   </div>
                 </div>
               ` : '<div class="py-16 text-center text-gray-400">ยังไม่มีข้อมูล</div>'}
@@ -844,12 +851,18 @@
 
                       <div>
                         <!-- Score Display -->
-                        <div class="mt-4 pt-3 border-t border-white/10 bg-[#091054]/80 p-3 rounded-2xl border border-[#5478FF]/30">
-                          <div class="text-[9px] uppercase font-bold text-rose-300">คะแนน POPULAR VOTE</div>
-                          <div id="all-score-${catKey}" class="text-3xl font-black text-[#FFDE42] gold-glow my-0.5">
+                        <div class="mt-4 pt-3 border-t border-white/10 bg-[#091054]/80 p-2.5 rounded-2xl border border-[#5478FF]/30">
+                          <div class="text-[9px] uppercase font-bold text-rose-300">คะแนน POPULAR VOTE รวม</div>
+                          <div id="all-score-${catKey}" class="text-2xl font-black text-[#FFDE42] gold-glow my-0.5">
                             ${popScore.toLocaleString()}
                           </div>
-                          <div class="text-[9px] text-gray-400">คะแนน</div>
+                          <div class="text-[9px] text-gray-300 flex items-center justify-center gap-1 mt-1 pt-1 border-t border-white/10 flex-wrap">
+                            <span class="text-blue-300">ออน: ${(leader?.rounds?.popular?.score_c1 || 0).toLocaleString()}</span>
+                            <span>•</span>
+                            <span class="text-amber-300">จริง 1: ${(leader?.rounds?.popular?.score_c2 || 0).toLocaleString()}</span>
+                            <span>•</span>
+                            <span class="text-purple-300">จริง 2: ${(leader?.rounds?.popular?.score_c3 || 0).toLocaleString()}</span>
+                          </div>
                         </div>
                       </div>
                     </div>

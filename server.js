@@ -46,7 +46,7 @@ const CATEGORIES = {
     jumbo: 'Miss Jumbo'
 };
 
-const ROUNDS_PRE = ['blackroom', 'grand', 'popular'];
+const ROUNDS_PRE = ['blackroom', 'grand'];
 
 async function initDB() {
     // 1. ลองเชื่อมต่อเพื่อ CREATE DATABASE หากเป็นไปได้ (เช่นบน localhost)
@@ -532,7 +532,7 @@ app.post('/api/scores', async (req, res) => {
     const c4 = Math.max(0, parseInt(score_c4) || 0);
     const c5 = Math.max(0, parseInt(score_c5) || 0);
     const c6 = Math.max(0, parseInt(score_c6) || 0);
-    const total = (round_id === 'popular') ? c1 : (c1 + c2 + c3 + c4 + c5 + c6);
+    const total = (round_id === 'popular') ? (c1 + c2 + c3) : (c1 + c2 + c3 + c4 + c5 + c6);
 
     try {
         const query = `
@@ -562,7 +562,7 @@ app.post('/api/scores', async (req, res) => {
 
 // API สำหรับทีมงานนับคะแนนหน้าร้าน/จุดนับคะแนน (Staff Quick-Tally Concurrency-Safe Increment)
 app.post('/api/scores/increment', async (req, res) => {
-    const { contestant_id, delta, staff_name, passcode } = req.body;
+    const { contestant_id, delta, staff_name, passcode, sub_round } = req.body;
     
     // ตรวจสอบความถูกต้องของรหัสความปลอดภัย (Staff Passcode หรือ Admin Passcode)
     const validCodes = ['admin2026', '2026', 'freshy2026', USERS.admin];
@@ -580,16 +580,25 @@ app.post('/api/scores/increment', async (req, res) => {
         return res.status(400).json({ success: false, message: 'คะแนนที่เพิ่มหรือลดต้องไม่เป็น 0' });
     }
 
+    // กำหนดช่องที่ต้องการบวกคะแนน (c1 = ออนไลน์, c2 = วันจริงรอบแรก [ค่าเริ่มต้น], c3 = วันจริงรอบสอง)
+    let field = 'score_c2';
+    if (sub_round === 'c1' || sub_round === 'online') field = 'score_c1';
+    else if (sub_round === 'c3' || sub_round === 'onsite2') field = 'score_c3';
+
     try {
-        const initialVal = Math.max(0, amount);
+        const initC1 = (field === 'score_c1') ? Math.max(0, amount) : 0;
+        const initC2 = (field === 'score_c2') ? Math.max(0, amount) : 0;
+        const initC3 = (field === 'score_c3') ? Math.max(0, amount) : 0;
+        const initTotal = initC1 + initC2 + initC3;
+
         const query = `
-            INSERT INTO scores (judge_id, contestant_id, round_id, score_c1, total_score)
-            VALUES ('admin', ?, 'popular', ?, ?)
+            INSERT INTO scores (judge_id, contestant_id, round_id, score_c1, score_c2, score_c3, total_score)
+            VALUES ('admin', ?, 'popular', ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
-                score_c1 = GREATEST(0, score_c1 + ?),
-                total_score = GREATEST(0, total_score + ?)
+                ${field} = GREATEST(0, ${field} + ?),
+                total_score = GREATEST(0, score_c1 + score_c2 + score_c3)
         `;
-        await pool.execute(query, [contestant_id, initialVal, initialVal, amount, amount]);
+        await pool.execute(query, [contestant_id, initC1, initC2, initC3, initTotal, amount]);
 
         // เคลียร์แคช
         scoresCache.timestamp = 0;
@@ -597,16 +606,21 @@ app.post('/api/scores/increment', async (req, res) => {
 
         // ดึงคะแนนล่าสุดกลับไปตอบสนอง
         const [rows] = await pool.execute(
-            `SELECT total_score FROM scores WHERE judge_id = 'admin' AND contestant_id = ? AND round_id = 'popular'`,
+            `SELECT score_c1, score_c2, score_c3, total_score FROM scores WHERE judge_id = 'admin' AND contestant_id = ? AND round_id = 'popular'`,
             [contestant_id]
         );
-        const newTotal = rows[0] ? rows[0].total_score : initialVal;
+        const row = rows[0] || {};
+        const newTotal = row.total_score !== undefined ? row.total_score : initTotal;
 
         res.json({
             success: true,
             message: `อัปเดตคะแนน ${contestant_id} สำเร็จ (${amount > 0 ? '+' : ''}${amount})`,
             contestant_id,
+            sub_round: field,
             delta: amount,
+            score_c1: row.score_c1 || 0,
+            score_c2: row.score_c2 || 0,
+            score_c3: row.score_c3 || 0,
             new_total: newTotal,
             staff_name: staff_name || 'Staff'
         });
@@ -661,12 +675,26 @@ async function calculateSummary() {
                 preTotal += score;
             });
 
-            // 3. รอบ Popular Vote (แอดมินหรือสตาฟกรอก ไม่จำกัดคะแนน กรรมการไม่มีสิทธิ์กรอก)
+            // 3. รอบ Popular Vote (แยกต่างหาก • ไม่นำไปรวมใน preTotal รอบคัดเลือก TOP 5)
+            // ในช่องแบ่งเป็น 3 รอบ: 1. ออนไลน์ (score_c1), 2. วันจริงรอบแรก (score_c2), 3. วันจริงรอบสอง (score_c3)
             const popRec = contestantScores.find(s => s.round_id === 'popular' && (s.judge_id === 'admin' || s.judge_id === 'admin2' || s.judge_id === 'staff')) ||
                            contestantScores.find(s => s.round_id === 'popular');
-            const popScore = popRec ? (popRec.total_score || 0) : 0;
-            rounds.popular = { judges: { admin: popScore }, total: popScore, score: popScore };
-            preTotal += popScore;
+            const popC1 = popRec ? (popRec.score_c1 || 0) : 0; // 1. ออนไลน์
+            const popC2 = popRec ? (popRec.score_c2 || 0) : 0; // 2. วันจริงรอบแรก
+            const popC3 = popRec ? (popRec.score_c3 || 0) : 0; // 3. วันจริงรอบสอง
+            const popTotal = popRec ? (popRec.total_score || (popC1 + popC2 + popC3)) : (popC1 + popC2 + popC3);
+            rounds.popular = {
+                judges: { admin: popTotal },
+                total: popTotal,
+                score: popTotal,
+                score_c1: popC1,
+                score_c2: popC2,
+                score_c3: popC3,
+                online: popC1,
+                onsite1: popC2,
+                onsite2: popC3
+            };
+            // หมายเหตุ: เกณฑ์ Popular Vote เป็นรางวัลพิเศษแยกต่างหาก ไม่บวกเข้า preTotal เพื่อให้รอบคัดเลือก TOP 5 มาจากคะแนนกรรมการแท้จริง
 
             return {
                 id: c.id,
@@ -783,12 +811,41 @@ async function calculateSummary() {
         f.award = idx === 0 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4';
     });
 
+    // สรุปผลผู้ชนะ Popular Vote แต่ละประเภท (คัดคนที่ได้คะแนนสูงสุดเพียงคนเดียว)
+    const popularWinners = {};
+    for (const [catKey, list] of Object.entries(categoriesData)) {
+        const sorted = [...list].sort((a, b) => {
+            const scoreA = a.rounds?.popular?.total || 0;
+            const scoreB = b.rounds?.popular?.total || 0;
+            if (scoreB !== scoreA) return scoreB - scoreA;
+            const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+            const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return (a.id || '').localeCompare(b.id || '');
+        });
+        const top1 = sorted[0];
+        popularWinners[catKey] = top1 ? {
+            id: top1.id,
+            name: top1.name,
+            nickname: top1.nickname,
+            faculty: top1.faculty,
+            category: top1.category,
+            categoryName: top1.categoryName,
+            image: top1.image,
+            score_c1: top1.rounds?.popular?.score_c1 || 0,
+            score_c2: top1.rounds?.popular?.score_c2 || 0,
+            score_c3: top1.rounds?.popular?.score_c3 || 0,
+            total: top1.rounds?.popular?.total || 0
+        } : null;
+    }
+
     return {
         categories: categoriesData,
         top5: top5Finalists,
         top3: top3Finalists,
         finalRankings: [...top3Finalists, ...remainingTwo],
-        missConTalent
+        missConTalent,
+        popularWinners
     };
 }
 
