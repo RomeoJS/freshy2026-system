@@ -592,13 +592,13 @@
           <!-- TOP 3 PODIUM SECTION -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-end max-w-5xl mx-auto pt-4">
             <!-- 2nd Place (Silver) -->
-            ${top2 ? renderPodiumCard(top2, 2, 'podium-silver', 'text-slate-300', '🥈 อันดับ 2', 'h-[340px] md:h-[370px]', maxScore) : '<div class="hidden md:block"></div>'}
+            ${top2 ? renderPodiumCard(top2, 2, 'podium-silver', 'text-slate-300', '🥈 อันดับ 2', 'min-h-[440px] md:min-h-[470px]', maxScore) : '<div class="hidden md:block"></div>'}
 
             <!-- 1st Place (Gold) -->
-            ${top1 ? renderPodiumCard(top1, 1, 'podium-gold', 'text-[#FFDE42]', '👑 ผู้นำอันดับ 1', 'h-[370px] md:h-[410px] md:-translate-y-4', maxScore) : '<div></div>'}
+            ${top1 ? renderPodiumCard(top1, 1, 'podium-gold', 'text-[#FFDE42]', '👑 ผู้นำอันดับ 1', 'min-h-[480px] md:min-h-[520px] md:-translate-y-4', maxScore) : '<div></div>'}
 
             <!-- 3rd Place (Bronze) -->
-            ${top3 ? renderPodiumCard(top3, 3, 'podium-bronze', 'text-amber-400', '🥉 อันดับ 3', 'h-[320px] md:h-[350px]', maxScore) : '<div class="hidden md:block"></div>'}
+            ${top3 ? renderPodiumCard(top3, 3, 'podium-bronze', 'text-amber-400', '🥉 อันดับ 3', 'min-h-[420px] md:min-h-[450px]', maxScore) : '<div class="hidden md:block"></div>'}
           </div>
 
           <!-- OTHERS RANKINGS SECTION (อันดับ 4 เป็นต้นไป) -->
@@ -625,27 +625,31 @@
       const pct = Math.min(100, Math.round((popScore / maxScore) * 100));
       const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
       const displayScore = isBlindMode ? '???' : popScore.toLocaleString();
+      const isFirst = rank === 1;
 
       return `
         <div class="relative glass-panel rounded-3xl p-5 flex flex-col justify-between text-center transition-all duration-500 hover:scale-[1.02] ${borderClass} ${heightClass}">
           <!-- Rank Badge Top Center -->
-          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-0.5 rounded-full bg-[#050A30] border-2 border-current ${accentColor} text-xs font-black tracking-wider shadow-lg flex items-center gap-1.5 whitespace-nowrap">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-0.5 rounded-full bg-[#050A30] border-2 border-current ${accentColor} text-xs font-black tracking-wider shadow-lg flex items-center gap-1.5 whitespace-nowrap z-10">
             ${rankTitle}
           </div>
 
           <div class="pt-3">
-            <!-- Photo Avatar -->
+            <!-- Photo Avatar with face focus -->
             <div class="relative inline-block mx-auto mb-3">
-              <div class="absolute -inset-1 rounded-full bg-current ${accentColor} blur-md opacity-40"></div>
-              <img src="${img}" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');"
-                class="relative w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-current ${accentColor} shadow-xl mx-auto">
-              <span class="absolute -bottom-1.5 -right-1 px-2.5 py-0.5 rounded-lg bg-[#050A30] border border-current ${accentColor} text-xs font-black ${accentColor}">
+              <div class="absolute -inset-1.5 rounded-2xl bg-current ${accentColor} blur-md opacity-40"></div>
+              <div class="relative ${isFirst ? 'w-32 h-44 md:w-40 md:h-52' : 'w-28 h-36 md:w-32 md:h-44'} rounded-2xl overflow-hidden border-2 border-current ${accentColor} shadow-2xl mx-auto bg-[#050A30]">
+                <img src="${img}" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');"
+                  class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  style="object-position: center 10%;">
+              </div>
+              <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-lg bg-[#050A30] border border-current ${accentColor} text-xs font-black ${accentColor} shadow-md whitespace-nowrap">
                 ${c.id}
               </span>
             </div>
 
             <!-- Contestant Names -->
-            <div class="font-bold text-white text-base md:text-lg line-clamp-1 ${isResigned ? 'line-through text-gray-400' : ''}">
+            <div class="font-bold text-white text-base md:text-lg line-clamp-1 mt-1 ${isResigned ? 'line-through text-gray-400' : ''}">
               ${c.name}
             </div>
             ${c.nickname ? `<div class="text-xs ${accentColor} font-semibold">"${c.nickname}"</div>` : ''}
@@ -690,9 +694,12 @@
             <div class="w-7 h-7 rounded-xl bg-blue-950/90 text-gray-300 text-xs font-black flex items-center justify-center shrink-0 border border-[#5478FF]/30">
               #${rank}
             </div>
-            <!-- Photo -->
-            <img src="${img}" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');"
-              class="w-10 h-10 rounded-full object-cover border border-[#5478FF]/50 shrink-0">
+            <!-- Photo with Face Focus -->
+            <div class="w-12 h-14 rounded-xl overflow-hidden border border-[#5478FF]/50 shrink-0 bg-[#050A30] shadow-sm">
+              <img src="${img}" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');"
+                class="w-full h-full object-cover"
+                style="object-position: center 10%;">
+            </div>
             <!-- Details -->
             <div class="min-w-0">
               <div class="flex items-center gap-1.5">
@@ -747,19 +754,23 @@
 
                 <!-- Leader Spotlight -->
                 ${leader ? `
-                  <div class="bg-gradient-to-b from-[#111FA2]/60 to-[#091054]/90 p-3.5 rounded-2xl border border-[#FFDE42]/50 text-center relative mb-3">
-                    <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-[#FFDE42] text-[#050A30] text-[10px] font-black shadow">
+                  <div class="bg-gradient-to-b from-[#111FA2]/60 to-[#091054]/90 p-4 rounded-2xl border border-[#FFDE42]/50 text-center relative mb-3 shadow-lg">
+                    <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#FFDE42] text-[#050A30] text-[11px] font-black shadow flex items-center gap-1 z-10">
                       👑 อันดับ 1
                     </span>
-                    <img src="/api/contestants/${encodeURIComponent(leader.id)}/image" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${leader.id}');"
-                      class="w-16 h-16 rounded-full object-cover border-2 border-[#FFDE42] mx-auto mb-2 mt-1 shadow-md">
-                    <div class="text-xs font-black text-[#FFDE42]">${leader.id}</div>
-                    <div class="text-xs font-bold text-white truncate">${leader.name}</div>
-                    ${leader.nickname ? `<div class="text-[10px] text-amber-300">"${leader.nickname}"</div>` : ''}
+                    <!-- Photo Container with Face Focus -->
+                    <div class="relative w-28 h-36 md:w-32 md:h-40 mx-auto mb-2.5 mt-2 rounded-2xl overflow-hidden border-2 border-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.35)] bg-[#050A30]">
+                      <img src="/api/contestants/${encodeURIComponent(leader.id)}/image" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${leader.id}');"
+                        class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        style="object-position: center 10%;">
+                    </div>
+                    <div class="text-sm font-black text-[#FFDE42]">${leader.id}</div>
+                    <div class="text-xs font-bold text-white truncate px-1">${leader.name}</div>
+                    ${leader.nickname ? `<div class="text-[11px] text-amber-300 font-semibold">"${leader.nickname}"</div>` : ''}
 
-                    <div class="mt-2 pt-2 border-t border-white/10 flex items-center justify-center gap-1.5">
+                    <div class="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-center gap-1.5">
                       <i class="fas fa-heart text-rose-400 text-xs"></i>
-                      <span class="text-xl font-black text-[#FFDE42] gold-glow">
+                      <span class="text-2xl font-black text-[#FFDE42] gold-glow">
                         ${isBlindMode ? '???' : (leader.rounds?.popular?.total || 0).toLocaleString()}
                       </span>
                       <span class="text-[10px] text-gray-300">คะแนน</span>
@@ -772,9 +783,14 @@
                   ${followers.map((c, idx) => {
                     const score = c.rounds?.popular?.total || 0;
                     return `
-                      <div class="flex items-center justify-between p-2 rounded-xl bg-[#091054]/60 border border-white/5 text-xs">
+                      <div class="flex items-center justify-between p-2 rounded-xl bg-[#091054]/60 border border-white/5 text-xs hover:border-[#5478FF]/40 transition">
                         <div class="flex items-center gap-2 truncate">
                           <span class="text-[10px] font-bold text-gray-400 w-4">#${idx + 2}</span>
+                          <div class="w-7 h-8 rounded-lg overflow-hidden border border-[#5478FF]/40 shrink-0 bg-[#050A30] shadow-sm">
+                            <img src="/api/contestants/${encodeURIComponent(c.id)}/image" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');"
+                              class="w-full h-full object-cover"
+                              style="object-position: center 10%;">
+                          </div>
                           <span class="font-bold text-[#FFDE42] text-[11px]">${c.id}</span>
                           <span class="truncate text-gray-200 text-[11px]">${c.nickname || c.name}</span>
                         </div>
