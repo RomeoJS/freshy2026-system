@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RMUTK FRESHY 2026 - POPULAR VOTE LIVE MONITOR</title>
+  <title>RMUTK FRESHY 2026 - POPULAR VOTE STAGE CEREMONY</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -22,9 +22,9 @@
       font-family: "Prompt", sans-serif;
       background-color: #050a30;
       background-image:
-        radial-gradient(circle at 50% 10%, rgba(84, 120, 255, 0.35) 0%, transparent 60%),
-        radial-gradient(circle at 10% 85%, rgba(244, 63, 94, 0.22) 0%, transparent 50%),
-        radial-gradient(circle at 90% 85%, rgba(255, 222, 66, 0.22) 0%, transparent 50%);
+        radial-gradient(circle at 50% 10%, rgba(84, 120, 255, 0.38) 0%, transparent 60%),
+        radial-gradient(circle at 10% 85%, rgba(244, 63, 94, 0.25) 0%, transparent 50%),
+        radial-gradient(circle at 90% 85%, rgba(255, 222, 66, 0.25) 0%, transparent 50%);
       background-attachment: fixed;
       color: #ffffff;
       min-height: 100vh;
@@ -33,23 +33,17 @@
     }
 
     .glass-panel {
-      background: rgba(13, 24, 120, 0.45);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(13, 24, 120, 0.5);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(84, 120, 255, 0.35);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.12);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.12);
     }
 
     .gold-glow {
       text-shadow:
         0 0 15px rgba(255, 222, 66, 0.9),
-        0 0 35px rgba(255, 180, 0, 0.5);
-    }
-
-    .rose-glow {
-      text-shadow:
-        0 0 15px rgba(244, 63, 94, 0.9),
-        0 0 35px rgba(225, 29, 72, 0.5);
+        0 0 35px rgba(255, 180, 0, 0.6);
     }
 
     .pulse-live {
@@ -58,242 +52,219 @@
     }
 
     @keyframes pulse-ring {
-      0% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-      }
-      70% {
-        box-shadow: 0 0 0 14px rgba(239, 68, 68, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-      }
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
 
     @keyframes scoreFlash {
-      0% {
-        transform: scale(1);
-        filter: brightness(1);
-      }
-      30% {
-        transform: scale(1.05);
-        filter: brightness(1.6) drop-shadow(0 0 25px rgba(255, 222, 66, 0.9));
-      }
-      100% {
-        transform: scale(1);
-        filter: brightness(1);
-      }
+      0% { transform: scale(1); filter: brightness(1); }
+      30% { transform: scale(1.08); filter: brightness(1.6) drop-shadow(0 0 25px rgba(255, 222, 66, 0.9)); }
+      100% { transform: scale(1); filter: brightness(1); }
     }
 
     .score-updated {
       animation: scoreFlash 0.9s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Podium 1st, 2nd, 3rd glow borders */
-    .podium-gold {
-      border: 2px solid #FFDE42;
-      background: linear-gradient(145deg, rgba(255, 222, 66, 0.18), rgba(9, 16, 84, 0.85));
-      box-shadow: 0 0 45px rgba(255, 222, 66, 0.35), inset 0 0 25px rgba(255, 222, 66, 0.15);
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.85) translateY(20px); }
+      70% { opacity: 1; transform: scale(1.03) translateY(-5px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
-    .podium-silver {
-      border: 2px solid #CBD5E1;
-      background: linear-gradient(145deg, rgba(203, 213, 225, 0.18), rgba(9, 16, 84, 0.85));
-      box-shadow: 0 0 35px rgba(203, 213, 225, 0.25), inset 0 0 20px rgba(203, 213, 225, 0.1);
+    .animate-pop-in {
+      animation: popIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    .podium-bronze {
-      border: 2px solid #F59E0B;
-      background: linear-gradient(145deg, rgba(245, 158, 11, 0.18), rgba(9, 16, 84, 0.85));
-      box-shadow: 0 0 35px rgba(245, 158, 11, 0.25), inset 0 0 20px rgba(245, 158, 11, 0.1);
+    @keyframes pulseMystery {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255, 222, 66, 0.3)); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 45px rgba(255, 222, 66, 0.8)); }
     }
 
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(5, 10, 48, 0.8);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(84, 120, 255, 0.5);
-      border-radius: 999px;
+    .animate-mystery {
+      animation: pulseMystery 2.5s infinite ease-in-out;
     }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col justify-between p-3 md:p-6 select-none">
+<body class="min-h-screen flex flex-col justify-between p-3 md:p-6 select-none relative">
 
-  <!-- TOP BAR: Brand & Event Header -->
-  <header class="w-full mb-4">
+  <!-- CONFETTI CANVAS OVERLAY -->
+  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+  <!-- TOP BAR: Stage Ceremony Header & Controls -->
+  <header class="w-full mb-3">
     <div class="glass-panel rounded-3xl p-3 md:p-4 border border-[#5478FF]/40 flex flex-wrap items-center justify-between gap-3 shadow-2xl relative overflow-hidden">
-      <!-- Glow ambient background inside header -->
+      <!-- Glow ambient background -->
       <div class="absolute -right-16 -top-16 w-56 h-56 bg-gradient-to-br from-[#FFDE42]/20 to-transparent rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute -left-16 -bottom-16 w-56 h-56 bg-gradient-to-tr from-rose-500/20 to-transparent rounded-full blur-3xl pointer-events-none"></div>
 
-      <!-- Left: Logo & Stage Titles -->
-      <div class="flex items-center gap-3.5 z-10">
-        <img src="images/logo.png" alt="RMUTK FRESHY 2026" class="h-12 md:h-14 object-contain drop-shadow-[0_0_15px_rgba(255,222,66,0.4)] hover:scale-105 transition" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('RMUTK');">
+      <!-- Left: Logo & Event Title -->
+      <div class="flex items-center gap-3 z-10">
+        <img src="images/logo.png" alt="RMUTK FRESHY 2026" class="h-11 md:h-13 object-contain drop-shadow-[0_0_15px_rgba(255,222,66,0.4)]" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('RMUTK');">
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-xs uppercase tracking-widest text-[#FFDE42] font-black">RMUTK FRESHY 2026</span>
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-bold">
+            <span class="text-[10px] md:text-xs uppercase tracking-widest text-[#FFDE42] font-black">RMUTK FRESHY 2026</span>
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold">
               <span class="w-2 h-2 rounded-full bg-rose-500 pulse-live"></span>
-              LIVE STAGE
+              พิธีประกาศผลรางวัล
             </span>
           </div>
-          <h1 class="text-xl md:text-2xl font-black text-white tracking-wide flex items-center gap-2">
-            <i class="fas fa-heart text-rose-400"></i>
-            POPULAR VOTE LEADERBOARD
+          <h1 class="text-lg md:text-xl font-black text-white tracking-wide flex items-center gap-2">
+            <i class="fas fa-crown text-[#FFDE42]"></i>
+            POPULAR VOTE CEREMONY
           </h1>
         </div>
       </div>
 
-      <!-- Center: Auto-Loop Countdown Bar (Active when loop is ON) -->
-      <div id="loop-indicator" class="hidden flex-col items-center justify-center z-10">
-        <div class="text-[11px] font-bold text-amber-200 flex items-center gap-1.5 mb-1">
-          <i class="fas fa-sync-alt fa-spin text-rose-400"></i>
-          <span>สลับหมวดอัตโนมัติใน: <span id="loop-seconds" class="font-black text-white text-xs">12</span>s</span>
-        </div>
-        <div class="w-36 h-1.5 bg-blue-950 rounded-full overflow-hidden border border-[#5478FF]/30">
-          <div id="loop-progress" class="h-full bg-gradient-to-r from-rose-500 to-[#FFDE42] transition-all duration-300" style="width: 100%;"></div>
-        </div>
-      </div>
-
-      <!-- Right: Live Controls & Status Indicators -->
-      <div class="flex items-center gap-2 z-10 flex-wrap">
-        <!-- Live Clock -->
-        <div class="px-3 py-1.5 rounded-xl bg-[#091054]/90 border border-[#5478FF]/40 text-xs font-semibold text-gray-200 flex items-center gap-1.5">
-          <i class="far fa-clock text-[#FFDE42]"></i>
-          <span id="live-clock">--:--:--</span>
-        </div>
-
-        <!-- Blind / Reveal Mode (ซ่อน/เปิดเผยคะแนนบนเวที) -->
-        <button type="button" id="btn-toggle-blind" onclick="toggleBlindMode()"
-          class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/40 active:scale-95"
-          title="ซ่อนคะแนนเพื่อเล่นเกมบิ้วด์อารมณ์บนเวทีก่อนเฉลย">
-          <i class="fas fa-eye-slash text-amber-400" id="blind-icon"></i>
-          <span id="blind-label">ซ่อนคะแนน</span>
+      <!-- Center: Stage Nav Stepper (ก่อนหน้า - ถัดไป) -->
+      <div class="flex items-center gap-2 z-10">
+        <button type="button" onclick="stepCategory(-1)"
+          class="px-3.5 py-2 rounded-xl bg-[#091054]/90 hover:bg-[#111FA2] text-gray-200 hover:text-white border border-[#5478FF]/40 text-xs font-bold transition flex items-center gap-1.5 active:scale-95 shadow"
+          title="ประเภทก่อนหน้า (ลูกศรซ้าย ←)">
+          <i class="fas fa-chevron-left text-[#FFDE42]"></i>
+          <span class="hidden sm:inline">ก่อนหน้า</span>
         </button>
 
-        <!-- Auto-Loop Toggle -->
-        <button type="button" id="btn-toggle-loop" onclick="toggleAutoLoop()"
-          class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/40 active:scale-95"
-          title="สลับหมวดหมู่แสดงผลอัตโนมัติทุกๆ 12 วินาที">
-          <i class="fas fa-redo text-emerald-400"></i>
-          <span id="loop-label">เปิดวนลูป</span>
+        <div id="step-indicator" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#111FA2]/80 to-[#091054]/90 border border-[#FFDE42]/50 text-xs font-black text-[#FFDE42] min-w-[130px] text-center shadow">
+          1/5 • Miss Jumbo
+        </div>
+
+        <button type="button" onclick="stepCategory(1)"
+          class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-400 text-[#050A30] font-black text-xs transition flex items-center gap-1.5 active:scale-95 shadow-[0_0_15px_rgba(255,222,66,0.4)]"
+          title="ประเภทถัดไป (ลูกศรขวา →)">
+          <span class="hidden sm:inline">ถัดไป</span>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Right: Action Controls -->
+      <div class="flex items-center gap-2 z-10 flex-wrap">
+        <!-- Reveal / Mystery Toggle Button -->
+        <button type="button" id="btn-toggle-reveal" onclick="toggleCurrentCategoryReveal()"
+          class="px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white shadow-lg active:scale-95"
+          title="กด Spacebar บนคีย์บอร์ด หรือคลิกปุ่มเพื่อเฉลยผู้ชนะ">
+          <i class="fas fa-magic text-yellow-300" id="reveal-icon"></i>
+          <span id="reveal-btn-label">เฉลยผู้ชนะ (Space)</span>
+        </button>
+
+        <!-- Confetti Trigger -->
+        <button type="button" onclick="launchConfetti()"
+          class="px-3 py-2 rounded-xl text-xs font-bold transition bg-[#091054]/90 hover:bg-[#111FA2] text-yellow-300 border border-[#5478FF]/40 active:scale-95"
+          title="ยิงพลุฉลอง (กด C บนคีย์บอร์ด)">
+          <i class="fas fa-glass-cheers mr-1"></i> ยิงพลุ
         </button>
 
         <!-- Sound FX Toggle -->
         <button type="button" id="btn-toggle-sound" onclick="toggleSound()"
-          class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054]/90 text-gray-400 hover:text-white border border-[#5478FF]/40 active:scale-95"
-          title="เปิด/ปิดเสียงเอฟเฟกต์เมื่อคะแนนเพิ่มขึ้น">
-          <i class="fas fa-volume-mute" id="sound-icon"></i>
+          class="px-2.5 py-2 rounded-xl text-xs font-bold transition bg-[#091054]/90 text-gray-400 hover:text-white border border-[#5478FF]/40 active:scale-95"
+          title="เปิด/ปิดเสียงประโคม">
+          <i class="fas fa-volume-up text-[#FFDE42]" id="sound-icon"></i>
         </button>
 
         <!-- Fullscreen Button -->
         <button type="button" onclick="toggleFullScreen()"
-          class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-gradient-to-r from-yellow-500 to-amber-400 text-[#050A30] shadow-md hover:scale-105 active:scale-95 font-black">
+          class="px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-gray-200 hover:text-white border border-slate-600 active:scale-95 font-bold"
+          title="เต็มจอ (F11)">
           <i class="fas fa-expand"></i>
-          <span class="hidden sm:inline">เต็มจอ (F11)</span>
         </button>
       </div>
     </div>
 
-    <!-- Category Tabs Navigation -->
-    <div class="mt-3 flex items-center justify-between gap-2 overflow-x-auto pb-1">
+    <!-- Category Tabs Navigation Bar (ตามลำดับการประกาศผลบนเวที) -->
+    <div class="mt-2.5 flex items-center justify-between gap-2 overflow-x-auto pb-1 text-xs">
       <div class="flex items-center gap-2">
-        <button onclick="setCategoryFilter('all')" id="cat-tab-all"
-          class="cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-black transition-all flex items-center gap-2 bg-[#FFDE42] text-[#050A30] shadow-[0_0_15px_rgba(255,222,66,0.4)]">
-          <i class="fas fa-crown text-amber-500"></i> TOP Popular Vote แต่ละประเภท
+        <button onclick="setCategoryIndex(0)" id="cat-tab-jumbo"
+          class="cat-tab px-3.5 py-2 rounded-2xl font-black transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#050A30] shadow-[0_0_15px_rgba(255,222,66,0.4)]">
+          <span>1.</span> <i class="fas fa-gem text-amber-500"></i> Miss Jumbo
         </button>
-        <button onclick="setCategoryFilter('miss')" id="cat-tab-miss"
-          class="cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 glass-panel text-gray-300 hover:text-white">
-          <i class="fas fa-female text-pink-400"></i> Miss RMUTK
+        <button onclick="setCategoryIndex(1)" id="cat-tab-queen"
+          class="cat-tab px-3.5 py-2 rounded-2xl font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
+          <span>2.</span> <i class="fas fa-crown text-purple-400"></i> Miss Queen
         </button>
-        <button onclick="setCategoryFilter('mister')" id="cat-tab-mister"
-          class="cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 glass-panel text-gray-300 hover:text-white">
-          <i class="fas fa-male text-blue-400"></i> Mister RMUTK
+        <button onclick="setCategoryIndex(2)" id="cat-tab-mister"
+          class="cat-tab px-3.5 py-2 rounded-2xl font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
+          <span>3.</span> <i class="fas fa-male text-blue-400"></i> Mister
         </button>
-        <button onclick="setCategoryFilter('queen')" id="cat-tab-queen"
-          class="cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 glass-panel text-gray-300 hover:text-white">
-          <i class="fas fa-crown text-purple-400"></i> Miss Queen RMUTK
+        <button onclick="setCategoryIndex(3)" id="cat-tab-miss"
+          class="cat-tab px-3.5 py-2 rounded-2xl font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white">
+          <span>4.</span> <i class="fas fa-female text-pink-400"></i> Miss
         </button>
-        <button onclick="setCategoryFilter('jumbo')" id="cat-tab-jumbo"
-          class="cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 glass-panel text-gray-300 hover:text-white">
-          <i class="fas fa-gem text-amber-400"></i> Miss Jumbo RMUTK
+        <button onclick="setCategoryIndex(4)" id="cat-tab-all"
+          class="cat-tab px-4 py-2 rounded-2xl font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white border border-[#FFDE42]/40">
+          <i class="fas fa-award text-yellow-300"></i> 🏆 สรุปรวม 4 ประเภท
         </button>
       </div>
 
-      <!-- Total Votes Stat -->
-      <div class="shrink-0 px-4 py-1.5 rounded-2xl bg-rose-950/40 border border-rose-500/30 flex items-center gap-2">
-        <i class="fas fa-vote-yea text-rose-400 text-sm"></i>
-        <div class="text-[11px] text-gray-300">
-          คะแนนโหวตรวมทั้งหมด: <span id="stat-total-votes" class="font-black text-rose-300 text-sm">0</span> คะแนน
-        </div>
+      <!-- Keyboard hint for operator -->
+      <div class="hidden lg:flex items-center gap-2 text-[11px] text-gray-400 shrink-0">
+        <span class="px-1.5 py-0.5 rounded bg-black/40 border border-white/20 text-gray-300">Space</span> เฉลย
+        <span class="px-1.5 py-0.5 rounded bg-black/40 border border-white/20 text-gray-300">← / →</span> สลับประเภท
+        <span class="px-1.5 py-0.5 rounded bg-black/40 border border-white/20 text-gray-300">C</span> พลุ
       </div>
     </div>
   </header>
 
-  <!-- MAIN MONITOR DISPLAY CONTAINER -->
-  <main id="monitor-content" class="flex-1 w-full my-auto transition-all duration-500">
-    <!-- Content injected dynamically via JavaScript -->
+  <!-- MAIN CEREMONY STAGE CONTAINER -->
+  <main id="ceremony-content" class="flex-1 w-full my-auto transition-all duration-500 flex flex-col justify-center">
     <div class="flex flex-col items-center justify-center py-24 text-gray-400">
       <i class="fas fa-spinner fa-spin text-4xl text-[#FFDE42] mb-3"></i>
-      <p class="text-sm font-semibold tracking-wide">กำลังเชื่อมต่อฐานข้อมูลคะแนนแบบเรียลไทม์...</p>
+      <p class="text-sm font-semibold tracking-wide">กำลังเตรียมเวทีประกาศผลรางวัล Popular Vote...</p>
     </div>
   </main>
 
-  <!-- FOOTER: Stage Status & Credit -->
-  <footer class="mt-4 pt-3 border-t border-[#5478FF]/20 flex flex-wrap items-center justify-between text-[11px] text-gray-400 gap-2">
+  <!-- FOOTER: Stage Status -->
+  <footer class="mt-3 pt-2.5 border-t border-[#5478FF]/20 flex flex-wrap items-center justify-between text-[11px] text-gray-400 gap-2">
     <div class="flex items-center gap-3">
       <span class="inline-flex items-center gap-1.5">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span id="connection-status" class="text-emerald-400 font-semibold">ระบบเชื่อมต่อสด (Auto-Sync ทุก 2.5 วินาที)</span>
+        <span class="text-emerald-400 font-semibold">ระบบเชื่อมต่อสด (Auto-Sync ทุก 2.5 วินาที)</span>
       </span>
       <span>•</span>
-      <span>อัปเดตล่าสุด: <span id="last-updated" class="text-gray-300 font-mono">--:--:--</span></span>
+      <span>อัปเดต: <span id="last-updated" class="text-gray-300 font-mono">--:--:--</span></span>
     </div>
 
     <div class="flex items-center gap-2 font-medium">
       <span class="text-[#FFDE42] font-bold">RMUTK FRESHY 2026</span>
       <span>|</span>
-      <span>ระบบตัดสินและแสดงผลการประกวดอย่างเป็นทางการ</span>
+      <span>เวทีประกาศผลรางวัล Popular Vote อย่างเป็นทางการ</span>
     </div>
   </footer>
 
-  <!-- SCRIPT LOGIC -->
+  <!-- SCRIPT -->
   <script>
-    // ========================================================
+    // ==========================================
     // State & Configurations
-    // ========================================================
+    // ==========================================
     let summaryData = null;
-    let allContestants = [];
-    let currentCategory = 'all'; // 'all', 'miss', 'mister', 'queen', 'jumbo'
-    let previousScores = {}; // Map of contestantId -> last score for animation
-    let isBlindMode = false; // Conceal scores for stage suspense
-    let isAutoLoop = false;
-    let loopInterval = null;
-    let loopTimer = null;
-    let loopSecondsRemaining = 12;
-    const LOOP_DURATION_SEC = 12;
-    let isSoundEnabled = false;
+    let previousScores = {};
+    let isSoundEnabled = true;
     let audioCtx = null;
     let pollingTimer = null;
     const POLLING_INTERVAL_MS = 2500;
 
-    const CATEGORIES_CONFIG = {
-      miss: { name: 'Miss RMUTK', icon: 'fa-female', color: 'pink', badge: 'bg-pink-500/20 text-pink-300 border-pink-500/40' },
-      mister: { name: 'Mister RMUTK', icon: 'fa-male', color: 'blue', badge: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
-      queen: { name: 'Miss Queen RMUTK', icon: 'fa-crown', color: 'purple', badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
-      jumbo: { name: 'Miss Jumbo RMUTK', icon: 'fa-gem', color: 'amber', badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40' }
+    // Ordered sequence of categories for ceremony announcement:
+    // 1. Miss Jumbo -> 2. Miss Queen -> 3. Mister -> 4. Miss -> 5. All Summary
+    const CEREMONY_SEQUENCE = ['jumbo', 'queen', 'mister', 'miss', 'all'];
+    let currentSequenceIndex = 0; // Starts at Miss Jumbo (index 0)
+
+    // Track reveal status per category (false = mystery silhouette, true = winner revealed)
+    const categoryRevealedState = {
+      jumbo: false,
+      queen: false,
+      mister: false,
+      miss: false,
+      all: true // all overview is always revealed
     };
 
-    const LOOP_CATEGORIES = ['all', 'miss', 'mister', 'queen', 'jumbo'];
+    const CATEGORIES_CONFIG = {
+      jumbo: { name: 'Miss Jumbo RMUTK', short: 'Miss Jumbo', icon: 'fa-gem', color: 'amber', badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40', titleColor: 'text-amber-400' },
+      queen: { name: 'Miss Queen RMUTK', short: 'Miss Queen', icon: 'fa-crown', color: 'purple', badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40', titleColor: 'text-purple-400' },
+      mister: { name: 'Mister RMUTK', short: 'Mister', icon: 'fa-male', color: 'blue', badge: 'bg-blue-500/20 text-blue-300 border-blue-500/40', titleColor: 'text-blue-400' },
+      miss: { name: 'Miss RMUTK', short: 'Miss', icon: 'fa-female', color: 'pink', badge: 'bg-pink-500/20 text-pink-300 border-pink-500/40', titleColor: 'text-pink-400' }
+    };
 
-    // ========================================================
-    // Placeholder SVG Generator
-    // ========================================================
     function getPlaceholderSvgUri(text) {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
         <rect width="100%" height="100%" fill="#091054"/>
@@ -305,181 +276,202 @@
       return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     }
 
-    // ========================================================
-    // Web Audio Synthesizer (Zero External Audio File Needed)
-    // ========================================================
-    function playChime() {
+    // ==========================================
+    // Confetti Fireworks (Canvas Particle Burst)
+    // ==========================================
+    function launchConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#FFDE42', '#F59E0B', '#F43F5E', '#EC4899', '#3B82F6', '#10B981', '#FFFFFF', '#FFD700'];
+
+      for (let i = 0; i < 200; i++) {
+        particles.push({
+          x: canvas.width / 2 + (Math.random() - 0.5) * 300,
+          y: canvas.height * 0.55,
+          vx: (Math.random() - 0.5) * 28,
+          vy: -Math.random() * 22 - 9,
+          size: Math.random() * 9 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 16,
+          gravity: 0.55,
+          opacity: 1
+        });
+      }
+
+      let animationFrame;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let activeCount = 0;
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.gravity;
+          p.vx *= 0.98;
+          p.rotation += p.vRot;
+          if (p.y > canvas.height * 0.3) {
+            p.opacity -= 0.0075;
+          }
+
+          if (p.opacity > 0 && p.y < canvas.height + 50) {
+            activeCount++;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = Math.max(0, p.opacity);
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+            ctx.restore();
+          }
+        });
+
+        if (activeCount > 0) {
+          animationFrame = requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          cancelAnimationFrame(animationFrame);
+        }
+      }
+
+      animate();
+    }
+
+    // ==========================================
+    // Web Audio Synthesizer (Fanfare & Victory Chime)
+    // ==========================================
+    function playFanfare() {
       if (!isSoundEnabled) return;
       try {
-        if (!audioCtx) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
 
+        const notes = [
+          { f: 523.25, t: 0, d: 0.14 },    // C5
+          { f: 659.25, t: 0.15, d: 0.14 }, // E5
+          { f: 783.99, t: 0.30, d: 0.18 }, // G5
+          { f: 1046.50, t: 0.50, d: 0.8 }  // High C6
+        ];
         const now = audioCtx.currentTime;
-        const osc1 = audioCtx.createOscillator();
-        const osc2 = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc1.type = 'triangle';
-        osc1.frequency.setValueAtTime(587.33, now); // D5
-        osc1.frequency.exponentialRampToValueAtTime(880.00, now + 0.15); // A5
-
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(1174.66, now + 0.05); // D6
-
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-
-        osc1.connect(gain);
-        osc2.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc1.start(now);
-        osc2.start(now + 0.05);
-        osc1.stop(now + 0.6);
-        osc2.stop(now + 0.6);
-      } catch (e) {
-        // Audio error ignored
-      }
+        notes.forEach(n => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(n.f, now + n.t);
+          gain.gain.setValueAtTime(0.28, now + n.t);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.d);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + n.t);
+          osc.stop(now + n.t + n.d);
+        });
+      } catch (e) {}
     }
 
     function toggleSound() {
       isSoundEnabled = !isSoundEnabled;
       const icon = document.getElementById('sound-icon');
-      const btn = document.getElementById('btn-toggle-sound');
       if (isSoundEnabled) {
         icon.className = 'fas fa-volume-up text-[#FFDE42]';
-        btn.classList.add('border-[#FFDE42]');
-        playChime();
+        playFanfare();
       } else {
-        icon.className = 'fas fa-volume-mute';
-        btn.classList.remove('border-[#FFDE42]');
+        icon.className = 'fas fa-volume-mute text-gray-500';
       }
     }
 
-    // ========================================================
-    // Fullscreen Handling
-    // ========================================================
     function toggleFullScreen() {
       if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
-          console.error(`Error attempting to enable fullscreen: ${err.message}`);
-        });
+        document.documentElement.requestFullscreen().catch(() => {});
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    // ==========================================
+    // Sequence Stepper Navigation (ก่อนหน้า - ถัดไป)
+    // ==========================================
+    function setCategoryIndex(idx) {
+      currentSequenceIndex = Math.max(0, Math.min(CEREMONY_SEQUENCE.length - 1, idx));
+      updateTabStyles();
+      updateStepperUI();
+      renderCeremonyDisplay();
+    }
+
+    function stepCategory(direction) {
+      const newIdx = currentSequenceIndex + direction;
+      if (newIdx >= 0 && newIdx < CEREMONY_SEQUENCE.length) {
+        setCategoryIndex(newIdx);
+      }
+    }
+
+    function updateStepperUI() {
+      const catKey = CEREMONY_SEQUENCE[currentSequenceIndex];
+      const ind = document.getElementById('step-indicator');
+      const revBtn = document.getElementById('btn-toggle-reveal');
+      const revLabel = document.getElementById('reveal-btn-label');
+      const revIcon = document.getElementById('reveal-icon');
+
+      if (catKey === 'all') {
+        if (ind) ind.innerText = '5/5 • สรุปรวม 4 ประเภท';
+        if (revBtn) revBtn.classList.add('hidden');
+      } else {
+        const config = CATEGORIES_CONFIG[catKey];
+        if (ind) ind.innerText = `${currentSequenceIndex + 1}/5 • ${config.short}`;
+        if (revBtn) revBtn.classList.remove('hidden');
+
+        const isRev = categoryRevealedState[catKey];
+        if (isRev) {
+          revLabel.innerText = 'ซ่อนคะแนน (ปิดม่าน)';
+          revIcon.className = 'fas fa-eye-slash text-gray-200';
+          revBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-gray-700 hover:bg-gray-600 text-gray-200 active:scale-95';
+        } else {
+          revLabel.innerText = 'เฉลยผู้ชนะ (Space)';
+          revIcon.className = 'fas fa-magic text-yellow-300';
+          revBtn.className = 'px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white shadow-lg active:scale-95 animate-pulse';
         }
       }
     }
 
-    // ========================================================
-    // Blind Mode (ซ่อน/เฉลยคะแนน)
-    // ========================================================
-    function toggleBlindMode() {
-      isBlindMode = !isBlindMode;
-      const label = document.getElementById('blind-label');
-      const icon = document.getElementById('blind-icon');
-      const btn = document.getElementById('btn-toggle-blind');
-
-      if (isBlindMode) {
-        label.innerText = 'เปิดเผยคะแนน (Reveal)';
-        icon.className = 'fas fa-eye text-[#FFDE42]';
-        btn.classList.add('border-[#FFDE42]', 'bg-amber-500/20');
-      } else {
-        label.innerText = 'ซ่อนคะแนน (Blind)';
-        icon.className = 'fas fa-eye-slash text-amber-400';
-        btn.classList.remove('border-[#FFDE42]', 'bg-amber-500/20');
-        playChime();
-      }
-      renderDisplay();
-    }
-
-    // ========================================================
-    // Auto Loop Controller
-    // ========================================================
-    function toggleAutoLoop() {
-      isAutoLoop = !isAutoLoop;
-      const label = document.getElementById('loop-label');
-      const ind = document.getElementById('loop-indicator');
-      const btn = document.getElementById('btn-toggle-loop');
-
-      if (isAutoLoop) {
-        label.innerText = 'ปิดวนลูป';
-        btn.classList.add('border-emerald-400', 'bg-emerald-500/20');
-        ind.classList.remove('hidden');
-        startLoopTimer();
-      } else {
-        label.innerText = 'เปิดวนลูป';
-        btn.classList.remove('border-emerald-400', 'bg-emerald-500/20');
-        ind.classList.add('hidden');
-        stopLoopTimer();
-      }
-    }
-
-    function startLoopTimer() {
-      stopLoopTimer();
-      loopSecondsRemaining = LOOP_DURATION_SEC;
-      updateLoopUI();
-
-      loopTimer = setInterval(() => {
-        loopSecondsRemaining--;
-        if (loopSecondsRemaining <= 0) {
-          nextCategoryInLoop();
-          loopSecondsRemaining = LOOP_DURATION_SEC;
-        }
-        updateLoopUI();
-      }, 1000);
-    }
-
-    function stopLoopTimer() {
-      if (loopTimer) clearInterval(loopTimer);
-      loopTimer = null;
-    }
-
-    function updateLoopUI() {
-      const secEl = document.getElementById('loop-seconds');
-      const progEl = document.getElementById('loop-progress');
-      if (secEl) secEl.innerText = loopSecondsRemaining;
-      if (progEl) {
-        const pct = Math.max(0, (loopSecondsRemaining / LOOP_DURATION_SEC) * 100);
-        progEl.style.width = pct + '%';
-      }
-    }
-
-    function nextCategoryInLoop() {
-      const idx = LOOP_CATEGORIES.indexOf(currentCategory);
-      const nextIdx = (idx + 1) % LOOP_CATEGORIES.length;
-      setCategoryFilter(LOOP_CATEGORIES[nextIdx], false);
-    }
-
-    // ========================================================
-    // Category Switcher
-    // ========================================================
-    function setCategoryFilter(cat, resetTimer = true) {
-      currentCategory = cat;
+    function updateTabStyles() {
       document.querySelectorAll('.cat-tab').forEach(b => {
-        b.className = 'cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 glass-panel text-gray-300 hover:text-white';
+        b.className = 'cat-tab px-3.5 py-2 rounded-2xl font-bold transition-all flex items-center gap-1.5 glass-panel text-gray-300 hover:text-white';
       });
 
-      const activeBtn = document.getElementById(`cat-tab-${cat}`);
+      const catKey = CEREMONY_SEQUENCE[currentSequenceIndex];
+      const activeBtn = document.getElementById(`cat-tab-${catKey}`);
       if (activeBtn) {
-        activeBtn.className = 'cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-black transition-all flex items-center gap-2 bg-[#FFDE42] text-[#050A30] shadow-[0_0_15px_rgba(255,222,66,0.4)]';
+        activeBtn.className = 'cat-tab px-4 py-2 rounded-2xl font-black transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#050A30] shadow-[0_0_15px_rgba(255,222,66,0.5)]';
       }
-
-      if (isAutoLoop && resetTimer) {
-        loopSecondsRemaining = LOOP_DURATION_SEC;
-        updateLoopUI();
-      }
-
-      renderDisplay();
     }
 
-    // ========================================================
-    // Data Fetching & Real-time Synchronization
-    // ========================================================
+    // ==========================================
+    // Reveal / Suspense Controller
+    // ==========================================
+    function toggleCurrentCategoryReveal() {
+      const catKey = CEREMONY_SEQUENCE[currentSequenceIndex];
+      if (catKey === 'all') return;
+
+      const currentRev = categoryRevealedState[catKey];
+      categoryRevealedState[catKey] = !currentRev;
+
+      if (!currentRev) {
+        // Trigger celebration fanfare and confetti burst on reveal!
+        launchConfetti();
+        playFanfare();
+      }
+
+      updateStepperUI();
+      renderCeremonyDisplay();
+    }
+
+    // ==========================================
+    // Data Fetching & Sync
+    // ==========================================
     async function fetchLiveData() {
       try {
         const res = await fetch('/api/summary?t=' + Date.now());
@@ -487,254 +479,192 @@
         const data = await res.json();
         summaryData = data;
 
-        // Check if any score updated for animation & chime
-        let scoreChanged = false;
-        let totalVotes = 0;
-
-        for (const catKey in data.categories || {}) {
-          (data.categories[catKey] || []).forEach(c => {
-            const popScore = c.rounds?.popular?.total || 0;
-            totalVotes += popScore;
-            if (previousScores[c.id] !== undefined && popScore > previousScores[c.id]) {
-              scoreChanged = true;
-            }
-            previousScores[c.id] = popScore;
-          });
-        }
-
-        document.getElementById('stat-total-votes').innerText = totalVotes.toLocaleString();
         document.getElementById('last-updated').innerText = new Date().toLocaleTimeString('th-TH');
-        document.getElementById('connection-status').innerText = 'ระบบเชื่อมต่อสด (Auto-Sync ทุก 2.5 วินาที)';
-        document.getElementById('connection-status').className = 'text-emerald-400 font-semibold';
-
-        if (scoreChanged) {
-          playChime();
-        }
-
-        renderDisplay();
+        renderCeremonyDisplay();
       } catch (err) {
-        console.error('Fetch live data error:', err);
-        const statusEl = document.getElementById('connection-status');
-        if (statusEl) {
-          statusEl.innerText = 'กำลังพยายามเชื่อมต่อใหม่...';
-          statusEl.className = 'text-amber-400 font-semibold';
-        }
+        console.error('Fetch error:', err);
       }
     }
 
-    // ========================================================
-    // Render Display Dispatcher
-    // ========================================================
-    function renderDisplay() {
-      const container = document.getElementById('monitor-content');
+    // ==========================================
+    // Render Dispatcher
+    // ==========================================
+    function renderCeremonyDisplay() {
+      const container = document.getElementById('ceremony-content');
       if (!container) return;
 
       if (!summaryData || !summaryData.categories) {
         container.innerHTML = `
           <div class="flex flex-col items-center justify-center py-24 text-gray-400">
             <i class="fas fa-spinner fa-spin text-4xl text-[#FFDE42] mb-3"></i>
-            <p class="text-sm font-semibold tracking-wide">กำลังดาวน์โหลดข้อมูลคะแนน...</p>
+            <p class="text-sm font-semibold tracking-wide">กำลังเชื่อมต่อฐานข้อมูล...</p>
           </div>`;
         return;
       }
 
-      if (currentCategory === 'all') {
+      const activeKey = CEREMONY_SEQUENCE[currentSequenceIndex];
+
+      if (activeKey === 'all') {
         renderAllCategoriesView(container);
       } else {
-        renderSingleCategoryView(container, currentCategory);
+        renderSingleCeremonySpotlight(container, activeKey);
       }
     }
 
-    // ========================================================
-    // View 1: Single Category (Podium TOP 3 + Remaining List)
-    // ========================================================
-    function renderSingleCategoryView(container, catKey) {
-      const config = CATEGORIES_CONFIG[catKey] || { name: catKey, icon: 'fa-star' };
+    // ==========================================
+    // 🌟 View 1: Spotlight Single Category Ceremony (ทีละประเภท)
+    // ==========================================
+    function renderSingleCeremonySpotlight(container, catKey) {
+      const config = CATEGORIES_CONFIG[catKey];
       const rawList = summaryData.categories[catKey] || [];
-
-      // Sort by Popular Vote score descending (resigned contestants to the bottom)
       const list = [...rawList].sort((a, b) => {
         if (a.status === 'resigned' && b.status !== 'resigned') return 1;
         if (b.status === 'resigned' && a.status !== 'resigned') return -1;
-        const scoreA = a.rounds?.popular?.total || 0;
-        const scoreB = b.rounds?.popular?.total || 0;
-        return scoreB - scoreA;
+        return (b.rounds?.popular?.total || 0) - (a.rounds?.popular?.total || 0);
       });
 
-      if (list.length === 0) {
-        container.innerHTML = `
-          <div class="glass-panel p-12 rounded-3xl text-center text-gray-400">
-            <i class="fas fa-users-slash text-4xl mb-3 text-gray-500"></i>
-            <p>ยังไม่มีข้อมูลผู้เข้าประกวดในหมวดนี้</p>
-          </div>`;
-        return;
-      }
+      const leader = list[0];
+      const runner1 = list[1];
+      const runner2 = list[2];
+      const isRevealed = categoryRevealedState[catKey];
 
-      const top1 = list[0];
-      const top2 = list[1];
-      const top3 = list[2];
-      const others = list.slice(3);
-
-      const maxScore = Math.max(1, list[0]?.rounds?.popular?.total || 1);
+      // Next category name for preview
+      const nextKey = CEREMONY_SEQUENCE[currentSequenceIndex + 1];
+      const nextLabel = nextKey === 'all' ? 'สรุปรวม 4 ประเภท' : (CATEGORIES_CONFIG[nextKey]?.short || '');
 
       container.innerHTML = `
-        <div class="space-y-6 animate-fadeIn">
-          <!-- Category Stage Header -->
-          <div class="text-center mb-2">
-            <span class="inline-flex items-center gap-2 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${config.badge}">
-              <i class="fas ${config.icon}"></i> ${config.name}
+        <div class="max-w-4xl mx-auto w-full space-y-4">
+
+          <!-- Category Banner Above Card -->
+          <div class="text-center">
+            <span class="inline-flex items-center gap-2 px-5 py-1.5 rounded-full text-xs md:text-sm font-black uppercase tracking-wider ${config.badge} shadow-lg">
+              <i class="fas ${config.icon}"></i> การประกาศผลรางวัล: ${config.name}
             </span>
-            <h2 class="text-2xl md:text-3xl font-black text-[#FFDE42] gold-glow mt-1">
-              ผู้นำคะแนน POPULAR VOTE
-            </h2>
           </div>
 
-          <!-- TOP 3 PODIUM SECTION -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-end max-w-5xl mx-auto pt-4">
-            <!-- 2nd Place (Silver) -->
-            ${top2 ? renderPodiumCard(top2, 2, 'podium-silver', 'text-slate-300', '🥈 อันดับ 2', 'min-h-[440px] md:min-h-[470px]', maxScore) : '<div class="hidden md:block"></div>'}
+          <!-- MAIN SPOTLIGHT STAGE CARD -->
+          <div class="glass-panel rounded-3xl p-6 md:p-8 border-2 border-[#FFDE42] shadow-[0_0_60px_rgba(255,222,66,0.3)] relative overflow-hidden text-center transition-all">
 
-            <!-- 1st Place (Gold) -->
-            ${top1 ? renderPodiumCard(top1, 1, 'podium-gold', 'text-[#FFDE42]', '👑 ผู้นำอันดับ 1', 'min-h-[480px] md:min-h-[520px] md:-translate-y-4', maxScore) : '<div></div>'}
+            ${!isRevealed ? `
+              <!-- ============================================== -->
+              <!-- STATE A: MYSTERY / SUSPENSE (ก่อนเฉลย) -->
+              <!-- ============================================== -->
+              <div class="py-8 md:py-12 flex flex-col items-center justify-center animate-fadeIn">
+                <!-- Glowing Mystery Aura -->
+                <div class="relative w-44 h-56 md:w-52 md:h-64 rounded-3xl border-2 border-dashed border-[#FFDE42]/70 bg-gradient-to-b from-[#111FA2]/80 to-[#050A30] flex flex-col items-center justify-center shadow-[0_0_40px_rgba(255,222,66,0.35)] animate-mystery mb-5">
+                  <div class="w-20 h-20 rounded-full bg-[#FFDE42]/20 flex items-center justify-center text-4xl text-[#FFDE42] mb-2 shadow-inner">
+                    <i class="fas fa-question"></i>
+                  </div>
+                  <div class="text-xs uppercase font-black tracking-widest text-[#FFDE42]">MYSTERY WINNER</div>
+                </div>
 
-            <!-- 3rd Place (Bronze) -->
-            ${top3 ? renderPodiumCard(top3, 3, 'podium-bronze', 'text-amber-400', '🥉 อันดับ 3', 'min-h-[420px] md:min-h-[450px]', maxScore) : '<div class="hidden md:block"></div>'}
-          </div>
+                <div class="text-xl md:text-2xl font-black text-white gold-glow mb-2">
+                  ✦ ผู้ได้รับรางวัลชนะเลิศ POPULAR VOTE ✦
+                </div>
+                <div class="text-sm md:text-base font-bold ${config.titleColor} mb-6">
+                  ${config.name}
+                </div>
 
-          <!-- OTHERS RANKINGS SECTION (อันดับ 4 เป็นต้นไป) -->
-          ${others.length > 0 ? `
-            <div class="mt-8 pt-6 border-t border-[#5478FF]/30">
-              <h3 class="text-xs font-bold text-gray-300 mb-3 flex items-center gap-2 tracking-wider uppercase">
-                <i class="fas fa-list-ol text-[#FFDE42]"></i> ผู้เข้าประกวดอันดับถัดไป (อันดับ 4 - ${list.length})
-              </h3>
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                ${others.map((c, idx) => renderRowCard(c, idx + 4, maxScore)).join('')}
+                <!-- Big Call-to-Action Reveal Button -->
+                <button type="button" onclick="toggleCurrentCategoryReveal()"
+                  class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#050A30] font-black text-sm md:text-base shadow-[0_0_30px_rgba(255,222,66,0.7)] hover:scale-105 active:scale-95 transition flex items-center gap-2">
+                  <i class="fas fa-magic text-rose-600"></i>
+                  <span>กดเฉลยผู้ชนะรางวัลบนเวที (Spacebar)</span>
+                </button>
               </div>
-            </div>
-          ` : ''}
-        </div>
-      `;
-    }
+            ` : `
+              <!-- ============================================== -->
+              <!-- STATE B: REVEALED / CELEBRATION (เปิดม่านเฉลย) -->
+              <!-- ============================================== -->
+              ${leader ? `
+                <div class="animate-pop-in flex flex-col items-center">
+                  <!-- Crown Badge -->
+                  <div class="inline-flex items-center gap-2 px-5 py-1 rounded-full bg-[#050A30] border-2 border-[#FFDE42] text-xs md:text-sm font-black text-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.5)] mb-3">
+                    <i class="fas fa-crown text-amber-300"></i>
+                    <span>THE WINNER • POPULAR VOTE</span>
+                  </div>
 
-    // ========================================================
-    // Component: Podium Card (Top 1, 2, 3)
-    // ========================================================
-    function renderPodiumCard(c, rank, borderClass, accentColor, rankTitle, heightClass, maxScore) {
-      const isResigned = c.status === 'resigned';
-      const popScore = c.rounds?.popular?.total || 0;
-      const pct = Math.min(100, Math.round((popScore / maxScore) * 100));
-      const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
-      const displayScore = isBlindMode ? '???' : popScore.toLocaleString();
-      const isFirst = rank === 1;
+                  <!-- Giant Winner Photo with Face Focus -->
+                  <div class="relative w-48 h-64 md:w-56 md:h-72 mx-auto mb-4 rounded-3xl overflow-hidden border-4 border-[#FFDE42] shadow-[0_0_50px_rgba(255,222,66,0.6)] bg-[#050A30]">
+                    <img src="/api/contestants/${encodeURIComponent(leader.id)}/image" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${leader.id}');"
+                      class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      style="object-position: center 10%;">
+                    <span class="absolute bottom-2 right-2 px-3.5 py-1 rounded-xl bg-[#050A30]/90 border-2 border-[#FFDE42] text-sm md:text-base font-black text-[#FFDE42] shadow-xl">
+                      ${leader.id}
+                    </span>
+                  </div>
 
-      return `
-        <div class="relative glass-panel rounded-3xl p-5 flex flex-col justify-between text-center transition-all duration-500 hover:scale-[1.02] ${borderClass} ${heightClass}">
-          <!-- Rank Badge Top Center -->
-          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-0.5 rounded-full bg-[#050A30] border-2 border-current ${accentColor} text-xs font-black tracking-wider shadow-lg flex items-center gap-1.5 whitespace-nowrap z-10">
-            ${rankTitle}
+                  <!-- Contestant Names -->
+                  <h2 class="text-2xl md:text-3xl font-black text-white tracking-wide">${leader.name}</h2>
+                  ${leader.nickname ? `<div class="text-sm md:text-base text-amber-300 font-bold mt-0.5">"${leader.nickname}"</div>` : ''}
+                  <div class="text-xs md:text-sm text-gray-300 mt-1">${leader.faculty || ''}</div>
+
+                  <!-- Huge Score Display -->
+                  <div class="mt-5 bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/95 to-[#111FA2]/90 px-8 py-3.5 rounded-2xl border-2 border-[#FFDE42]/60 shadow-[0_0_30px_rgba(255,222,66,0.35)] min-w-[280px]">
+                    <div class="text-[11px] uppercase font-bold tracking-widest text-rose-300 flex items-center justify-center gap-1.5">
+                      <i class="fas fa-heart text-rose-400"></i> คะแนน POPULAR VOTE รวม
+                    </div>
+                    <div class="text-4xl md:text-5xl font-black text-[#FFDE42] gold-glow my-0.5 score-updated">
+                      ${(leader.rounds?.popular?.total || 0).toLocaleString()}
+                    </div>
+                    <div class="text-xs text-gray-400">คะแนนโหวตอย่างเป็นทางการ</div>
+                  </div>
+
+                  <!-- Runners-up Strip (รองอันดับ 1 และ 2) -->
+                  <div class="mt-6 pt-4 border-t border-white/10 w-full max-w-xl flex flex-wrap items-center justify-center gap-3 text-xs text-gray-300">
+                    ${runner1 ? `
+                      <div class="flex items-center gap-2 bg-[#091054]/80 px-3.5 py-1.5 rounded-xl border border-slate-400/30">
+                        <span class="text-slate-300 font-black">🥈 รองอันดับ 1:</span>
+                        <span class="text-white font-bold">${runner1.id} ${runner1.nickname || runner1.name}</span>
+                        <span class="font-black text-rose-300">(${(runner1.rounds?.popular?.total || 0).toLocaleString()} คะแนน)</span>
+                      </div>` : ''}
+                    ${runner2 ? `
+                      <div class="flex items-center gap-2 bg-[#091054]/80 px-3.5 py-1.5 rounded-xl border border-amber-500/30">
+                        <span class="text-amber-400 font-black">🥉 รองอันดับ 2:</span>
+                        <span class="text-white font-bold">${runner2.id} ${runner2.nickname || runner2.name}</span>
+                        <span class="font-black text-rose-300">(${(runner2.rounds?.popular?.total || 0).toLocaleString()} คะแนน)</span>
+                      </div>` : ''}
+                  </div>
+                </div>
+              ` : '<div class="py-16 text-center text-gray-400">ยังไม่มีข้อมูล</div>'}
+            `}
+
           </div>
 
-          <div class="pt-3">
-            <!-- Photo Avatar with face focus -->
-            <div class="relative inline-block mx-auto mb-3">
-              <div class="absolute -inset-1.5 rounded-2xl bg-current ${accentColor} blur-md opacity-40"></div>
-              <div class="relative ${isFirst ? 'w-32 h-44 md:w-40 md:h-52' : 'w-28 h-36 md:w-32 md:h-44'} rounded-2xl overflow-hidden border-2 border-current ${accentColor} shadow-2xl mx-auto bg-[#050A30]">
-                <img src="${img}" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');"
-                  class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                  style="object-position: center 10%;">
-              </div>
-              <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-lg bg-[#050A30] border border-current ${accentColor} text-xs font-black ${accentColor} shadow-md whitespace-nowrap">
-                ${c.id}
-              </span>
+          <!-- Bottom Navigation Shortcut Bar -->
+          <div class="flex items-center justify-between text-xs px-2 pt-1 text-gray-400">
+            <button type="button" onclick="stepCategory(-1)" class="hover:text-white flex items-center gap-1.5 font-bold">
+              <i class="fas fa-arrow-left text-[#FFDE42]"></i>
+              <span>ประเภทย้อนหลัง</span>
+            </button>
+            <div class="text-center text-[11px]">
+              คิวถัดไป: <span class="font-bold text-[#FFDE42]">${nextLabel}</span>
             </div>
-
-            <!-- Contestant Names -->
-            <div class="font-bold text-white text-base md:text-lg line-clamp-1 mt-1 ${isResigned ? 'line-through text-gray-400' : ''}">
-              ${c.name}
-            </div>
-            ${c.nickname ? `<div class="text-xs ${accentColor} font-semibold">"${c.nickname}"</div>` : ''}
-            <div class="text-[11px] text-gray-300 mt-0.5 line-clamp-1">${c.faculty || ''}</div>
-          </div>
-
-          <!-- Bottom: Score Display -->
-          <div class="mt-4 pt-3 border-t border-white/10">
-            <div class="text-[10px] uppercase font-bold tracking-widest text-rose-300 flex items-center justify-center gap-1">
-              <i class="fas fa-heart text-rose-400"></i> POPULAR VOTE
-            </div>
-            <div class="text-3xl md:text-4xl font-black ${accentColor} ${isBlindMode ? '' : 'gold-glow'} tracking-tight my-0.5 score-updated">
-              ${displayScore}
-            </div>
-            <div class="text-[10px] text-gray-400">คะแนนโหวต</div>
-
-            <!-- Visual Bar -->
-            ${!isBlindMode ? `
-              <div class="w-full bg-blue-950/80 rounded-full h-1.5 mt-2.5 overflow-hidden border border-white/10">
-                <div class="h-full bg-gradient-to-r from-rose-500 to-[#FFDE42] transition-all duration-700" style="width: ${pct}%;"></div>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      `;
-    }
-
-    // ========================================================
-    // Component: Row Card (อันดับ 4 เป็นต้นไป)
-    // ========================================================
-    function renderRowCard(c, rank, maxScore) {
-      const isResigned = c.status === 'resigned';
-      const popScore = c.rounds?.popular?.total || 0;
-      const pct = Math.min(100, Math.round((popScore / maxScore) * 100));
-      const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
-      const displayScore = isBlindMode ? '???' : popScore.toLocaleString();
-
-      return `
-        <div class="glass-panel p-3 rounded-2xl flex items-center justify-between gap-3 border border-[#5478FF]/30 hover:border-[#FFDE42]/50 transition-all">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <!-- Rank Badge -->
-            <div class="w-7 h-7 rounded-xl bg-blue-950/90 text-gray-300 text-xs font-black flex items-center justify-center shrink-0 border border-[#5478FF]/30">
-              #${rank}
-            </div>
-            <!-- Photo with Face Focus -->
-            <div class="w-12 h-14 rounded-xl overflow-hidden border border-[#5478FF]/50 shrink-0 bg-[#050A30] shadow-sm">
-              <img src="${img}" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');"
-                class="w-full h-full object-cover"
-                style="object-position: center 10%;">
-            </div>
-            <!-- Details -->
-            <div class="min-w-0">
-              <div class="flex items-center gap-1.5">
-                <span class="text-xs font-black text-[#FFDE42]">${c.id}</span>
-                <span class="text-xs font-bold text-white truncate ${isResigned ? 'line-through text-gray-400' : ''}">${c.name}</span>
-              </div>
-              <div class="text-[10px] text-gray-300 truncate">${c.nickname ? `"${c.nickname}" • ` : ''}${c.faculty || ''}</div>
-            </div>
-          </div>
-
-          <!-- Score -->
-          <div class="text-right shrink-0">
-            <div class="text-base font-black text-[#FFDE42]">${displayScore}</div>
-            <div class="text-[9px] text-rose-300">คะแนน</div>
+            <button type="button" onclick="stepCategory(1)" class="hover:text-white flex items-center gap-1.5 font-bold">
+              <span>ไปประเภทถัดไป</span>
+              <i class="fas fa-arrow-right text-[#FFDE42]"></i>
+            </button>
           </div>
         </div>
       `;
     }
 
-    // ========================================================
-    // View 2: All Categories Overview (TOP Popular Vote แต่ละประเภท)
-    // ========================================================
+    // ==========================================
+    // 🌟 View 2: All 4 Winners Grand Showcase (สรุปรวม 4 ประเภท)
+    // ==========================================
     function renderAllCategoriesView(container) {
-      const keys = ['miss', 'mister', 'queen', 'jumbo'];
+      const keys = ['jumbo', 'queen', 'mister', 'miss'];
 
       container.innerHTML = `
         <div class="space-y-4 animate-fadeIn">
-          <!-- Page Subtitle -->
+          <!-- Page Header -->
           <div class="text-center mb-1">
-            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-gradient-to-r from-[#FFDE42]/20 via-rose-500/20 to-[#FFDE42]/20 border border-[#FFDE42]/40 text-amber-300 shadow">
-              <i class="fas fa-crown text-[#FFDE42]"></i> ผู้นำคะแนน POPULAR VOTE แต่ละประเภท
+            <span class="inline-flex items-center gap-2 px-5 py-1.5 rounded-full text-xs md:text-sm font-black uppercase tracking-widest bg-gradient-to-r from-[#FFDE42]/20 via-rose-500/20 to-[#FFDE42]/20 border border-[#FFDE42]/50 text-amber-300 shadow">
+              <i class="fas fa-award text-[#FFDE42]"></i> 🏆 สรุปผลผู้ชนะ POPULAR VOTE ทั้ง 4 ประเภท
             </span>
           </div>
 
-          <!-- 4 Categories Top Showcase Cards Grid -->
+          <!-- 4 Categories Winners Grid -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 items-stretch">
             ${keys.map(catKey => {
               const config = CATEGORIES_CONFIG[catKey];
@@ -749,36 +679,33 @@
               const runner1 = list[1];
               const runner2 = list[2];
               const popScore = leader?.rounds?.popular?.total || 0;
-              const displayScore = isBlindMode ? '???' : popScore.toLocaleString();
 
               return `
                 <div class="relative glass-panel rounded-3xl p-5 flex flex-col justify-between border-2 border-[#FFDE42]/60 shadow-[0_0_35px_rgba(255,222,66,0.25)] hover:border-[#FFDE42] transition-all duration-500 hover:scale-[1.02]">
-                  <!-- Category Header Badge -->
-                  <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+                  <!-- Top Badge -->
+                  <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-2">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black uppercase ${config.badge}">
                       <i class="fas ${config.icon}"></i> ${config.name}
                     </span>
-                    <button type="button" onclick="setCategoryFilter('${catKey}')" class="text-[11px] text-[#FFDE42] hover:text-white font-bold flex items-center gap-1 underline">
-                      <span>อันดับทั้งหมด</span>
-                      <i class="fas fa-chevron-right text-[9px]"></i>
+                    <button type="button" onclick="setCategoryIndex(${CEREMONY_SEQUENCE.indexOf(catKey)})"
+                      class="text-[11px] text-[#FFDE42] hover:text-white font-bold underline">
+                      สปอตไลต์
                     </button>
                   </div>
 
-                  <!-- Leader Content -->
+                  <!-- Winner Content -->
                   ${leader ? `
                     <div class="text-center flex-1 flex flex-col justify-between">
                       <div>
-                        <!-- Crown Icon & Rank Badge -->
-                        <div class="inline-flex items-center gap-1.5 px-3.5 py-0.5 rounded-full bg-[#050A30] border border-[#FFDE42] text-[11px] font-black text-[#FFDE42] shadow mb-2.5">
-                          <span>👑 อันดับ 1</span>
-                          <span class="text-gray-400 font-normal">•</span>
-                          <span>TOP VOTE</span>
+                        <!-- Crown Badge -->
+                        <div class="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-[#050A30] border border-[#FFDE42] text-[10px] font-black text-[#FFDE42] shadow mb-2">
+                          👑 อันดับ 1 WINNER
                         </div>
 
-                        <!-- Large Photo with Face Focus -->
-                        <div class="relative w-36 h-48 md:w-40 md:h-52 mx-auto mb-3 rounded-2xl overflow-hidden border-2 border-[#FFDE42] shadow-[0_0_25px_rgba(255,222,66,0.4)] bg-[#050A30]">
+                        <!-- Large Photo -->
+                        <div class="relative w-36 h-48 md:w-40 md:h-52 mx-auto mb-2.5 rounded-2xl overflow-hidden border-2 border-[#FFDE42] shadow-[0_0_25px_rgba(255,222,66,0.4)] bg-[#050A30]">
                           <img src="/api/contestants/${encodeURIComponent(leader.id)}/image" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${leader.id}');"
-                            class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                            class="w-full h-full object-cover"
                             style="object-position: center 10%;">
                           <span class="absolute bottom-1.5 right-1.5 px-2.5 py-0.5 rounded-lg bg-[#050A30]/90 border border-[#FFDE42] text-xs font-black text-[#FFDE42] shadow">
                             ${leader.id}
@@ -786,39 +713,37 @@
                         </div>
 
                         <!-- Names -->
-                        <div class="text-base font-black text-white line-clamp-1">${leader.name}</div>
+                        <div class="text-sm font-black text-white line-clamp-1">${leader.name}</div>
                         ${leader.nickname ? `<div class="text-xs text-amber-300 font-bold mt-0.5">"${leader.nickname}"</div>` : ''}
-                        <div class="text-[11px] text-gray-300 line-clamp-1 mt-0.5">${leader.faculty || ''}</div>
+                        <div class="text-[10px] text-gray-300 line-clamp-1 mt-0.5">${leader.faculty || ''}</div>
                       </div>
 
                       <div>
-                        <!-- Score Box -->
-                        <div class="mt-4 pt-3 border-t border-white/10 bg-[#091054]/80 p-3 rounded-2xl border border-[#5478FF]/30">
-                          <div class="text-[10px] uppercase font-bold tracking-widest text-rose-300 flex items-center justify-center gap-1">
-                            <i class="fas fa-heart text-rose-400"></i> POPULAR VOTE
+                        <!-- Score Display -->
+                        <div class="mt-3.5 pt-2.5 border-t border-white/10 bg-[#091054]/80 p-2.5 rounded-2xl border border-[#5478FF]/30">
+                          <div class="text-[9px] uppercase font-bold text-rose-300">คะแนน POPULAR VOTE</div>
+                          <div class="text-2xl md:text-3xl font-black text-[#FFDE42] gold-glow my-0.5">
+                            ${popScore.toLocaleString()}
                           </div>
-                          <div class="text-3xl md:text-4xl font-black text-[#FFDE42] ${isBlindMode ? '' : 'gold-glow'} score-updated my-0.5">
-                            ${displayScore}
-                          </div>
-                          <div class="text-[10px] text-gray-400">คะแนนโหวต</div>
+                          <div class="text-[9px] text-gray-400">คะแนน</div>
                         </div>
 
                         <!-- Mini Runners-up Footer -->
-                        <div class="mt-3 pt-2 text-[10px] text-gray-300 flex flex-col gap-1 border-t border-white/5 text-left">
+                        <div class="mt-2.5 pt-2 text-[10px] text-gray-300 flex flex-col gap-1 border-t border-white/5 text-left">
                           ${runner1 ? `
                             <div class="flex items-center justify-between bg-black/25 px-2 py-1 rounded-lg">
                               <span class="truncate"><span class="text-slate-300 font-bold">#2</span> ${runner1.id} ${runner1.nickname || runner1.name}</span>
-                              <span class="font-bold text-rose-300 shrink-0">${isBlindMode ? '???' : (runner1.rounds?.popular?.total || 0).toLocaleString()}</span>
+                              <span class="font-bold text-rose-300 shrink-0">${(runner1.rounds?.popular?.total || 0).toLocaleString()}</span>
                             </div>` : ''}
                           ${runner2 ? `
                             <div class="flex items-center justify-between bg-black/25 px-2 py-1 rounded-lg">
                               <span class="truncate"><span class="text-amber-400 font-bold">#3</span> ${runner2.id} ${runner2.nickname || runner2.name}</span>
-                              <span class="font-bold text-rose-300 shrink-0">${isBlindMode ? '???' : (runner2.rounds?.popular?.total || 0).toLocaleString()}</span>
+                              <span class="font-bold text-rose-300 shrink-0">${(runner2.rounds?.popular?.total || 0).toLocaleString()}</span>
                             </div>` : ''}
                         </div>
                       </div>
                     </div>
-                  ` : '<div class="py-20 text-center text-xs text-gray-400">ยังไม่มีข้อมูล</div>'}
+                  ` : '<div class="py-16 text-center text-xs text-gray-400">ยังไม่มีข้อมูล</div>'}
                 </div>
               `;
             }).join('')}
@@ -827,21 +752,36 @@
       `;
     }
 
-    // ========================================================
-    // Live Clock & Initialization
-    // ========================================================
-    function updateClock() {
-      const now = new Date();
-      const clockEl = document.getElementById('live-clock');
-      if (clockEl) {
-        clockEl.innerText = now.toLocaleTimeString('th-TH');
-      }
-    }
+    // ==========================================
+    // Keyboard Shortcuts for Stage Operator
+    // ==========================================
+    document.addEventListener('keydown', (e) => {
+      // Ignore if user is inside an input box
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
+      if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        toggleCurrentCategoryReveal();
+      } else if (e.code === 'ArrowRight' || e.code === 'KeyN') {
+        e.preventDefault();
+        stepCategory(1);
+      } else if (e.code === 'ArrowLeft' || e.code === 'KeyP') {
+        e.preventDefault();
+        stepCategory(-1);
+      } else if (e.code === 'KeyC') {
+        launchConfetti();
+      } else if (e.code === 'KeyF') {
+        toggleFullScreen();
+      }
+    });
+
+    // ==========================================
+    // Init & Lifecycle
+    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
-      updateClock();
-      setInterval(updateClock, 1000);
       fetchLiveData();
+      updateTabStyles();
+      updateStepperUI();
       pollingTimer = setInterval(fetchLiveData, POLLING_INTERVAL_MS);
     });
   </script>
