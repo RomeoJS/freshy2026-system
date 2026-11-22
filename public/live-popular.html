@@ -76,6 +76,74 @@
       animation: pulseMystery 2.5s infinite ease-in-out;
     }
 
+    /* ==========================================
+       ROYAL STAGE CEREMONY EFFECTS (LUXURY GOLD)
+       ========================================== */
+    @keyframes rotateRays {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .god-rays {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 1000px;
+      height: 1000px;
+      background: repeating-conic-gradient(
+        from 0deg,
+        rgba(255, 222, 66, 0.08) 0deg 12deg,
+        transparent 12deg 24deg
+      );
+      border-radius: 50%;
+      pointer-events: none;
+      animation: rotateRays 45s linear infinite;
+      mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 20%, transparent 68%);
+      -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,0.85) 20%, transparent 68%);
+      z-index: 0;
+    }
+
+    @keyframes goldSheen {
+      0% { transform: translateX(-150%) skewX(-25deg); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateX(250%) skewX(-25deg); opacity: 0; }
+    }
+
+    .shimmer-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shimmer-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 222, 66, 0.15) 30%,
+        rgba(255, 255, 255, 0.45) 50%,
+        rgba(255, 222, 66, 0.15) 70%,
+        transparent 100%
+      );
+      pointer-events: none;
+      animation: goldSheen 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s forwards;
+      z-index: 20;
+    }
+
+    @keyframes starPulse {
+      0%, 100% { transform: scale(0.9) rotate(0deg); opacity: 0.7; }
+      50% { transform: scale(1.15) rotate(45deg); opacity: 1; filter: drop-shadow(0 0 10px rgba(255, 222, 66, 0.9)); }
+    }
+
+    .star-sparkle {
+      display: inline-block;
+      animation: starPulse 2.2s infinite ease-in-out;
+    }
+
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -88,8 +156,8 @@
 
 <body class="min-h-screen flex flex-col justify-between p-3 md:p-6 select-none relative">
 
-  <!-- CONFETTI CANVAS OVERLAY (SILENT FIREWORKS) -->
-  <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+  <!-- ROYAL CELEBRATION OVERLAY (GOLDEN STARDUST & SHOCKWAVE) -->
+  <canvas id="celebration-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
 
   <!-- ======================================================= -->
   <!-- 1. AUDIENCE BRAND HEADER (แสดงบนจอเวทีสำหรับผู้ชม: สะอาดตา ไม่มีปุ่มควบคุม) -->
@@ -165,9 +233,9 @@
         </button>
 
         <button type="button" onclick="adminTriggerConfetti()"
-          class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-white text-xs font-bold transition flex items-center gap-1.5 active:scale-95 shadow">
-          <i class="fas fa-glass-cheers text-yellow-300"></i>
-          <span>ยิงพลุ</span>
+          class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-[#050A30] text-xs font-black transition flex items-center gap-1.5 active:scale-95 shadow-[0_0_15px_rgba(255,222,66,0.35)]">
+          <i class="fas fa-sparkles text-amber-950"></i>
+          <span>✨ ฉลองเกียรติยศ</span>
         </button>
 
         <button type="button" onclick="toggleFullScreen()"
@@ -251,74 +319,200 @@
     }
 
     // ==========================================
-    // Confetti Fireworks (Silent Canvas Particle Burst)
+    // Royal Golden Celebration Effect (Luxury Gold Stardust, Diamond Sparkles & Shockwave)
     // ==========================================
-    let activeConfettiAnim = null;
-    function launchConfetti() {
-      const canvas = document.getElementById('confetti-canvas');
+    let activeCelebrationAnim = null;
+
+    function launchCelebrationEffect() {
+      const canvas = document.getElementById('celebration-canvas') || document.getElementById('confetti-canvas');
       if (!canvas) return;
-      if (activeConfettiAnim) {
-        cancelAnimationFrame(activeConfettiAnim);
-        activeConfettiAnim = null;
+
+      if (activeCelebrationAnim) {
+        cancelAnimationFrame(activeCelebrationAnim);
+        activeCelebrationAnim = null;
       }
+
       const ctx = canvas.getContext('2d');
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
-      const particles = [];
-      const colors = ['#FFDE42', '#F59E0B', '#F43F5E', '#EC4899', '#3B82F6', '#10B981', '#FFFFFF', '#FFD700'];
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height * 0.45;
 
-      for (let i = 0; i < 180; i++) {
-        particles.push({
-          x: canvas.width / 2 + (Math.random() - 0.5) * 300,
-          y: canvas.height * 0.55,
-          vx: (Math.random() - 0.5) * 26,
-          vy: -Math.random() * 22 - 8,
-          size: Math.random() * 8 + 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: Math.random() * 360,
-          vRot: (Math.random() - 0.5) * 14,
-          gravity: 0.55,
-          opacity: 1
+      // 1. Concentric Golden Shockwave Rings (คลื่นวงแหวนแสงสีทองขยายตัว)
+      const rings = [
+        { radius: 40, maxRadius: Math.max(canvas.width, canvas.height) * 0.65, speed: 18, opacity: 0.9, width: 6, delay: 0 },
+        { radius: 20, maxRadius: Math.max(canvas.width, canvas.height) * 0.55, speed: 14, opacity: 0.7, width: 4, delay: 12 },
+        { radius: 10, maxRadius: Math.max(canvas.width, canvas.height) * 0.45, speed: 10, opacity: 0.5, width: 3, delay: 24 }
+      ];
+
+      // 2. Diamond Glint Stars (✦ ประกายเพชรวิบวับลอยละล่อง)
+      const diamondStars = [];
+      const starColors = ['#FFFFFF', '#FFDE42', '#FFEAA7', '#FDE047', '#FFF3BF'];
+      for (let i = 0; i < 55; i++) {
+        diamondStars.push({
+          x: centerX + (Math.random() - 0.5) * Math.min(canvas.width * 0.7, 700),
+          y: centerY + (Math.random() - 0.5) * 350,
+          vx: (Math.random() - 0.5) * 2.2,
+          vy: -Math.random() * 2.8 - 0.6,
+          size: Math.random() * 11 + 6,
+          rotation: Math.random() * Math.PI,
+          vRot: (Math.random() - 0.5) * 0.05,
+          color: starColors[Math.floor(Math.random() * starColors.length)],
+          phase: Math.random() * Math.PI * 2,
+          twinkleSpeed: Math.random() * 0.08 + 0.04,
+          life: 1.0,
+          decay: Math.random() * 0.004 + 0.003
         });
+      }
+
+      // 3. Floating Golden Stardust / Champagne Bokeh Dust (ละอองดาวสีทองละมุน)
+      const stardust = [];
+      const goldTones = ['#FFDE42', '#F59E0B', '#FDE047', '#FFFFFF', '#D4AF37'];
+      for (let i = 0; i < 90; i++) {
+        stardust.push({
+          x: centerX + (Math.random() - 0.5) * Math.min(canvas.width * 0.85, 900),
+          y: centerY + Math.random() * 250 - 50,
+          vx: (Math.random() - 0.5) * 1.6,
+          vy: -Math.random() * 2.2 - 0.5,
+          radius: Math.random() * 4 + 2,
+          color: goldTones[Math.floor(Math.random() * goldTones.length)],
+          phase: Math.random() * Math.PI * 2,
+          life: 1.0,
+          decay: Math.random() * 0.005 + 0.0035
+        });
+      }
+
+      let frameCount = 0;
+
+      function drawDiamondGlint(x, y, size, rot, opacity, color) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot);
+        ctx.globalAlpha = Math.max(0, opacity);
+
+        // Subtle soft outer glow
+        ctx.shadowColor = '#FFDE42';
+        ctx.shadowBlur = 12;
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(0, -size);
+        ctx.quadraticCurveTo(0, 0, size * 0.85, 0);
+        ctx.quadraticCurveTo(0, 0, 0, size);
+        ctx.quadraticCurveTo(0, 0, -size * 0.85, 0);
+        ctx.quadraticCurveTo(0, 0, 0, -size);
+        ctx.closePath();
+        ctx.fill();
+
+        // Brilliant diamond white core
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 0.22, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function drawGlowingDust(x, y, radius, opacity, color) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, opacity);
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        grad.addColorStop(0, '#FFFFFF');
+        grad.addColorStop(0.35, color);
+        grad.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(x, y, radius * 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       }
 
       function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        let activeCount = 0;
+        frameCount++;
+        let activeElements = 0;
 
-        particles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += p.gravity;
-          p.vx *= 0.98;
-          p.rotation += p.vRot;
-          if (p.y > canvas.height * 0.3) {
-            p.opacity -= 0.008;
-          }
+        // Animate & Draw Shockwave Rings
+        rings.forEach(r => {
+          if (frameCount >= r.delay && r.opacity > 0.01) {
+            activeElements++;
+            r.radius += r.speed;
+            r.speed *= 0.965;
+            r.opacity -= 0.012;
 
-          if (p.opacity > 0 && p.y < canvas.height + 50) {
-            activeCount++;
-            ctx.save();
-            ctx.translate(p.x, p.y);
-            ctx.rotate((p.rotation * Math.PI) / 180);
-            ctx.fillStyle = p.color;
-            ctx.globalAlpha = Math.max(0, p.opacity);
-            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
-            ctx.restore();
+            if (r.opacity > 0) {
+              ctx.save();
+              ctx.globalAlpha = Math.max(0, r.opacity);
+              ctx.shadowColor = '#FFDE42';
+              ctx.shadowBlur = 20;
+
+              const ringGrad = ctx.createRadialGradient(centerX, centerY, Math.max(0, r.radius - 20), centerX, centerY, r.radius + 20);
+              ringGrad.addColorStop(0, 'transparent');
+              ringGrad.addColorStop(0.5, '#FFEAA7');
+              ringGrad.addColorStop(0.8, '#FFDE42');
+              ringGrad.addColorStop(1, 'transparent');
+
+              ctx.strokeStyle = ringGrad;
+              ctx.lineWidth = r.width;
+              ctx.beginPath();
+              ctx.arc(centerX, centerY, r.radius, 0, Math.PI * 2);
+              ctx.stroke();
+              ctx.restore();
+            }
           }
         });
 
-        if (activeCount > 0) {
-          activeConfettiAnim = requestAnimationFrame(animate);
+        // Animate & Draw Diamond Stars
+        diamondStars.forEach(s => {
+          if (s.life > 0.01) {
+            activeElements++;
+            s.x += s.vx;
+            s.y += s.vy;
+            s.vx *= 0.99;
+            s.vy *= 0.995;
+            s.rotation += s.vRot;
+            s.life -= s.decay;
+
+            const twinkle = (Math.sin(frameCount * s.twinkleSpeed + s.phase) + 1) * 0.35 + 0.3;
+            const currentAlpha = Math.max(0, s.life * twinkle);
+
+            drawDiamondGlint(s.x, s.y, s.size, s.rotation, currentAlpha, s.color);
+          }
+        });
+
+        // Animate & Draw Glowing Stardust
+        stardust.forEach(d => {
+          if (d.life > 0.01) {
+            activeElements++;
+            d.x += d.vx;
+            d.y += d.vy;
+            d.vx += (Math.random() - 0.5) * 0.15;
+            d.life -= d.decay;
+
+            const twinkle = (Math.sin(frameCount * 0.06 + d.phase) + 1) * 0.4 + 0.2;
+            const currentAlpha = Math.max(0, d.life * twinkle * 0.85);
+
+            drawGlowingDust(d.x, d.y, d.radius, currentAlpha, d.color);
+          }
+        });
+
+        if (activeElements > 0) {
+          activeCelebrationAnim = requestAnimationFrame(animate);
         } else {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          cancelAnimationFrame(activeConfettiAnim);
-          activeConfettiAnim = null;
+          cancelAnimationFrame(activeCelebrationAnim);
+          activeCelebrationAnim = null;
         }
       }
 
       animate();
+    }
+
+    // Alias for full compatibility
+    function launchConfetti() {
+      launchCelebrationEffect();
     }
 
     // ==========================================
@@ -465,13 +659,15 @@
           </div>
 
           <!-- MAIN SPOTLIGHT STAGE CARD -->
-          <div class="glass-panel rounded-3xl p-6 md:p-8 border-2 border-[#FFDE42] shadow-[0_0_60px_rgba(255,222,66,0.35)] relative overflow-hidden text-center transition-all">
+          <div class="glass-panel ${isRevealed ? 'shimmer-card' : ''} rounded-3xl p-6 md:p-8 border-2 border-[#FFDE42] shadow-[0_0_70px_rgba(255,222,66,0.4)] relative overflow-hidden text-center transition-all">
+
+            ${isRevealed ? '<div class="god-rays"></div>' : ''}
 
             ${!isRevealed ? `
               <!-- ============================================== -->
               <!-- STATE A: MYSTERY / SUSPENSE (รอประกาศผล) -->
               <!-- ============================================== -->
-              <div class="py-12 md:py-16 flex flex-col items-center justify-center animate-fadeIn">
+              <div class="py-12 md:py-16 flex flex-col items-center justify-center animate-fadeIn relative z-10">
                 <!-- Glowing Mystery Aura Box -->
                 <div class="relative w-48 h-60 md:w-56 md:h-72 rounded-3xl border-2 border-dashed border-[#FFDE42]/70 bg-gradient-to-b from-[#111FA2]/80 to-[#050A30] flex flex-col items-center justify-center shadow-[0_0_45px_rgba(255,222,66,0.4)] animate-mystery mb-6">
                   <div class="w-24 h-24 rounded-full bg-[#FFDE42]/20 flex items-center justify-center text-5xl text-[#FFDE42] mb-3 shadow-inner">
@@ -493,11 +689,13 @@
               <!-- STATE B: REVEALED WINNER (โชว์เฉพาะผู้ชนะอันดับ 1 เล่นอนิเมชันครั้งเดียวตอนเปิด) -->
               <!-- ============================================== -->
               ${leader ? `
-                <div class="animate-pop-in flex flex-col items-center py-2">
+                <div class="animate-pop-in flex flex-col items-center py-2 relative z-10">
                   <!-- Crown Badge -->
                   <div class="inline-flex items-center gap-2 px-6 py-1.5 rounded-full bg-[#050A30] border-2 border-[#FFDE42] text-xs md:text-sm font-black text-[#FFDE42] shadow-[0_0_25px_rgba(255,222,66,0.6)] mb-3">
+                    <span class="star-sparkle text-amber-300">✦</span>
                     <i class="fas fa-crown text-amber-300"></i>
                     <span>THE WINNER • POPULAR VOTE</span>
+                    <span class="star-sparkle text-amber-300">✦</span>
                   </div>
 
                   <!-- Giant Winner Photo with Face Focus -->

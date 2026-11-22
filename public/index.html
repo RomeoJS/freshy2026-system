@@ -435,9 +435,9 @@
               <span id="stage-remote-reveal-text">กดเฉลยผู้ชนะขึ้นจอ (Reveal)</span>
             </button>
             <button type="button" onclick="stageRemoteTriggerConfetti()"
-              class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-white font-bold text-xs transition shadow active:scale-95 flex items-center gap-1.5">
-              <i class="fas fa-glass-cheers text-yellow-300"></i>
-              <span>ยิงพลุฉลอง</span>
+              class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-[#050A30] font-black text-xs transition shadow active:scale-95 flex items-center gap-1.5 shadow-[0_0_15px_rgba(255,222,66,0.35)]">
+              <i class="fas fa-sparkles text-amber-950"></i>
+              <span>✨ ฉลองเกียรติยศ</span>
             </button>
             <a href="/live-popular" target="_blank"
               class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 font-bold text-xs transition active:scale-95 flex items-center gap-1.5"
@@ -6128,7 +6128,7 @@
 
       function stageRemoteTriggerConfetti() {
         sendStageRemoteCommand({ triggerConfetti: true });
-        showToast('ยิงพลุฉลองขึ้นจอเวทีเรียบร้อยแล้ว!');
+        showToast('เปิดเอฟเฟกต์ฉลองเกียรติยศ (Royal Golden Aura) ขึ้นจอเรียบร้อยแล้ว!');
       }
 
       // Initial sync on load
