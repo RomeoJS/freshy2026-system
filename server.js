@@ -635,7 +635,6 @@ async function calculateSummary() {
     const categoriesData = {};
 
     for (const [catKey, catName] of Object.entries(CATEGORIES)) {
-        if (catKey === 'congeniality') continue; // Miss Con แยกเฉพาะรอบความสามารถพิเศษ ไม่นำมารวมในรอบคัดเลือกวันจริง
         const catContestants = contestants.filter(c => c.category === catKey);
         const list = catContestants.map(c => {
             const contestantScores = scores.filter(s => s.contestant_id === c.id);
@@ -729,6 +728,7 @@ async function calculateSummary() {
 
     const allCalculatedContestants = [];
     for (const [catKey, catList] of Object.entries(categoriesData)) {
+        if (catKey === 'congeniality') continue; // Miss Con ไม่นำมารวมในรอบคัดเลือก TOP 5 วันจริง (เป็นรางวัลพิเศษเฉพาะตำแหน่ง)
         allCalculatedContestants.push(...catList);
     }
     allCalculatedContestants.sort((a, b) => b.preTotal - a.preTotal);

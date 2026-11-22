@@ -252,7 +252,7 @@
       </div>
     </div>
 
-    <!-- Category Filter Tabs (แถบหมวดหมู่ 5 ปุ่ม) -->
+    <!-- Category Filter Tabs (แถบหมวดหมู่ 6 ปุ่ม) -->
     <div class="flex items-center gap-2 overflow-x-auto mt-2 pb-1 no-scrollbar justify-center sm:justify-start">
       <button onclick="adminSelectCategory('jumbo')" id="tab-jumbo"
         class="cat-tab px-4 py-2 rounded-2xl text-xs font-black transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#050A30] shadow-[0_0_15px_rgba(255,222,66,0.4)]">
@@ -262,17 +262,21 @@
         class="cat-tab px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/30">
         <span>2.</span> <i class="fas fa-crown text-purple-400"></i> Miss Queen
       </button>
+      <button onclick="adminSelectCategory('congeniality')" id="tab-congeniality"
+        class="cat-tab px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/30">
+        <span>3.</span> <i class="fas fa-star text-emerald-400"></i> Miss Con
+      </button>
       <button onclick="adminSelectCategory('mister')" id="tab-mister"
         class="cat-tab px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/30">
-        <span>3.</span> <i class="fas fa-male text-blue-400"></i> Mister
+        <span>4.</span> <i class="fas fa-male text-blue-400"></i> Mister
       </button>
       <button onclick="adminSelectCategory('miss')" id="tab-miss"
         class="cat-tab px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/30">
-        <span>4.</span> <i class="fas fa-female text-pink-400"></i> Miss
+        <span>5.</span> <i class="fas fa-female text-pink-400"></i> Miss
       </button>
       <button onclick="adminSelectCategory('all')" id="tab-all"
         class="cat-tab px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/30">
-        <i class="fas fa-award text-amber-300"></i> 🏆 สรุปรวม 4 ประเภท
+        <i class="fas fa-award text-amber-300"></i> 🏆 สรุปรวม 5 ประเภท
       </button>
     </div>
   </header>
@@ -298,11 +302,12 @@
     let localRevealed = false;
     let isAdminActive = false;
 
-    const ORDER = ['jumbo', 'queen', 'mister', 'miss', 'all'];
+    const ORDER = ['jumbo', 'queen', 'congeniality', 'mister', 'miss', 'all'];
 
     const CATEGORIES_CONFIG = {
       jumbo: { name: 'Miss Jumbo RMUTK', icon: 'fa-gem', badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40', titleColor: 'text-amber-400' },
       queen: { name: 'Miss Queen RMUTK', icon: 'fa-crown', badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40', titleColor: 'text-purple-400' },
+      congeniality: { name: 'Miss Congeniality RMUTK (Miss Con)', icon: 'fa-star', badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40', titleColor: 'text-emerald-400' },
       mister: { name: 'Mister RMUTK', icon: 'fa-male', badge: 'bg-blue-500/20 text-blue-300 border-blue-500/40', titleColor: 'text-blue-400' },
       miss: { name: 'Miss RMUTK', icon: 'fa-female', badge: 'bg-pink-500/20 text-pink-300 border-pink-500/40', titleColor: 'text-pink-400' }
     };
@@ -732,9 +737,9 @@
       `;
     }
 
-    // วิว 2: สรุปผลผู้ชนะทั้ง 4 ประเภท (แสดงเฉพาะอันดับ 1 ทั้ง 4 คน ไม่แสดงอันดับรอง)
+    // วิว 2: สรุปผลผู้ชนะทั้ง 5 ประเภท (แสดงเฉพาะอันดับ 1 ทั้ง 5 คน ไม่แสดงอันดับรอง)
     function renderAllCategoriesView(container) {
-      const keys = ['jumbo', 'queen', 'mister', 'miss'];
+      const keys = ['jumbo', 'queen', 'congeniality', 'mister', 'miss'];
       const allHash = keys.map(catKey => {
         const rawList = summaryData.categories[catKey] || [];
         const list = [...rawList].sort((a, b) => {
@@ -785,12 +790,12 @@
           <!-- Page Header -->
           <div class="text-center mb-1">
             <span class="inline-flex items-center gap-2 px-6 py-1.5 rounded-full text-xs md:text-sm font-black uppercase tracking-widest bg-gradient-to-r from-[#FFDE42]/20 via-rose-500/20 to-[#FFDE42]/20 border border-[#FFDE42]/50 text-amber-300 shadow">
-              <i class="fas fa-award text-[#FFDE42]"></i> 🏆 สรุปผลผู้ชนะ POPULAR VOTE ทั้ง 4 ประเภท
+              <i class="fas fa-award text-[#FFDE42]"></i> 🏆 สรุปผลผู้ชนะ POPULAR VOTE ทั้ง 5 ประเภท
             </span>
           </div>
 
-          <!-- 4 Categories Winners Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 items-stretch">
+          <!-- 5 Categories Winners Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 items-stretch">
             ${keys.map(catKey => {
               const config = CATEGORIES_CONFIG[catKey];
               const rawList = summaryData.categories[catKey] || [];
@@ -898,13 +903,14 @@
       const indicator = document.getElementById('admin-step-indicator');
       if (indicator) {
         const names = {
-          jumbo: '1/5 • Miss Jumbo',
-          queen: '2/5 • Miss Queen',
-          mister: '3/5 • Mister',
-          miss: '4/5 • Miss',
-          all: '5/5 • สรุปรวม 4 ประเภท'
+          jumbo: '1/6 • Miss Jumbo',
+          queen: '2/6 • Miss Queen',
+          congeniality: '3/6 • Miss Con',
+          mister: '4/6 • Mister',
+          miss: '5/6 • Miss',
+          all: '6/6 • สรุปรวม 5 ประเภท'
         };
-        indicator.textContent = names[localCategory] || '1/5';
+        indicator.textContent = names[localCategory] || '1/6';
       }
 
       // Update Reveal Button

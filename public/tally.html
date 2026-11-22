@@ -174,9 +174,10 @@
         <div class="flex gap-1 overflow-x-auto no-scrollbar py-0.5">
           <button type="button" onclick="tallyStageSetCat('jumbo')" class="px-2 py-1 rounded bg-[#050A30] text-amber-300 font-bold text-[10px]">Jumbo</button>
           <button type="button" onclick="tallyStageSetCat('queen')" class="px-2 py-1 rounded bg-[#050A30] text-purple-300 font-bold text-[10px]">Queen</button>
+          <button type="button" onclick="tallyStageSetCat('congeniality')" class="px-2 py-1 rounded bg-[#050A30] text-emerald-300 font-bold text-[10px]">Miss Con</button>
           <button type="button" onclick="tallyStageSetCat('mister')" class="px-2 py-1 rounded bg-[#050A30] text-blue-300 font-bold text-[10px]">Mister</button>
           <button type="button" onclick="tallyStageSetCat('miss')" class="px-2 py-1 rounded bg-[#050A30] text-pink-300 font-bold text-[10px]">Miss</button>
-          <button type="button" onclick="tallyStageSetCat('all')" class="px-2 py-1 rounded bg-[#050A30] text-amber-200 font-bold text-[10px]">รวม 4</button>
+          <button type="button" onclick="tallyStageSetCat('all')" class="px-2 py-1 rounded bg-[#050A30] text-amber-200 font-bold text-[10px]">รวม 5</button>
         </div>
         <button type="button" onclick="tallyStageStep(1)" class="px-2.5 py-1 rounded-lg bg-[#FFDE42] text-[#050A30] font-black active:scale-95 text-[11px]">
           ถัดไป <i class="fas fa-chevron-right text-[#050A30]"></i>
@@ -211,6 +212,9 @@
         </button>
         <button onclick="setFilter('queen')" id="tab-queen" class="filter-tab px-3 py-1.5 rounded-xl font-bold bg-[#091054] text-gray-300 hover:text-white shrink-0 border border-[#5478FF]/30">
           Queen
+        </button>
+        <button onclick="setFilter('congeniality')" id="tab-congeniality" class="filter-tab px-3 py-1.5 rounded-xl font-bold bg-[#091054] text-gray-300 hover:text-white shrink-0 border border-[#5478FF]/30">
+          Miss Con
         </button>
         <button onclick="setFilter('jumbo')" id="tab-jumbo" class="filter-tab px-3 py-1.5 rounded-xl font-bold bg-[#091054] text-gray-300 hover:text-white shrink-0 border border-[#5478FF]/30">
           Jumbo
@@ -753,13 +757,14 @@
     // ==========================================
     // Stage Remote Control from Staff Phone
     // ==========================================
-    const TALLY_STAGE_ORDER = ['jumbo', 'queen', 'mister', 'miss', 'all'];
+    const TALLY_STAGE_ORDER = ['jumbo', 'queen', 'congeniality', 'mister', 'miss', 'all'];
     const TALLY_STAGE_NAMES = {
       jumbo: 'Miss Jumbo RMUTK',
       queen: 'Miss Queen RMUTK',
+      congeniality: 'Miss Congeniality (Miss Con)',
       mister: 'Mister RMUTK',
       miss: 'Miss RMUTK',
-      all: 'สรุปรวม 4 ประเภท'
+      all: 'สรุปรวม 5 ประเภท'
     };
     let tallyStageCat = 'jumbo';
     let tallyStageRevealed = false;
