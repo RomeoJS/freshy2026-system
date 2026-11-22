@@ -457,6 +457,27 @@ app.get('/api/contestants/:id/image', async (req, res) => {
     }
 });
 
+// ระบบจัดการสถานะจอเวทีประกาศผล Popular Vote (Stage Remote State)
+let stageState = {
+    category: 'jumbo', // 'jumbo', 'queen', 'mister', 'miss', 'all'
+    revealed: false,
+    confettiTrigger: 0,
+    updatedAt: Date.now()
+};
+
+app.get('/api/stage-state', (req, res) => {
+    res.json(stageState);
+});
+
+app.post('/api/stage-state', (req, res) => {
+    const { category, revealed, triggerConfetti } = req.body;
+    if (category !== undefined) stageState.category = category;
+    if (revealed !== undefined) stageState.revealed = Boolean(revealed);
+    if (triggerConfetti) stageState.confettiTrigger = Date.now();
+    stageState.updatedAt = Date.now();
+    res.json({ success: true, stageState });
+});
+
 // Cache สำหรับคะแนนและผลสรุป
 let scoresCache = { data: null, timestamp: 0 };
 let summaryCache = { data: null, timestamp: 0 };

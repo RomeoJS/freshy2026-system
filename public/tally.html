@@ -124,6 +124,12 @@
 
       <!-- Right: Link to Stage Monitor & Logout -->
       <div class="flex items-center gap-1.5">
+        <button type="button" onclick="toggleStagePanel()"
+          class="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-[#050A30] text-[11px] font-black shadow flex items-center gap-1 active:scale-95"
+          title="ควบคุมจอเวทีสด">
+          <i class="fas fa-broadcast-tower text-xs"></i>
+          <span>รีโมตเวที</span>
+        </button>
         <a href="/live-popular" target="_blank"
           class="px-2.5 py-1 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white text-[11px] font-bold shadow flex items-center gap-1 active:scale-95"
           title="ดูหน้าจอเวที">
@@ -134,6 +140,49 @@
           <i class="fas fa-sign-out-alt"></i>
         </button>
       </div>
+    </div>
+
+    <!-- COLLAPSIBLE STAGE REMOTE BAR (สตาฟกดเฉลย/เปลี่ยนหมวดจากมือถือได้ทันที) -->
+    <div id="tally-stage-remote" class="hidden mt-2 p-2.5 rounded-2xl bg-gradient-to-r from-[#111FA2]/90 to-[#091054]/95 border border-[#FFDE42]/50 shadow-lg space-y-2">
+      <div class="flex items-center justify-between text-xs">
+        <span class="text-[11px] font-bold text-[#FFDE42] flex items-center gap-1">
+          <i class="fas fa-broadcast-tower animate-pulse"></i>
+          <span id="tally-stage-cat-name">Miss Jumbo RMUTK</span>
+        </span>
+        <span id="tally-stage-status" class="px-2 py-0.5 rounded-full bg-slate-800 text-rose-300 font-bold text-[9px] border border-rose-500/30">
+          🔒 ปิดม่านรอประกาศ
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-1.5">
+        <button type="button" onclick="tallyStageToggleReveal()" id="tally-stage-reveal-btn"
+          class="py-2 px-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-xs shadow active:scale-95 flex items-center justify-center gap-1">
+          <i class="fas fa-eye text-yellow-300" id="tally-stage-reveal-icon"></i>
+          <span id="tally-stage-reveal-text">กดเฉลยผู้ชนะขึ้นจอ</span>
+        </button>
+        <button type="button" onclick="tallyStageConfetti()"
+          class="py-2 px-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-xs shadow active:scale-95 flex items-center justify-center gap-1">
+          <i class="fas fa-glass-cheers text-yellow-300"></i>
+          <span>ยิงพลุฉลอง</span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between gap-1 pt-1 border-t border-white/10 text-xs">
+        <button type="button" onclick="tallyStageStep(-1)" class="px-2.5 py-1 rounded-lg bg-[#050A30] text-gray-200 border border-white/20 active:scale-95 text-[11px]">
+          <i class="fas fa-chevron-left text-[#FFDE42]"></i> ก่อนหน้า
+        </button>
+        <div class="flex gap-1 overflow-x-auto no-scrollbar py-0.5">
+          <button type="button" onclick="tallyStageSetCat('jumbo')" class="px-2 py-1 rounded bg-[#050A30] text-amber-300 font-bold text-[10px]">Jumbo</button>
+          <button type="button" onclick="tallyStageSetCat('queen')" class="px-2 py-1 rounded bg-[#050A30] text-purple-300 font-bold text-[10px]">Queen</button>
+          <button type="button" onclick="tallyStageSetCat('mister')" class="px-2 py-1 rounded bg-[#050A30] text-blue-300 font-bold text-[10px]">Mister</button>
+          <button type="button" onclick="tallyStageSetCat('miss')" class="px-2 py-1 rounded bg-[#050A30] text-pink-300 font-bold text-[10px]">Miss</button>
+          <button type="button" onclick="tallyStageSetCat('all')" class="px-2 py-1 rounded bg-[#050A30] text-amber-200 font-bold text-[10px]">รวม 4</button>
+        </div>
+        <button type="button" onclick="tallyStageStep(1)" class="px-2.5 py-1 rounded-lg bg-[#FFDE42] text-[#050A30] font-black active:scale-95 text-[11px]">
+          ถัดไป <i class="fas fa-chevron-right text-[#050A30]"></i>
+        </button>
+      </div>
+    </div>
     </div>
 
     <!-- Quick Search & Filter Controls -->
@@ -702,6 +751,102 @@
     }
 
     // ==========================================
+    // Stage Remote Control from Staff Phone
+    // ==========================================
+    const TALLY_STAGE_ORDER = ['jumbo', 'queen', 'mister', 'miss', 'all'];
+    const TALLY_STAGE_NAMES = {
+      jumbo: 'Miss Jumbo RMUTK',
+      queen: 'Miss Queen RMUTK',
+      mister: 'Mister RMUTK',
+      miss: 'Miss RMUTK',
+      all: 'สรุปรวม 4 ประเภท'
+    };
+    let tallyStageCat = 'jumbo';
+    let tallyStageRevealed = false;
+
+    function toggleStagePanel() {
+      const panel = document.getElementById('tally-stage-remote');
+      if (panel) {
+        panel.classList.toggle('hidden');
+        if (!panel.classList.contains('hidden')) {
+          syncTallyStageState();
+        }
+      }
+    }
+
+    async function syncTallyStageState() {
+      try {
+        const res = await fetch('/api/stage-state', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        tallyStageCat = data.category || 'jumbo';
+        tallyStageRevealed = Boolean(data.revealed);
+
+        const nameEl = document.getElementById('tally-stage-cat-name');
+        if (nameEl) nameEl.textContent = TALLY_STAGE_NAMES[tallyStageCat] || tallyStageCat;
+
+        const statusEl = document.getElementById('tally-stage-status');
+        const revealBtn = document.getElementById('tally-stage-reveal-btn');
+        const revealIcon = document.getElementById('tally-stage-reveal-icon');
+        const revealText = document.getElementById('tally-stage-reveal-text');
+
+        if (tallyStageRevealed) {
+          if (statusEl) {
+            statusEl.className = 'px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-[9px] border border-emerald-500/40';
+            statusEl.innerHTML = '🎉 เฉลยผลอยู่';
+          }
+          if (revealBtn) revealBtn.className = 'py-2 px-2 rounded-xl bg-slate-800 text-gray-200 border border-white/20 font-bold text-xs shadow active:scale-95 flex items-center justify-center gap-1';
+          if (revealIcon) revealIcon.className = 'fas fa-eye-slash text-rose-400';
+          if (revealText) revealText.textContent = 'ปิดม่านรอประกาศ';
+        } else {
+          if (statusEl) {
+            statusEl.className = 'px-2 py-0.5 rounded-full bg-slate-800 text-rose-300 font-bold text-[9px] border border-rose-500/30';
+            statusEl.innerHTML = '🔒 ปิดม่านรอประกาศ';
+          }
+          if (revealBtn) revealBtn.className = 'py-2 px-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-xs shadow active:scale-95 flex items-center justify-center gap-1';
+          if (revealIcon) revealIcon.className = 'fas fa-eye text-yellow-300';
+          if (revealText) revealText.textContent = 'กดเฉลยผู้ชนะขึ้นจอ';
+        }
+      } catch (e) {
+        console.warn('Sync tally stage error:', e);
+      }
+    }
+
+    async function sendTallyStageCommand(patch) {
+      try {
+        await fetch('/api/stage-state', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(patch)
+        });
+        syncTallyStageState();
+      } catch (e) {
+        console.error('Send tally stage command error:', e);
+      }
+    }
+
+    function tallyStageStep(dir) {
+      const curIdx = TALLY_STAGE_ORDER.indexOf(tallyStageCat);
+      let nextIdx = curIdx + dir;
+      if (nextIdx < 0) nextIdx = TALLY_STAGE_ORDER.length - 1;
+      if (nextIdx >= TALLY_STAGE_ORDER.length) nextIdx = 0;
+      sendTallyStageCommand({ category: TALLY_STAGE_ORDER[nextIdx], revealed: false });
+    }
+
+    function tallyStageSetCat(cat) {
+      if (!TALLY_STAGE_ORDER.includes(cat)) return;
+      sendTallyStageCommand({ category: cat, revealed: false });
+    }
+
+    function tallyStageToggleReveal() {
+      sendTallyStageCommand({ revealed: !tallyStageRevealed });
+    }
+
+    function tallyStageConfetti() {
+      sendTallyStageCommand({ triggerConfetti: true });
+    }
+
+    // ==========================================
     // Init & Polling
     // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
@@ -712,6 +857,12 @@
           fetchData();
         }
       }, 3000);
+      setInterval(() => {
+        const panel = document.getElementById('tally-stage-remote');
+        if (panel && !panel.classList.contains('hidden')) {
+          syncTallyStageState();
+        }
+      }, 2500);
     });
   </script>
 </body>

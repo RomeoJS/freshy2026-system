@@ -403,6 +403,94 @@
         </div>
       </div>
 
+      <!-- 🎬 รีโมตควบคุมจอเวทีประกาศผล POPULAR VOTE (STAGE REMOTE สำหรับแอดมิน) -->
+      <div class="glass-panel p-5 rounded-3xl border-2 border-rose-500/60 shadow-[0_0_35px_rgba(244,63,94,0.25)] bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/95 to-[#111FA2]/90 space-y-4">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-3 pb-3 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-300 text-lg">
+              <i class="fas fa-broadcast-tower animate-pulse"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-base font-black text-[#FFDE42] flex items-center gap-1.5">
+                  รีโมตควบคุมจอเวทีประกาศผล (Popular Vote Stage Remote)
+                </h3>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold">
+                  ควบคุมจอเวทีสด
+                </span>
+              </div>
+              <p class="text-xs text-gray-300 mt-0.5">
+                กำลังแสดงบนจอเวที: <span id="stage-remote-current-cat" class="text-white font-black">Miss Jumbo RMUTK</span>
+                <span class="mx-1">•</span>
+                สถานะ: <span id="stage-remote-status-badge" class="px-2 py-0.5 rounded-full bg-slate-800 text-rose-300 font-bold border border-rose-500/30 text-[10px]">🔒 ปิดม่านรอประกาศ</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="stageRemoteToggleReveal()" id="stage-remote-reveal-btn"
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs transition shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95 flex items-center gap-1.5">
+              <i class="fas fa-eye text-yellow-300" id="stage-remote-reveal-icon"></i>
+              <span id="stage-remote-reveal-text">กดเฉลยผู้ชนะขึ้นจอ (Reveal)</span>
+            </button>
+            <button type="button" onclick="stageRemoteTriggerConfetti()"
+              class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-white font-bold text-xs transition shadow active:scale-95 flex items-center gap-1.5">
+              <i class="fas fa-glass-cheers text-yellow-300"></i>
+              <span>ยิงพลุฉลอง</span>
+            </button>
+            <a href="/live-popular" target="_blank"
+              class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 font-bold text-xs transition active:scale-95 flex items-center gap-1.5"
+              title="เปิดดูหน้าจอเวทีในแท็บใหม่">
+              <i class="fas fa-external-link-alt"></i>
+              <span>เปิดจอเวที</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Category Stepper & Tabs -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <button type="button" onclick="stageRemoteStepCategory(-1)"
+              class="px-3 py-2 rounded-xl bg-[#091054] hover:bg-[#111FA2] text-gray-200 hover:text-white border border-[#5478FF]/40 text-xs font-bold transition flex items-center gap-1 active:scale-95">
+              <i class="fas fa-chevron-left text-[#FFDE42]"></i>
+              <span>ก่อนหน้า</span>
+            </button>
+            <div id="stage-remote-step-indicator" class="px-3.5 py-2 rounded-xl bg-[#091054] border border-[#FFDE42]/50 text-xs font-black text-[#FFDE42] text-center min-w-[140px]">
+              1/5 • Miss Jumbo
+            </div>
+            <button type="button" onclick="stageRemoteStepCategory(1)"
+              class="px-3 py-2 rounded-xl bg-[#FFDE42] hover:bg-yellow-300 text-[#050A30] text-xs font-black transition flex items-center gap-1 active:scale-95 shadow">
+              <span>ถัดไป</span>
+              <i class="fas fa-chevron-right text-[#050A30]"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 no-scrollbar">
+            <button type="button" onclick="stageRemoteSetCategory('jumbo')" id="stage-tab-jumbo"
+              class="stage-tab px-3 py-1.5 rounded-xl text-xs font-black transition bg-[#FFDE42] text-[#050A30] shadow">
+              1. 💎 Jumbo
+            </button>
+            <button type="button" onclick="stageRemoteSetCategory('queen')" id="stage-tab-queen"
+              class="stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30">
+              2. 👑 Queen
+            </button>
+            <button type="button" onclick="stageRemoteSetCategory('mister')" id="stage-tab-mister"
+              class="stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30">
+              3. 👔 Mister
+            </button>
+            <button type="button" onclick="stageRemoteSetCategory('miss')" id="stage-tab-miss"
+              class="stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30">
+              4. 👗 Miss
+            </button>
+            <button type="button" onclick="stageRemoteSetCategory('all')" id="stage-tab-all"
+              class="stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30">
+              🏆 สรุปรวม 4 ประเภท
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- วิว 1: 🏆 ผลการตัดสินชี้ขาด (TOP 3 ตอบคำถาม & รางวัลทั้งหมด) -->
       <div id="admin-view-top3" class="space-y-6">
         <div
@@ -5928,6 +6016,124 @@
         printWindow.document.write(docHtml);
         printWindow.document.close();
       }
+
+      // ==========================================
+      // Stage Remote Controller (ควบคุมจอเวทีประกาศผล Popular Vote)
+      // ==========================================
+      const STAGE_ORDER = ['jumbo', 'queen', 'mister', 'miss', 'all'];
+      const STAGE_NAMES = {
+        jumbo: '1/5 • Miss Jumbo RMUTK',
+        queen: '2/5 • Miss Queen RMUTK',
+        mister: '3/5 • Mister RMUTK',
+        miss: '4/5 • Miss RMUTK',
+        all: '5/5 • สรุปรวม 4 ประเภท'
+      };
+      let currentStageCategory = 'jumbo';
+      let currentStageRevealed = false;
+
+      async function syncStageRemoteState() {
+        try {
+          const res = await fetch('/api/stage-state', { cache: 'no-store' });
+          if (!res.ok) return;
+          const data = await res.json();
+          currentStageCategory = data.category || 'jumbo';
+          currentStageRevealed = Boolean(data.revealed);
+          updateStageRemoteUI();
+        } catch (e) {
+          console.warn('Sync stage state error:', e);
+        }
+      }
+
+      function updateStageRemoteUI() {
+        const catLabel = document.getElementById('stage-remote-current-cat');
+        if (catLabel) catLabel.textContent = STAGE_NAMES[currentStageCategory] || currentStageCategory;
+
+        const stepIndicator = document.getElementById('stage-remote-step-indicator');
+        if (stepIndicator) stepIndicator.textContent = STAGE_NAMES[currentStageCategory] || '1/5';
+
+        const statusBadge = document.getElementById('stage-remote-status-badge');
+        const revealBtn = document.getElementById('stage-remote-reveal-btn');
+        const revealIcon = document.getElementById('stage-remote-reveal-icon');
+        const revealText = document.getElementById('stage-remote-reveal-text');
+
+        if (currentStageRevealed) {
+          if (statusBadge) {
+            statusBadge.className = 'px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40 text-[10px]';
+            statusBadge.innerHTML = '🎉 เฉลยผลขึ้นจอแล้ว';
+          }
+          if (revealBtn) {
+            revealBtn.className = 'px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 border border-white/20 font-bold text-xs transition active:scale-95 flex items-center gap-1.5';
+          }
+          if (revealIcon) revealIcon.className = 'fas fa-eye-slash text-rose-400';
+          if (revealText) revealText.textContent = 'ปิดม่านรอประกาศ (Hide)';
+        } else {
+          if (statusBadge) {
+            statusBadge.className = 'px-2 py-0.5 rounded-full bg-slate-800 text-rose-300 font-bold border border-rose-500/30 text-[10px]';
+            statusBadge.innerHTML = '🔒 ปิดม่านรอประกาศ';
+          }
+          if (revealBtn) {
+            revealBtn.className = 'px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs transition shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95 flex items-center gap-1.5';
+          }
+          if (revealIcon) revealIcon.className = 'fas fa-eye text-yellow-300';
+          if (revealText) revealText.textContent = 'กดเฉลยผู้ชนะขึ้นจอ (Reveal)';
+        }
+
+        STAGE_ORDER.forEach(k => {
+          const tab = document.getElementById(`stage-tab-${k}`);
+          if (!tab) return;
+          if (k === currentStageCategory) {
+            tab.className = 'stage-tab px-3 py-1.5 rounded-xl text-xs font-black transition bg-[#FFDE42] text-[#050A30] shadow';
+          } else {
+            tab.className = 'stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30';
+          }
+        });
+      }
+
+      async function sendStageRemoteCommand(body) {
+        try {
+          const res = await fetch('/api/stage-state', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.stageState) {
+              currentStageCategory = data.stageState.category;
+              currentStageRevealed = Boolean(data.stageState.revealed);
+              updateStageRemoteUI();
+            }
+          }
+        } catch (e) {
+          console.error('Send stage remote error:', e);
+        }
+      }
+
+      function stageRemoteStepCategory(dir) {
+        const curIdx = STAGE_ORDER.indexOf(currentStageCategory);
+        let nextIdx = curIdx + dir;
+        if (nextIdx < 0) nextIdx = STAGE_ORDER.length - 1;
+        if (nextIdx >= STAGE_ORDER.length) nextIdx = 0;
+        sendStageRemoteCommand({ category: STAGE_ORDER[nextIdx], revealed: false });
+      }
+
+      function stageRemoteSetCategory(cat) {
+        if (!STAGE_ORDER.includes(cat)) return;
+        sendStageRemoteCommand({ category: cat, revealed: false });
+      }
+
+      function stageRemoteToggleReveal() {
+        sendStageRemoteCommand({ revealed: !currentStageRevealed });
+      }
+
+      function stageRemoteTriggerConfetti() {
+        sendStageRemoteCommand({ triggerConfetti: true });
+        showToast('ยิงพลุฉลองขึ้นจอเวทีเรียบร้อยแล้ว!');
+      }
+
+      // Initial sync on load
+      syncStageRemoteState();
+      setInterval(syncStageRemoteState, 2000);
     </script>
   </body>
 </html>
