@@ -858,11 +858,11 @@
               placeholder="0" />
           </div>
 
-          <!-- รอบที่ 2: วันจริงรอบแรก -->
+          <!-- รอบที่ 2: รอบแรก -->
           <div class="bg-[#050A30]/80 p-3 rounded-2xl border border-amber-500/30">
             <div class="flex items-center justify-between mb-1.5">
               <label for="pop-modal-c2" class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                <i class="fas fa-crown text-amber-400"></i> 2. วันจริงรอบแรก (วันจริง รอบ 1)
+                <i class="fas fa-crown text-amber-400"></i> 2. รอบแรก
               </label>
               <div class="flex items-center gap-1">
                 <button type="button" onclick="adjustPopModalField('c2', 10)" class="px-2 py-0.5 rounded bg-amber-900/60 hover:bg-amber-800 text-[10px] font-bold text-amber-200 border border-amber-500/30">+10</button>
@@ -876,11 +876,11 @@
               placeholder="0" />
           </div>
 
-          <!-- รอบที่ 3: วันจริงรอบสอง -->
+          <!-- รอบที่ 3: รอบสอง -->
           <div class="bg-[#050A30]/80 p-3 rounded-2xl border border-purple-500/30">
             <div class="flex items-center justify-between mb-1.5">
               <label for="pop-modal-c3" class="text-xs font-bold text-purple-300 flex items-center gap-1.5">
-                <i class="fas fa-star text-purple-400"></i> 3. วันจริงรอบสอง (วันจริง รอบ 2)
+                <i class="fas fa-star text-purple-400"></i> 3. รอบสอง
               </label>
               <div class="flex items-center gap-1">
                 <button type="button" onclick="adjustPopModalField('c3', 10)" class="px-2 py-0.5 rounded bg-purple-900/60 hover:bg-purple-800 text-[10px] font-bold text-purple-200 border border-purple-500/30">+10</button>
@@ -1397,7 +1397,7 @@
       const ROUNDS = [
         { id: 'blackroom', name: '1. รอบห้องดำ', fullTitle: 'รอบห้องดำ (รอบคัดเลือก 23 คน)', max: 25 },
         { id: 'grand', name: '2. Grand Opening', fullTitle: 'รอบ Grand Opening รอบแนะนำตัว (23 คน)', max: 50 },
-        { id: 'popular', name: '3. Popular Vote', fullTitle: 'รอบ Popular Vote (รางวัลพิเศษแยกต่างหาก • แบ่ง 3 ช่อง: ออนไลน์ / วันจริงรอบแรก / วันจริงรอบสอง)', max: 99999, unlimited: true },
+        { id: 'popular', name: '3. Popular Vote', fullTitle: 'รอบ Popular Vote (รางวัลพิเศษแยกต่างหาก • แบ่ง 3 ช่อง: ออนไลน์ / รอบแรก / รอบสอง)', max: 99999, unlimited: true },
         { id: 'speed', name: '4. TOP 5 (Speed)', fullTitle: 'รอบ 5 คนสุดท้าย (Speed คัดเหลือ 3 คน)', max: 50 },
         { id: 'qa', name: '5. TOP 3 ตอบคำถาม', fullTitle: 'รอบ 3 คนสุดท้าย ตัดสินชี้ขาด (ล้างคะแนนเดิม)', max: 100 }
       ];
@@ -1417,8 +1417,8 @@
         ],
         popular: [
           { id: 'c1', name: '1. ออนไลน์', max: 99999, short: 'ออนไลน์', desc: 'คะแนน Popular Vote รอบออนไลน์ (ไม่จำกัดคะแนน)' },
-          { id: 'c2', name: '2. วันจริงรอบแรก', max: 99999, short: 'วันจริงรอบ 1', desc: 'คะแนน Popular Vote / มาลัย วันจริง รอบที่ 1 (ไม่จำกัดคะแนน)' },
-          { id: 'c3', name: '3. วันจริงรอบสอง', max: 99999, short: 'วันจริงรอบ 2', desc: 'คะแนน Popular Vote / มาลัย วันจริง รอบที่ 2 (ไม่จำกัดคะแนน)' }
+          { id: 'c2', name: '2. รอบแรก', max: 99999, short: 'รอบแรก', desc: 'คะแนน Popular Vote / มาลัย รอบแรก (ไม่จำกัดคะแนน)' },
+          { id: 'c3', name: '3. รอบสอง', max: 99999, short: 'รอบสอง', desc: 'คะแนน Popular Vote / มาลัย รอบสอง (ไม่จำกัดคะแนน)' }
         ],
         speed: [
           { id: 'c1', name: '1. ภาษากาย / บุคลิกภาพ', max: 10, short: 'ภาษากาย' },
@@ -2963,7 +2963,7 @@
           tbody.innerHTML = rows.join('');
 
         } else if (adminPreRoundView === 'popular') {
-          // มุมมองรอบ Popular Vote: เป็นรางวัลพิเศษแยกต่างหาก แบ่งเป็น 3 ช่อง (ออนไลน์ / วันจริงรอบแรก / วันจริงรอบสอง)
+          // มุมมองรอบ Popular Vote: เป็นรางวัลพิเศษแยกต่างหาก แบ่งเป็น 3 ช่อง (ออนไลน์ / รอบแรก / รอบสอง)
           // คัดเลือกคนที่ได้คะแนนสูงสุดเพียงคนเดียวในแต่ละประเภท
           thead.innerHTML = `
           <tr class="bg-[#111FA2] text-[#FFDE42] text-xs uppercase">
@@ -2976,12 +2976,12 @@
               <span class="text-[9px] font-normal text-blue-200">(Online Vote)</span>
             </th>
             <th class="px-3 py-3 text-center bg-amber-950/60 text-amber-300 border-l border-amber-500/30">
-              <i class="fas fa-crown mr-1"></i> 2. วันจริงรอบแรก<br>
-              <span class="text-[9px] font-normal text-amber-200">(วันจริง รอบ 1)</span>
+              <i class="fas fa-crown mr-1"></i> 2. รอบแรก<br>
+              <span class="text-[9px] font-normal text-amber-200">(รอบที่ 1)</span>
             </th>
             <th class="px-3 py-3 text-center bg-purple-950/60 text-purple-300 border-l border-purple-500/30">
-              <i class="fas fa-star mr-1"></i> 3. วันจริงรอบสอง<br>
-              <span class="text-[9px] font-normal text-purple-200">(วันจริง รอบ 2)</span>
+              <i class="fas fa-star mr-1"></i> 3. รอบสอง<br>
+              <span class="text-[9px] font-normal text-purple-200">(รอบที่ 2)</span>
             </th>
             <th class="px-4 py-3 text-center bg-gradient-to-r from-rose-900/80 to-pink-900/80 text-rose-200 border-l border-r border-rose-500/40">
               <i class="fas fa-heart text-rose-400 mr-1"></i> รวม 3 ช่อง Popular<br>

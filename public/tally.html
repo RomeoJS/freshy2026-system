@@ -101,12 +101,12 @@
             class="input-dark w-full p-2 rounded-xl text-center text-lg font-black text-blue-300 border border-blue-400/40" />
         </div>
         <div>
-          <label class="text-[10px] font-bold text-amber-300">2. วันจริงรอบแรก (วันจริงรอบ 1):</label>
+          <label class="text-[10px] font-bold text-amber-300">2. รอบแรก (รอบ 1):</label>
           <input type="number" id="override-c2" min="0" step="1" oninput="updateOverrideTotal()"
             class="input-dark w-full p-2 rounded-xl text-center text-lg font-black text-amber-300 border border-amber-400/40" />
         </div>
         <div>
-          <label class="text-[10px] font-bold text-purple-300">3. วันจริงรอบสอง (วันจริงรอบ 2):</label>
+          <label class="text-[10px] font-bold text-purple-300">3. รอบสอง (รอบ 2):</label>
           <input type="number" id="override-c3" min="0" step="1" oninput="updateOverrideTotal()"
             class="input-dark w-full p-2 rounded-xl text-center text-lg font-black text-purple-300 border border-purple-400/40" />
         </div>
@@ -252,11 +252,11 @@
           </button>
           <button type="button" onclick="setSubRound('c2')" id="subround-c2"
             class="subround-btn px-2.5 py-1 rounded-xl font-black text-[11px] transition bg-[#FFDE42] text-[#050A30] shadow">
-            2. วันจริงรอบ 1
+            2. รอบแรก
           </button>
           <button type="button" onclick="setSubRound('c3')" id="subround-c3"
             class="subround-btn px-2.5 py-1 rounded-xl font-bold text-[11px] transition bg-[#091054] text-gray-300 border border-[#5478FF]/30">
-            3. วันจริงรอบ 2
+            3. รอบสอง
           </button>
         </div>
       </div>
@@ -326,9 +326,9 @@
     let overrideTargetId = null;
 
     const SUB_ROUND_NAMES = {
-      c1: '1. ออนไลน์',
-      c2: '2. วันจริงรอบแรก',
-      c3: '3. วันจริงรอบสอง'
+      c1: 'ออนไลน์',
+      c2: 'รอบแรก',
+      c3: 'รอบสอง'
     };
 
     function setSubRound(sub) {
@@ -527,8 +527,8 @@
                   <!-- Breakdown 3 Rounds -->
                   <div class="flex items-center gap-1 text-[10px] text-gray-300 mt-1 flex-wrap">
                     <span class="px-1.5 py-0.5 rounded ${currentSubRound === 'c1' ? 'bg-blue-600/40 text-blue-200 border border-blue-400 font-bold' : 'bg-blue-950/60 text-blue-300'}">ออนไลน์: ${popC1.toLocaleString()}</span>
-                    <span class="px-1.5 py-0.5 rounded ${currentSubRound === 'c2' ? 'bg-amber-600/40 text-amber-200 border border-amber-400 font-bold' : 'bg-amber-950/60 text-amber-300'}">จริง 1: ${popC2.toLocaleString()}</span>
-                    <span class="px-1.5 py-0.5 rounded ${currentSubRound === 'c3' ? 'bg-purple-600/40 text-purple-200 border border-purple-400 font-bold' : 'bg-purple-950/60 text-purple-300'}">จริง 2: ${popC3.toLocaleString()}</span>
+                    <span class="px-1.5 py-0.5 rounded ${currentSubRound === 'c2' ? 'bg-amber-600/40 text-amber-200 border border-amber-400 font-bold' : 'bg-amber-950/60 text-amber-300'}">รอบแรก: ${popC2.toLocaleString()}</span>
+                    <span class="px-1.5 py-0.5 rounded ${currentSubRound === 'c3' ? 'bg-purple-600/40 text-purple-200 border border-purple-400 font-bold' : 'bg-purple-950/60 text-purple-300'}">รอบสอง: ${popC3.toLocaleString()}</span>
                   </div>
                 </div>
               </div>

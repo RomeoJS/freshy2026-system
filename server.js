@@ -580,10 +580,10 @@ app.post('/api/scores/increment', async (req, res) => {
         return res.status(400).json({ success: false, message: 'คะแนนที่เพิ่มหรือลดต้องไม่เป็น 0' });
     }
 
-    // กำหนดช่องที่ต้องการบวกคะแนน (c1 = ออนไลน์, c2 = วันจริงรอบแรก [ค่าเริ่มต้น], c3 = วันจริงรอบสอง)
+    // กำหนดช่องที่ต้องการบวกคะแนน (c1 = ออนไลน์, c2 = รอบแรก [ค่าเริ่มต้น], c3 = รอบสอง)
     let field = 'score_c2';
     if (sub_round === 'c1' || sub_round === 'online') field = 'score_c1';
-    else if (sub_round === 'c3' || sub_round === 'onsite2') field = 'score_c3';
+    else if (sub_round === 'c3' || sub_round === 'round2' || sub_round === 'onsite2') field = 'score_c3';
 
     try {
         const initC1 = (field === 'score_c1') ? Math.max(0, amount) : 0;

@@ -730,9 +730,9 @@
                     <div class="flex items-center justify-center gap-2.5 text-[11px] text-gray-300 mt-2 pt-2 border-t border-white/10 flex-wrap">
                       <span class="text-blue-300"><i class="fas fa-globe text-blue-400"></i> ออนไลน์: <strong>${(leader?.rounds?.popular?.score_c1 || 0).toLocaleString()}</strong></span>
                       <span class="text-gray-500">•</span>
-                      <span class="text-amber-300"><i class="fas fa-crown text-amber-400"></i> วันจริงรอบ 1: <strong>${(leader?.rounds?.popular?.score_c2 || 0).toLocaleString()}</strong></span>
+                      <span class="text-amber-300"><i class="fas fa-crown text-amber-400"></i> รอบแรก: <strong>${(leader?.rounds?.popular?.score_c2 || 0).toLocaleString()}</strong></span>
                       <span class="text-gray-500">•</span>
-                      <span class="text-purple-300"><i class="fas fa-star text-purple-400"></i> วันจริงรอบ 2: <strong>${(leader?.rounds?.popular?.score_c3 || 0).toLocaleString()}</strong></span>
+                      <span class="text-purple-300"><i class="fas fa-star text-purple-400"></i> รอบสอง: <strong>${(leader?.rounds?.popular?.score_c3 || 0).toLocaleString()}</strong></span>
                     </div>
                   </div>
                 </div>
@@ -857,11 +857,11 @@
                             ${popScore.toLocaleString()}
                           </div>
                           <div class="text-[9px] text-gray-300 flex items-center justify-center gap-1 mt-1 pt-1 border-t border-white/10 flex-wrap">
-                            <span class="text-blue-300">ออน: ${(leader?.rounds?.popular?.score_c1 || 0).toLocaleString()}</span>
+                            <span class="text-blue-300">ออนไลน์: ${(leader?.rounds?.popular?.score_c1 || 0).toLocaleString()}</span>
                             <span>•</span>
-                            <span class="text-amber-300">จริง 1: ${(leader?.rounds?.popular?.score_c2 || 0).toLocaleString()}</span>
+                            <span class="text-amber-300">รอบแรก: ${(leader?.rounds?.popular?.score_c2 || 0).toLocaleString()}</span>
                             <span>•</span>
-                            <span class="text-purple-300">จริง 2: ${(leader?.rounds?.popular?.score_c3 || 0).toLocaleString()}</span>
+                            <span class="text-purple-300">รอบสอง: ${(leader?.rounds?.popular?.score_c3 || 0).toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
