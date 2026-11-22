@@ -252,11 +252,15 @@
       </div>
     </div>
 
-    <!-- Category Filter Tabs (แถบหมวดหมู่ 6 ปุ่ม) -->
+    <!-- Category Filter Tabs (แถบหมวดหมู่: ผู้ชนะ 1 เดียว, ผู้เข้าชิง 5 ประเภท, สรุปทั้ง 5) -->
     <div class="flex items-center gap-2 overflow-x-auto mt-2 pb-1 no-scrollbar justify-center sm:justify-start">
-      <button onclick="adminSelectCategory('jumbo')" id="tab-jumbo"
+      <button onclick="adminSelectCategory('winner')" id="tab-winner"
         class="cat-tab px-4 py-2 rounded-2xl text-xs font-black transition-all flex items-center gap-1.5 bg-[#FFDE42] text-[#050A30] shadow-[0_0_15px_rgba(255,222,66,0.4)]">
-        <span>1.</span> <i class="fas fa-gem"></i> Miss Jumbo
+        <i class="fas fa-crown text-amber-900"></i> 👑 ผู้ชนะเลิศ (1 เดียว)
+      </button>
+      <button onclick="adminSelectCategory('jumbo')" id="tab-jumbo"
+        class="cat-tab px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/30">
+        <span>1.</span> <i class="fas fa-gem text-amber-400"></i> Miss Jumbo
       </button>
       <button onclick="adminSelectCategory('queen')" id="tab-queen"
         class="cat-tab px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/30">
@@ -276,7 +280,7 @@
       </button>
       <button onclick="adminSelectCategory('all')" id="tab-all"
         class="cat-tab px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/30">
-        <i class="fas fa-award text-amber-300"></i> 🏆 สรุปรวม 5 ประเภท
+        <i class="fas fa-award text-amber-300"></i> 🏆 สรุปผู้เข้าชิงทั้ง 5
       </button>
     </div>
   </header>
@@ -298,11 +302,11 @@
     // ==========================================
     let summaryData = null;
     let lastConfettiTrigger = 0;
-    let localCategory = 'jumbo';
+    let localCategory = 'winner';
     let localRevealed = false;
     let isAdminActive = false;
 
-    const ORDER = ['jumbo', 'queen', 'congeniality', 'mister', 'miss', 'all'];
+    const ORDER = ['winner', 'jumbo', 'queen', 'congeniality', 'mister', 'miss', 'all'];
 
     const CATEGORIES_CONFIG = {
       jumbo: { name: 'Miss Jumbo RMUTK', icon: 'fa-gem', badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40', titleColor: 'text-amber-400' },
@@ -622,14 +626,126 @@
       const container = document.getElementById('ceremony-content');
       if (!container || !summaryData || !summaryData.categories) return;
 
-      if (localCategory === 'all') {
+      if (localCategory === 'winner') {
+        renderSoleWinnerView(container);
+      } else if (localCategory === 'all') {
         renderAllCategoriesView(container);
       } else {
         renderSingleCategoryView(container, localCategory);
       }
     }
 
-    // วิว 1: แสดงเฉพาะผลอันดับ 1 ของหมวดหมู่นั้นๆ (ไม่แสดงอันดับรอง)
+    // วิว 0: 👑 ประกาศผลรางวัลชนะเลิศ POPULAR VOTE เพียงหนึ่งเดียวของงาน (จากทั้ง 5 ประเภท)
+    function renderSoleWinnerView(container) {
+      const winner = summaryData?.popularWinner;
+      const isRevealed = localRevealed;
+      const winnerId = winner ? winner.id : 'none';
+      const winnerScore = winner?.total || 0;
+
+      if (
+        lastRenderedState.category === 'winner' &&
+        lastRenderedState.revealed === isRevealed &&
+        lastRenderedState.leaderId === winnerId
+      ) {
+        if (lastRenderedState.leaderScore !== winnerScore) {
+          lastRenderedState.leaderScore = winnerScore;
+          const scoreEl = document.getElementById('sole-winner-score-display');
+          if (scoreEl) scoreEl.textContent = winnerScore.toLocaleString();
+        }
+        return;
+      }
+
+      lastRenderedState.category = 'winner';
+      lastRenderedState.revealed = isRevealed;
+      lastRenderedState.leaderId = winnerId;
+      lastRenderedState.leaderScore = winnerScore;
+      lastRenderedState.allHash = null;
+
+      container.innerHTML = `
+        <div class="max-w-4xl mx-auto w-full space-y-4">
+          <!-- Top Badge -->
+          <div class="text-center">
+            <span class="inline-flex items-center gap-2 px-6 py-1.5 rounded-full text-sm md:text-base font-black uppercase tracking-wider bg-gradient-to-r from-amber-500/25 via-yellow-400/30 to-amber-500/25 text-[#FFDE42] border border-[#FFDE42]/60 shadow-lg">
+              <i class="fas fa-crown text-[#FFDE42]"></i> การประกาศผลรางวัลชนะเลิศ POPULAR VOTE 2026 (เพียงหนึ่งเดียว)
+            </span>
+          </div>
+
+          <!-- Spotlight Card -->
+          <div class="glass-panel ${isRevealed ? 'shimmer-card' : ''} rounded-3xl p-6 md:p-8 border-2 border-[#FFDE42] shadow-[0_0_70px_rgba(255,222,66,0.4)] relative overflow-hidden text-center transition-all">
+            ${isRevealed ? '<div class="god-rays"></div>' : ''}
+
+            ${!isRevealed ? `
+              <!-- Mystery Suspense State -->
+              <div class="py-12 md:py-16 flex flex-col items-center justify-center animate-fadeIn relative z-10">
+                <div class="relative w-48 h-60 md:w-56 md:h-72 rounded-3xl border-2 border-dashed border-[#FFDE42]/70 bg-gradient-to-b from-[#111FA2]/80 to-[#050A30] flex flex-col items-center justify-center shadow-[0_0_45px_rgba(255,222,66,0.4)] animate-mystery mb-6">
+                  <div class="w-24 h-24 rounded-full bg-[#FFDE42]/20 flex items-center justify-center text-5xl text-[#FFDE42] mb-3 shadow-inner">
+                    <i class="fas fa-question"></i>
+                  </div>
+                  <div class="text-xs uppercase font-black tracking-widest text-[#FFDE42]">MYSTERY WINNER</div>
+                </div>
+
+                <div class="text-2xl md:text-3xl font-black text-white gold-glow mb-2">
+                  ✦ ผู้ได้รับรางวัลชนะเลิศ POPULAR VOTE ✦
+                </div>
+                <div class="text-base md:text-lg font-bold text-amber-300">
+                  RMUTK FRESHY 2026 • มีผู้ชนะเพียงคนเดียวเท่านั้น จากผู้เข้าประกวดทั้ง 5 ประเภท
+                </div>
+                <p class="text-xs text-gray-400 mt-2">กำลังรอพิธีกรประกาศผลอย่างเป็นทางการบนเวที...</p>
+              </div>
+            ` : `
+              <!-- Revealed State -->
+              ${winner ? `
+                <div class="animate-pop-in flex flex-col items-center py-2 relative z-10">
+                  <div class="inline-flex items-center gap-2 px-6 py-1.5 rounded-full bg-[#050A30] border-2 border-[#FFDE42] text-xs md:text-sm font-black text-[#FFDE42] shadow-[0_0_25px_rgba(255,222,66,0.6)] mb-3">
+                    <span class="star-sparkle text-amber-300">✦</span>
+                    <i class="fas fa-trophy text-amber-300"></i>
+                    <span>THE GRAND WINNER • POPULAR VOTE 2026</span>
+                    <span class="star-sparkle text-amber-300">✦</span>
+                  </div>
+
+                  <div class="relative w-52 h-68 md:w-60 md:h-80 mx-auto mb-4 rounded-3xl overflow-hidden border-4 border-[#FFDE42] shadow-[0_0_55px_rgba(255,222,66,0.7)] bg-[#050A30]">
+                    <img src="/api/contestants/${encodeURIComponent(winner.id)}/image" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${winner.id}');"
+                      class="w-full h-full object-cover"
+                      style="object-position: center 10%;">
+                    <span class="absolute bottom-2 right-2 px-4 py-1 rounded-xl bg-[#050A30]/90 border-2 border-[#FFDE42] text-base md:text-lg font-black text-[#FFDE42] shadow-xl">
+                      ${winner.id}
+                    </span>
+                  </div>
+
+                  <div class="mb-2">
+                    <span class="px-3.5 py-1 rounded-xl bg-[#111FA2] text-[#FFDE42] font-black text-xs border border-[#FFDE42]/50 shadow">
+                      ${winner.categoryName || winner.category}
+                    </span>
+                  </div>
+
+                  <h2 class="text-2xl md:text-4xl font-black text-white tracking-wide">${winner.name}</h2>
+                  ${winner.nickname ? `<div class="text-base md:text-lg text-amber-300 font-bold mt-0.5">"${winner.nickname}"</div>` : ''}
+                  <div class="text-xs md:text-sm text-gray-300 mt-1">${winner.faculty || ''}</div>
+
+                  <div class="mt-5 bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/95 to-[#111FA2]/90 px-8 py-3.5 rounded-2xl border-2 border-[#FFDE42]/70 shadow-[0_0_35px_rgba(255,222,66,0.4)] min-w-[320px]">
+                    <div class="text-[11px] uppercase font-bold tracking-widest text-rose-300 flex items-center justify-center gap-1.5">
+                      <i class="fas fa-heart text-rose-400"></i> คะแนน POPULAR VOTE รวมสุทธิ (ชนะเลิศอันดับ 1 ของงาน)
+                    </div>
+                    <div id="sole-winner-score-display" class="text-4xl md:text-5xl font-black text-[#FFDE42] gold-glow my-1">
+                      ${(winner.total || 0).toLocaleString()}
+                    </div>
+                    <div class="text-xs text-gray-300 flex items-center justify-center gap-3 mt-1 pt-1 border-t border-white/10 flex-wrap">
+                      <span class="text-blue-300"><i class="fas fa-globe text-blue-400"></i> ออนไลน์: <strong>${(winner.score_c1 || 0).toLocaleString()}</strong></span>
+                      <span>•</span>
+                      <span class="text-amber-300"><i class="fas fa-crown text-amber-400"></i> รอบแรก: <strong>${(winner.score_c2 || 0).toLocaleString()}</strong></span>
+                      <span>•</span>
+                      <span class="text-purple-300"><i class="fas fa-star text-purple-400"></i> รอบสอง: <strong>${(winner.score_c3 || 0).toLocaleString()}</strong></span>
+                    </div>
+                  </div>
+                </div>
+              ` : '<div class="py-16 text-center text-gray-400">ยังไม่มีข้อมูลคะแนน Popular Vote</div>'}
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    // วิว 1: แสดงตัวแทนผู้เข้าชิงของหมวดหมู่นั้นๆ (ผู้ชนะมีเพียง 1 คนในงาน)
     function renderSingleCategoryView(container, catKey) {
       const config = CATEGORIES_CONFIG[catKey] || CATEGORIES_CONFIG.jumbo;
       const rawList = summaryData.categories[catKey] || [];
@@ -643,6 +759,7 @@
       const isRevealed = localRevealed;
       const leaderId = leader ? leader.id : 'none';
       const leaderScore = leader?.rounds?.popular?.total || 0;
+      const isOverallWinner = Boolean(leader && summaryData?.popularWinner && leader.id === summaryData.popularWinner.id && (leader.rounds?.popular?.total || 0) > 0);
 
       // ป้องกันการเรนเดอร์ซ้ำจนป๊อปอัพรัวๆ: ถ้าสถานะและผู้ชนะยังคงเดิม
       if (
@@ -650,7 +767,6 @@
         lastRenderedState.revealed === isRevealed &&
         lastRenderedState.leaderId === leaderId
       ) {
-        // หากเปลี่ยนแค่คะแนน ให้อัปเดตเฉพาะตัวเลข ไม่ต้องทำลาย DOM หรือสั่งอนิเมชันป๊อปอัพใหม่
         if (lastRenderedState.leaderScore !== leaderScore) {
           lastRenderedState.leaderScore = leaderScore;
           const scoreEl = document.getElementById('winner-score-display');
@@ -658,10 +774,9 @@
             scoreEl.textContent = leaderScore.toLocaleString();
           }
         }
-        return; // ไม่ต้องทำอะไรเพิ่ม DOM คงที่สมบูรณ์แบบ
+        return;
       }
 
-      // บันทึกสถานะล่าสุดที่ทำการเรนเดอร์
       lastRenderedState.category = catKey;
       lastRenderedState.revealed = isRevealed;
       lastRenderedState.leaderId = leaderId;
@@ -674,7 +789,7 @@
           <!-- Category Banner Above Card -->
           <div class="text-center">
             <span class="inline-flex items-center gap-2 px-6 py-1.5 rounded-full text-sm md:text-base font-black uppercase tracking-wider ${config.badge} shadow-lg">
-              <i class="fas ${config.icon}"></i> การประกาศผลรางวัล: ${config.name}
+              <i class="fas ${config.icon}"></i> ${isOverallWinner ? 'ผู้ชนะเลิศ POPULAR VOTE ประจำหมวด: ' : 'ตัวแทนผู้เข้าชิง: '} ${config.name}
             </span>
           </div>
 
@@ -684,11 +799,8 @@
             ${isRevealed ? '<div class="god-rays"></div>' : ''}
 
             ${!isRevealed ? `
-              <!-- ============================================== -->
               <!-- STATE A: MYSTERY / SUSPENSE (รอประกาศผล) -->
-              <!-- ============================================== -->
               <div class="py-12 md:py-16 flex flex-col items-center justify-center animate-fadeIn relative z-10">
-                <!-- Glowing Mystery Aura Box -->
                 <div class="relative w-48 h-60 md:w-56 md:h-72 rounded-3xl border-2 border-dashed border-[#FFDE42]/70 bg-gradient-to-b from-[#111FA2]/80 to-[#050A30] flex flex-col items-center justify-center shadow-[0_0_45px_rgba(255,222,66,0.4)] animate-mystery mb-6">
                   <div class="w-24 h-24 rounded-full bg-[#FFDE42]/20 flex items-center justify-center text-5xl text-[#FFDE42] mb-3 shadow-inner">
                     <i class="fas fa-question"></i>
@@ -697,29 +809,34 @@
                 </div>
 
                 <div class="text-2xl md:text-3xl font-black text-white gold-glow mb-2">
-                  ✦ ผู้ได้รับรางวัลชนะเลิศ POPULAR VOTE ✦
+                  ✦ ตัวแทนผู้เข้าชิงหมวด ${config.name} ✦
                 </div>
                 <div class="text-base md:text-lg font-bold ${config.titleColor || 'text-amber-400'}">
-                  ${config.name}
+                  ตัวแทนผู้เข้าชิงรางวัลชนะเลิศ Popular Vote (มีผู้ชนะ 1 คนจากทั้ง 5 ประเภท)
                 </div>
                 <p class="text-xs text-gray-400 mt-2">กำลังรอพิธีกรประกาศผลอย่างเป็นทางการบนเวที...</p>
               </div>
             ` : `
-              <!-- ============================================== -->
-              <!-- STATE B: REVEALED WINNER (โชว์เฉพาะผู้ชนะอันดับ 1 เล่นอนิเมชันครั้งเดียวตอนเปิด) -->
-              <!-- ============================================== -->
+              <!-- STATE B: REVEALED -->
               ${leader ? `
                 <div class="animate-pop-in flex flex-col items-center py-2 relative z-10">
-                  <!-- Crown Badge -->
-                  <div class="inline-flex items-center gap-2 px-6 py-1.5 rounded-full bg-[#050A30] border-2 border-[#FFDE42] text-xs md:text-sm font-black text-[#FFDE42] shadow-[0_0_25px_rgba(255,222,66,0.6)] mb-3">
-                    <span class="star-sparkle text-amber-300">✦</span>
-                    <i class="fas fa-crown text-amber-300"></i>
-                    <span>THE WINNER • POPULAR VOTE</span>
-                    <span class="star-sparkle text-amber-300">✦</span>
-                  </div>
+                  <!-- Crown / Nominee Badge -->
+                  ${isOverallWinner ? `
+                    <div class="inline-flex items-center gap-2 px-6 py-1.5 rounded-full bg-[#FFDE42] text-[#050A30] border-2 border-white text-xs md:text-sm font-black shadow-[0_0_30px_rgba(255,222,66,0.8)] mb-3 animate-bounce">
+                      <span class="star-sparkle text-amber-900">✦</span>
+                      <i class="fas fa-trophy text-amber-900"></i>
+                      <span>👑 THE GRAND WINNER • ชนะเลิศ POPULAR VOTE 2026</span>
+                      <span class="star-sparkle text-amber-900">✦</span>
+                    </div>
+                  ` : `
+                    <div class="inline-flex items-center gap-2 px-6 py-1.5 rounded-full bg-[#050A30] border-2 border-[#5478FF] text-xs md:text-sm font-bold text-gray-200 shadow mb-3">
+                      <i class="fas fa-star text-amber-300"></i>
+                      <span>ตัวแทนผู้เข้าชิง (Nominee) • ${config.name}</span>
+                    </div>
+                  `}
 
                   <!-- Giant Winner Photo with Face Focus -->
-                  <div class="relative w-52 h-68 md:w-60 md:h-80 mx-auto mb-4 rounded-3xl overflow-hidden border-4 border-[#FFDE42] shadow-[0_0_55px_rgba(255,222,66,0.65)] bg-[#050A30]">
+                  <div class="relative w-52 h-68 md:w-60 md:h-80 mx-auto mb-4 rounded-3xl overflow-hidden border-4 ${isOverallWinner ? 'border-[#FFDE42] shadow-[0_0_55px_rgba(255,222,66,0.7)]' : 'border-[#5478FF]/60 shadow-xl'} bg-[#050A30]">
                     <img src="/api/contestants/${encodeURIComponent(leader.id)}/image" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${leader.id}');"
                       class="w-full h-full object-cover"
                       style="object-position: center 10%;">
@@ -734,9 +851,9 @@
                   <div class="text-xs md:text-sm text-gray-300 mt-1">${leader.faculty || ''}</div>
 
                   <!-- Huge Score Display -->
-                  <div class="mt-5 bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/95 to-[#111FA2]/90 px-8 py-3.5 rounded-2xl border-2 border-[#FFDE42]/70 shadow-[0_0_35px_rgba(255,222,66,0.4)] min-w-[320px]">
+                  <div class="mt-5 bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/95 to-[#111FA2]/90 px-8 py-3.5 rounded-2xl border-2 ${isOverallWinner ? 'border-[#FFDE42] shadow-[0_0_35px_rgba(255,222,66,0.4)]' : 'border-[#5478FF]/40'} min-w-[320px]">
                     <div class="text-[11px] uppercase font-bold tracking-widest text-rose-300 flex items-center justify-center gap-1.5">
-                      <i class="fas fa-heart text-rose-400"></i> คะแนน POPULAR VOTE รวม (3 รอบ)
+                      <i class="fas fa-heart text-rose-400"></i> คะแนน POPULAR VOTE รวม (3 ช่อง)
                     </div>
                     <div id="winner-score-display" class="text-4xl md:text-5xl font-black text-[#FFDE42] gold-glow my-0.5">
                       ${leaderScore.toLocaleString()}
@@ -759,9 +876,10 @@
       `;
     }
 
-    // วิว 2: สรุปผลผู้ชนะทั้ง 5 ประเภท (แสดงเฉพาะอันดับ 1 ทั้ง 5 คน ไม่แสดงอันดับรอง)
+    // วิว 2: สรุปผลผู้เข้าชิงทั้ง 5 ประเภท (คัดคนที่ได้คะแนนสูงสุดเพียงคนเดียวเป็นผู้ชนะเลิศ)
     function renderAllCategoriesView(container) {
       const keys = ['jumbo', 'queen', 'congeniality', 'mister', 'miss'];
+      const winner = summaryData?.popularWinner;
       const allHash = keys.map(catKey => {
         const rawList = summaryData.categories[catKey] || [];
         const list = [...rawList].sort((a, b) => {
@@ -771,33 +889,13 @@
         });
         const leader = list[0];
         return leader ? `${catKey}:${leader.id}:${leader.rounds?.popular?.total || 0}` : `${catKey}:none`;
-      }).join('|');
+      }).join('|') + `|win:${winner?.id || 'none'}`;
 
-      // ถ้าไม่มีอะไรเปลี่ยนเลย ไม่ต้องแตะ DOM
       if (
         lastRenderedState.category === 'all' &&
         lastRenderedState.revealed === localRevealed &&
         lastRenderedState.allHash === allHash
       ) {
-        return;
-      }
-
-      // ถ้าเปลี่ยนแค่คะแนน อัปเดตเฉพาะตัวเลขคะแนนในแต่ละกล่อง
-      if (
-        lastRenderedState.category === 'all' &&
-        lastRenderedState.revealed === localRevealed &&
-        lastRenderedState.allHash !== null
-      ) {
-        keys.forEach(catKey => {
-          const rawList = summaryData.categories[catKey] || [];
-          const list = [...rawList].sort((a, b) => (b.rounds?.popular?.total || 0) - (a.rounds?.popular?.total || 0));
-          const leader = list[0];
-          const scoreEl = document.getElementById(`all-score-${catKey}`);
-          if (scoreEl && leader) {
-            scoreEl.textContent = (leader.rounds?.popular?.total || 0).toLocaleString();
-          }
-        });
-        lastRenderedState.allHash = allHash;
         return;
       }
 
@@ -812,7 +910,7 @@
           <!-- Page Header -->
           <div class="text-center mb-1">
             <span class="inline-flex items-center gap-2 px-6 py-1.5 rounded-full text-xs md:text-sm font-black uppercase tracking-widest bg-gradient-to-r from-[#FFDE42]/20 via-rose-500/20 to-[#FFDE42]/20 border border-[#FFDE42]/50 text-amber-300 shadow">
-              <i class="fas fa-award text-[#FFDE42]"></i> 🏆 สรุปผลผู้ชนะ POPULAR VOTE ทั้ง 5 ประเภท
+              <i class="fas fa-trophy text-[#FFDE42]"></i> 🏆 ผู้เข้าชิง POPULAR VOTE ทั้ง 5 ประเภท (มีผู้ชนะเลิศเพียง 1 เดียว)
             </span>
           </div>
 
@@ -829,9 +927,10 @@
 
               const leader = list[0];
               const popScore = leader?.rounds?.popular?.total || 0;
+              const isWinner = Boolean(leader && winner && leader.id === winner.id && popScore > 0);
 
               return `
-                <div class="relative glass-panel rounded-3xl p-5 flex flex-col justify-between border-2 border-[#FFDE42]/60 shadow-[0_0_35px_rgba(255,222,66,0.25)]">
+                <div class="relative glass-panel rounded-3xl p-5 flex flex-col justify-between transition-all ${isWinner ? 'border-4 border-[#FFDE42] shadow-[0_0_45px_rgba(255,222,66,0.55)] scale-105 z-10 bg-gradient-to-b from-[#111FA2]/90 to-[#050A30]' : 'border border-[#5478FF]/30 shadow-lg opacity-90'}">
                   <!-- Top Badge -->
                   <div class="text-center pb-3 border-b border-white/10 mb-3">
                     <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-xl text-xs font-black uppercase ${config.badge}">
@@ -839,21 +938,27 @@
                     </span>
                   </div>
 
-                  <!-- Winner Content (No runners-up) -->
+                  <!-- Winner or Nominee Content -->
                   ${leader ? `
                     <div class="text-center flex-1 flex flex-col justify-between">
                       <div>
-                        <!-- Crown Badge -->
-                        <div class="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-[#050A30] border border-[#FFDE42] text-[10px] font-black text-[#FFDE42] shadow mb-2">
-                          👑 WINNER
-                        </div>
+                        <!-- Crown Badge (เฉพาะคนชนะคนเดียวเท่านั้น) หรือ Nominee Badge -->
+                        ${isWinner ? `
+                          <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFDE42] text-[#050A30] border-2 border-white text-xs font-black shadow-[0_0_20px_rgba(255,222,66,0.8)] mb-2 animate-bounce">
+                            <i class="fas fa-crown text-amber-900"></i> 👑 ชนะเลิศ POPULAR VOTE
+                          </div>
+                        ` : `
+                          <div class="inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-[#050A30] border border-[#5478FF]/50 text-[10px] font-bold text-gray-300 shadow mb-2">
+                            ⭐ ผู้เข้าชิง (Nominee)
+                          </div>
+                        `}
 
                         <!-- Large Photo -->
-                        <div class="relative w-40 h-52 md:w-44 md:h-56 mx-auto mb-3 rounded-2xl overflow-hidden border-2 border-[#FFDE42] shadow-[0_0_25px_rgba(255,222,66,0.4)] bg-[#050A30]">
+                        <div class="relative w-40 h-52 md:w-44 md:h-56 mx-auto mb-3 rounded-2xl overflow-hidden ${isWinner ? 'border-4 border-[#FFDE42] shadow-[0_0_30px_rgba(255,222,66,0.6)]' : 'border border-[#5478FF]/50 shadow-md'} bg-[#050A30]">
                           <img src="/api/contestants/${encodeURIComponent(leader.id)}/image" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${leader.id}');"
                             class="w-full h-full object-cover"
                             style="object-position: center 10%;">
-                          <span class="absolute bottom-1.5 right-1.5 px-2.5 py-0.5 rounded-lg bg-[#050A30]/90 border border-[#FFDE42] text-xs font-black text-[#FFDE42] shadow">
+                          <span class="absolute bottom-1.5 right-1.5 px-2.5 py-0.5 rounded-lg bg-[#050A30]/90 border ${isWinner ? 'border-[#FFDE42] text-[#FFDE42]' : 'border-[#5478FF] text-gray-200'} text-xs font-black shadow">
                             ${leader.id}
                           </span>
                         </div>
@@ -866,17 +971,19 @@
 
                       <div>
                         <!-- Score Display -->
-                        <div class="mt-4 pt-3 border-t border-white/10 bg-[#091054]/80 p-2.5 rounded-2xl border border-[#5478FF]/30">
-                          <div class="text-[9px] uppercase font-bold text-rose-300">คะแนน POPULAR VOTE รวม</div>
-                          <div id="all-score-${catKey}" class="text-2xl font-black text-[#FFDE42] gold-glow my-0.5">
+                        <div class="mt-4 pt-3 border-t border-white/10 ${isWinner ? 'bg-[#091054] border-2 border-[#FFDE42]/70 shadow' : 'bg-[#091054]/80 border border-[#5478FF]/30'} p-2.5 rounded-2xl">
+                          <div class="text-[9px] uppercase font-bold ${isWinner ? 'text-amber-300' : 'text-rose-300'}">
+                            ${isWinner ? '👑 คะแนนสูงสุด (ชนะเลิศ)' : 'คะแนนผู้เข้าชิงรวม'}
+                          </div>
+                          <div id="all-score-${catKey}" class="text-2xl font-black ${isWinner ? 'text-[#FFDE42] gold-glow scale-105' : 'text-gray-100'} my-0.5">
                             ${popScore.toLocaleString()}
                           </div>
                           <div class="text-[9px] text-gray-300 flex items-center justify-center gap-1 mt-1 pt-1 border-t border-white/10 flex-wrap">
-                            <span class="text-blue-300">ออนไลน์: ${(leader?.rounds?.popular?.score_c1 || 0).toLocaleString()}</span>
+                            <span class="text-blue-300">ออน: ${(leader?.rounds?.popular?.score_c1 || 0).toLocaleString()}</span>
                             <span>•</span>
-                            <span class="text-amber-300">รอบแรก: ${(leader?.rounds?.popular?.score_c2 || 0).toLocaleString()}</span>
+                            <span class="text-amber-300">จริง 1: ${(leader?.rounds?.popular?.score_c2 || 0).toLocaleString()}</span>
                             <span>•</span>
-                            <span class="text-purple-300">รอบสอง: ${(leader?.rounds?.popular?.score_c3 || 0).toLocaleString()}</span>
+                            <span class="text-purple-300">จริง 2: ${(leader?.rounds?.popular?.score_c3 || 0).toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
@@ -931,14 +1038,15 @@
       const indicator = document.getElementById('admin-step-indicator');
       if (indicator) {
         const names = {
-          jumbo: '1/6 • Miss Jumbo',
-          queen: '2/6 • Miss Queen',
-          congeniality: '3/6 • Miss Con',
-          mister: '4/6 • Mister',
-          miss: '5/6 • Miss',
-          all: '6/6 • สรุปรวม 5 ประเภท'
+          winner: '👑 ผู้ชนะเลิศ (1 เดียว)',
+          jumbo: '1/5 • ผู้เข้าชิง Miss Jumbo',
+          queen: '2/5 • ผู้เข้าชิง Miss Queen',
+          congeniality: '3/5 • ผู้เข้าชิง Miss Con',
+          mister: '4/5 • ผู้เข้าชิง Mister',
+          miss: '5/5 • ผู้เข้าชิง Miss',
+          all: '🏆 สรุปผู้เข้าชิงทั้ง 5'
         };
-        indicator.textContent = names[localCategory] || '1/6';
+        indicator.textContent = names[localCategory] || '👑 ชนะเลิศ 1 เดียว';
       }
 
       // Update Reveal Button

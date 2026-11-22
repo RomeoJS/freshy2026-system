@@ -469,7 +469,7 @@ app.get('/api/contestants/:id/image', async (req, res) => {
 
 // ระบบจัดการสถานะจอเวทีประกาศผล Popular Vote (Stage Remote State)
 let stageState = {
-    category: 'jumbo', // 'jumbo', 'queen', 'mister', 'miss', 'all'
+    category: 'winner', // 'winner', 'jumbo', 'queen', 'congeniality', 'mister', 'miss', 'all'
     revealed: false,
     confettiTrigger: 0,
     updatedAt: Date.now()
@@ -837,8 +837,10 @@ async function calculateSummary() {
         f.award = idx === 0 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4';
     });
 
-    // สรุปผลผู้ชนะ Popular Vote แต่ละประเภท (คัดคนที่ได้คะแนนสูงสุดเพียงคนเดียว)
-    const popularWinners = {};
+    // สรุปผลผู้เข้าชิงอันดับ 1 ของทั้ง 5 ประเภท และคัดเลือกผู้ชนะเลิศ POPULAR VOTE เพียง 1 เดียวจากทั้ง 5 คน
+    const popularCategoryLeaders = {};
+    const popularTopCandidates = [];
+
     for (const [catKey, list] of Object.entries(categoriesData)) {
         const sorted = [...list].sort((a, b) => {
             const scoreA = a.rounds?.popular?.total || 0;
@@ -850,19 +852,65 @@ async function calculateSummary() {
             return (a.id || '').localeCompare(b.id || '');
         });
         const top1 = sorted[0];
-        popularWinners[catKey] = top1 ? {
-            id: top1.id,
-            name: top1.name,
-            nickname: top1.nickname,
-            faculty: top1.faculty,
-            category: top1.category,
-            categoryName: top1.categoryName,
-            image: top1.image,
-            score_c1: top1.rounds?.popular?.score_c1 || 0,
-            score_c2: top1.rounds?.popular?.score_c2 || 0,
-            score_c3: top1.rounds?.popular?.score_c3 || 0,
-            total: top1.rounds?.popular?.total || 0
-        } : null;
+        if (top1) {
+            const candidate = {
+                id: top1.id,
+                name: top1.name,
+                nickname: top1.nickname,
+                faculty: top1.faculty,
+                category: top1.category,
+                categoryName: top1.categoryName,
+                image: top1.image,
+                score_c1: top1.rounds?.popular?.score_c1 || 0,
+                score_c2: top1.rounds?.popular?.score_c2 || 0,
+                score_c3: top1.rounds?.popular?.score_c3 || 0,
+                total: top1.rounds?.popular?.total || 0
+            };
+            popularCategoryLeaders[catKey] = candidate;
+            popularTopCandidates.push(candidate);
+        } else {
+            popularCategoryLeaders[catKey] = null;
+        }
+    }
+
+    // คัดเลือกคนที่มีคะแนน Popular Vote สูงสุดเพียงคนเดียวเท่านั้น จากผู้เข้าประกวดทั้งหมด
+    const allContestantsForPop = [];
+    for (const list of Object.values(categoriesData)) {
+        allContestantsForPop.push(...list);
+    }
+    allContestantsForPop.sort((a, b) => {
+        const scoreA = a.rounds?.popular?.total || 0;
+        const scoreB = b.rounds?.popular?.total || 0;
+        if (scoreB !== scoreA) return scoreB - scoreA;
+        const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+        const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+        if (numA !== numB) return numA - numB;
+        return (a.id || '').localeCompare(b.id || '');
+    });
+
+    const topContestant = allContestantsForPop[0];
+    const popularWinner = (topContestant && (topContestant.rounds?.popular?.total || 0) > 0)
+        ? {
+            id: topContestant.id,
+            name: topContestant.name,
+            nickname: topContestant.nickname,
+            faculty: topContestant.faculty,
+            category: topContestant.category,
+            categoryName: topContestant.categoryName,
+            image: topContestant.image,
+            score_c1: topContestant.rounds?.popular?.score_c1 || 0,
+            score_c2: topContestant.rounds?.popular?.score_c2 || 0,
+            score_c3: topContestant.rounds?.popular?.score_c3 || 0,
+            total: topContestant.rounds?.popular?.total || 0
+        }
+        : null;
+
+    // มาร์กให้ตัวแทน 5 คนทราบว่าใครคือผู้ชนะเพียง 1 เดียว
+    for (const catKey of Object.keys(popularCategoryLeaders)) {
+        const c = popularCategoryLeaders[catKey];
+        if (c) {
+            c.isOverallWinner = Boolean(popularWinner && c.id === popularWinner.id);
+        }
     }
 
     return {
@@ -871,7 +919,9 @@ async function calculateSummary() {
         top3: top3Finalists,
         finalRankings: [...top3Finalists, ...remainingTwo],
         missConTalent,
-        popularWinners
+        popularWinner, // ผู้ชนะเลิศ Popular Vote เพียงคนเดียวเท่านั้น
+        popularWinners: popularCategoryLeaders, // ตัวแทนอันดับ 1 แต่ละประเภท
+        popularCategoryLeaders
     };
 }
 
