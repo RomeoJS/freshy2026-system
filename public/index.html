@@ -1281,6 +1281,8 @@
       let isFetchingScores = false;
       let lastScoresHash = '';
       let lastSummaryHash = '';
+      let lastScoresVersion = '';
+      let lastSummaryVersion = '';
 
       function getPlaceholderSvgUri(text) {
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="100%" height="100%" fill="#111FA2"/><circle cx="100" cy="80" r="30" fill="#5478FF" opacity="0.3"/><circle cx="100" cy="72" r="16" fill="#FFDE42" opacity="0.85"/><path d="M70 120 Q100 95 130 120" fill="none" stroke="#FFDE42" stroke-width="4" stroke-linecap="round" opacity="0.85"/><text x="50%" y="160" dominant-baseline="middle" text-anchor="middle" fill="#FFDE42" font-family="sans-serif" font-weight="bold" font-size="20">${text}</text></svg>`;
@@ -1634,6 +1636,7 @@
           adminSec.classList.add('view-animated');
           switchAdminView('top3');
           startAdminPolling();
+          startStageRemoteSync();
         } else if (role === 'admin2') {
           if (adminJudgeBar) adminJudgeBar.classList.remove('hidden');
           if (admin2Switcher) admin2Switcher.classList.remove('hidden');
@@ -1643,6 +1646,7 @@
           selectAdminEditingJudge('judge1');
           switchRound('blackroom');
           startAdminPolling();
+          startStageRemoteSync();
         } else if (role === 'staff') {
           if (adminJudgeBar) adminJudgeBar.classList.add('hidden');
           if (admin2Switcher) admin2Switcher.classList.add('hidden');
@@ -1749,6 +1753,7 @@
       function forceLogout(reason) {
         if (heartbeatInterval) clearInterval(heartbeatInterval);
         if (pollingInterval) clearInterval(pollingInterval);
+        stopStageRemoteSync();
         heartbeatInterval = null;
         pollingInterval = null;
         currentUser = null;
@@ -1884,23 +1889,50 @@
 
       async function fetchScores(forceRender = false) {
         if (isFetchingScores) return;
+        if (document.hidden && !forceRender) return;
+
+        // หากผู้ใช้กำลังพิมพ์คะแนนอยู่ในตาราง ห้าม re-render ทับ เพื่อป้องกันเคอร์เซอร์หลุดและอาการกระตุก
+        const isTypingScore = document.activeElement && (
+          document.activeElement.classList?.contains('pop-vote-input') || 
+          document.activeElement.classList?.contains('score-slider')
+        );
+        if (isTypingScore && !forceRender) {
+          return;
+        }
+
         isFetchingScores = true;
         try {
           const [resScores, resSummary] = await Promise.all([
             fetch('/api/scores'),
             fetch('/api/summary')
           ]);
+
+          const scoresVer = resScores.headers.get('x-scores-version');
+          const sumVer = resSummary.headers.get('x-summary-version');
+
+          // ถ้ามี Version header และตรงกับครั้งก่อน และไม่ได้บังคับ render ไม่ต้อง parse หรือประมวลผล JSON ใหม่
+          if (scoresVer && sumVer && scoresVer === lastScoresVersion && sumVer === lastSummaryVersion && !forceRender) {
+            return;
+          }
+
           const newScores = await resScores.json();
           const newSummary = await resSummary.json();
 
-          const scoresStr = JSON.stringify(newScores);
-          const summaryStr = JSON.stringify(newSummary);
-          const hasChanged = (scoresStr !== lastScoresHash || summaryStr !== lastSummaryHash);
+          let hasChanged = false;
+          if (scoresVer && sumVer) {
+            hasChanged = (scoresVer !== lastScoresVersion || sumVer !== lastSummaryVersion);
+            lastScoresVersion = scoresVer;
+            lastSummaryVersion = sumVer;
+          } else {
+            const scoresStr = JSON.stringify(newScores);
+            const summaryStr = JSON.stringify(newSummary);
+            hasChanged = (scoresStr !== lastScoresHash || summaryStr !== lastSummaryHash);
+            lastScoresHash = scoresStr;
+            lastSummaryHash = summaryStr;
+          }
 
           allScores = newScores;
           summaryData = newSummary;
-          lastScoresHash = scoresStr;
-          lastSummaryHash = summaryStr;
 
           // หากข้อมูลคะแนนไม่ได้เปลี่ยนและไม่ได้บังคับ render ไม่ต้องวาด DOM ใหม่ เพื่อลดอาการกระตุก
           if (!hasChanged && !forceRender) {
@@ -1909,6 +1941,8 @@
 
           if (currentUser === 'admin') {
             renderAdminViews();
+          } else if (currentUser === 'staff') {
+            renderAdminPreTable();
           } else if (currentUser === 'admin2') {
             renderJudgeCards();
             renderAdminViews();
@@ -2235,7 +2269,7 @@
               <div class="w-full md:w-5/12 flex flex-col items-center text-center justify-between border-b md:border-b-0 md:border-r border-[#5478FF]/30 pb-5 md:pb-0 md:pr-5">
                 <div class="w-full flex flex-col items-center">
                   <div class="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden border-2 ${isResigned ? 'border-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.4)]' : (hasVoted ? 'border-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.4)]' : 'border-[#FFDE42] shadow-[0_0_20px_rgba(255,222,66,0.25)]')} bg-[#111FA2] group mb-2 cursor-pointer transition-all duration-300 hover:border-[#FFDE42]" onclick="openImageModal('${cId}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
-                    <img src="${imagePath}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${cId}');" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out ${isResigned ? 'grayscale-[50%]' : ''}">
+                    <img src="${imagePath}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${cId}');" alt="${cName}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out ${isResigned ? 'grayscale-[50%]' : ''}">
                     
                     <!-- ป้ายรหัสและหมวดหมู่ (มุมซ้ายล่าง ไม่บังรูปผู้เข้าประกวด) -->
                     <div class="absolute bottom-2 left-2 bg-[#111FA2]/95 backdrop-blur-sm border border-[#FFDE42] text-[#FFDE42] rounded-xl px-2.5 py-1.5 shadow-md z-10 pointer-events-none flex flex-col items-center text-center">
@@ -2651,11 +2685,27 @@
           renderAdminPreTable();
           return;
         }
-        renderAdminTop3Table();
-        renderAdminConResultsTable();
-        renderAdminSpeedTable();
-        renderAdminPreTable();
-        renderContestantManageTable();
+        // วาดเฉพาะ View ที่กำลังเปิดใช้งานอยู่เท่านั้น เพื่อลดภาระ DOM reflow และป้องกันเว็บกระตุก
+        switch (adminCurrentView) {
+          case 'top3':
+            renderAdminTop3Table();
+            break;
+          case 'con':
+            renderAdminConResultsTable();
+            break;
+          case 'speed':
+            renderAdminSpeedTable();
+            break;
+          case 'pre':
+            renderAdminPreTable();
+            break;
+          case 'manage':
+            renderContestantManageTable();
+            break;
+          default:
+            renderAdminPreTable();
+            break;
+        }
       }
 
       // วิว 3.5: ⭐ ผลการตัดสินรอบความสามารถพิเศษ Miss Congeniality (กรรมการ 3 ท่าน • แยกเก็บต่างหาก)
@@ -2718,7 +2768,7 @@
             <tr class="border-b border-[#5478FF]/20 ${isWinner ? 'bg-gradient-to-r from-yellow-500/20 via-amber-500/10 to-yellow-500/20' : 'hover:bg-[#5478FF]/10'} transition-colors">
               <td class="px-3 py-3 text-center font-extrabold text-lg ${isWinner ? 'text-[#FFDE42]' : 'text-gray-300'}">${isWinner ? '👑 1' : idx + 1}</td>
               <td class="px-3 py-3 text-center">
-                <img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-10 h-10 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42]' : 'border-[#5478FF]'} mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
+                <img src="${img}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-10 h-10 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42]' : 'border-[#5478FF]'} mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
               </td>
               <td class="px-3 py-3">
                 <div class="font-bold text-white text-sm">${c.name}</div>
@@ -2784,7 +2834,7 @@
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${idx === 0 && total > 0 ? 'bg-[#FFDE42]/10' : ''}">
               <td class="px-3 py-3 text-center font-bold text-white whitespace-nowrap">${idx + 1}</td>
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] whitespace-nowrap">${c.id}</td>
-              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
+              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 whitespace-nowrap">
                 <div class="font-semibold text-white text-sm">${c.name}</div>
                 ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', 'congeniality')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนน</button>` : ''}
@@ -2842,7 +2892,7 @@
                 ${f.finalRank === 1 ? '👑 1' : f.finalRank}
               </td>
               <td class="px-3 py-3 text-center">
-                <img src="${imagePath}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-11 h-11 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
+                <img src="${imagePath}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-11 h-11 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
               </td>
               <td class="px-3 py-3">
                 <div class="font-bold text-white text-sm">${f.name}</div>
@@ -2894,7 +2944,7 @@
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop3 ? 'bg-amber-500/10' : ''}">
               <td class="px-3 py-3 text-center font-extrabold text-base ${isTop3 ? 'text-amber-300' : 'text-gray-400'}">${idx + 1}</td>
               <td class="px-3 py-3 text-center">
-                <img src="${imagePath}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
+                <img src="${imagePath}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
               </td>
               <td class="px-3 py-3">
                 <div class="font-bold text-white text-sm">${f.name}</div>
@@ -3010,7 +3060,7 @@
             rows.push(`
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isResigned ? 'bg-rose-950/20 opacity-75' : (isTop5 ? 'bg-[#FFDE42]/5' : '')}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
-              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
+              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 whitespace-nowrap">
                 <div class="font-semibold text-white text-sm ${isResigned ? 'line-through text-gray-400' : ''}">${escapeHtml(c.name)}</div>
                 ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', 'blackroom')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบคัดเลือก</button>` : ''}
@@ -3082,7 +3132,7 @@
             rows.push(`
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isWinner ? 'bg-amber-400/10' : ''} ${isResigned ? 'bg-rose-950/20 opacity-75' : ''}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
-              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
+              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 whitespace-nowrap">
                 <div class="font-semibold text-white text-sm ${isResigned ? 'line-through text-gray-400' : ''}">${escapeHtml(c.name)}</div>
                 ${c.nickname ? `<div class="text-xs text-amber-300">"${escapeHtml(c.nickname)}"</div>` : ''}
@@ -3202,7 +3252,7 @@
             rows.push(`
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isResigned ? 'bg-rose-950/20 opacity-75' : (isTop5 ? 'bg-[#FFDE42]/5' : '')}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] whitespace-nowrap">${c.id}</td>
-              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
+              <td class="px-3 py-3 text-center"><img src="${img}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-9 h-9 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่"></td>
               <td class="px-3 py-3 whitespace-nowrap">
                 <div class="font-semibold text-white text-sm ${isResigned ? 'line-through text-gray-400' : ''}">${escapeHtml(c.name)}</div>
                 ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${c.id}', '${roundId}')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบนี้</button>` : ''}
@@ -3292,7 +3342,7 @@
             <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isResigned ? 'bg-rose-950/20' : ''}">
               <td class="px-3 py-3 text-center font-bold text-[#FFDE42] text-sm">${c.id}</td>
               <td class="px-3 py-3 text-center">
-                <img src="${img}" loading="lazy" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="ดูรูปภาพ">
+                <img src="${img}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${c.id}')" title="ดูรูปภาพ">
               </td>
               <td class="px-3 py-3">
                 <div class="font-bold text-white text-sm ${isResigned ? 'line-through text-gray-400' : ''}">${escapeHtml(rawName + nick)}</div>
@@ -6317,16 +6367,37 @@
       let currentStageCategory = 'jumbo';
       let currentStageRevealed = false;
 
+      let stageRemoteInterval = null;
       async function syncStageRemoteState() {
+        if (!currentUser || (currentUser !== 'admin' && currentUser !== 'admin2')) return;
+        if (document.hidden) return;
         try {
-          const res = await fetch('/api/stage-state', { cache: 'no-store' });
+          const res = await fetch('/api/stage-state');
           if (!res.ok) return;
           const data = await res.json();
-          currentStageCategory = data.category || 'jumbo';
-          currentStageRevealed = Boolean(data.revealed);
-          updateStageRemoteUI();
+          const nextCat = data.category || 'jumbo';
+          const nextRev = Boolean(data.revealed);
+          // อัปเดต UI เฉพาะเมื่อข้อมูลรีโมตเปลี่ยนจริงเท่านั้น ป้องกัน Layout Thrashing
+          if (nextCat !== currentStageCategory || nextRev !== currentStageRevealed) {
+            currentStageCategory = nextCat;
+            currentStageRevealed = nextRev;
+            updateStageRemoteUI();
+          }
         } catch (e) {
           console.warn('Sync stage state error:', e);
+        }
+      }
+
+      function startStageRemoteSync() {
+        if (stageRemoteInterval) clearInterval(stageRemoteInterval);
+        syncStageRemoteState();
+        stageRemoteInterval = setInterval(syncStageRemoteState, 3000);
+      }
+
+      function stopStageRemoteSync() {
+        if (stageRemoteInterval) {
+          clearInterval(stageRemoteInterval);
+          stageRemoteInterval = null;
         }
       }
 
@@ -6417,9 +6488,10 @@
         showToast('เปิดเอฟเฟกต์ฉลองเกียรติยศ (Royal Golden Aura) ขึ้นจอเรียบร้อยแล้ว!');
       }
 
-      // Initial sync on load
-      syncStageRemoteState();
-      setInterval(syncStageRemoteState, 2000);
+      // Sync stage remote state only if logged in as admin/admin2
+      if (currentUser === 'admin' || currentUser === 'admin2') {
+        startStageRemoteSync();
+      }
     </script>
   </body>
 </html>

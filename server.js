@@ -476,6 +476,7 @@ let stageState = {
 };
 
 app.get('/api/stage-state', (req, res) => {
+    res.setHeader('X-Stage-Version', String(stageState.updatedAt || 1));
     res.json(stageState);
 });
 
@@ -489,18 +490,19 @@ app.post('/api/stage-state', (req, res) => {
 });
 
 // Cache สำหรับคะแนนและผลสรุป
-let scoresCache = { data: null, timestamp: 0 };
-let summaryCache = { data: null, timestamp: 0 };
+let scoresCache = { data: null, timestamp: 0, version: 1 };
+let summaryCache = { data: null, timestamp: 0, version: 1 };
 const CACHE_TTL = 15000; // 15 วินาที (หากไม่มีการบันทึกคะแนนใหม่ จะดึงจากแคชทันที)
 
 app.get('/api/scores', async (req, res) => {
     try {
+        res.setHeader('X-Scores-Version', String(scoresCache.version));
         const now = Date.now();
         if (scoresCache.data && now - scoresCache.timestamp < CACHE_TTL) {
             return res.json(scoresCache.data);
         }
         const [rows] = await pool.execute('SELECT * FROM scores');
-        scoresCache = { data: rows, timestamp: now };
+        scoresCache = { data: rows, timestamp: now, version: scoresCache.version };
         res.json(rows);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch scores' });
@@ -509,12 +511,13 @@ app.get('/api/scores', async (req, res) => {
 
 app.get('/api/summary', async (req, res) => {
     try {
+        res.setHeader('X-Summary-Version', String(summaryCache.version));
         const now = Date.now();
         if (summaryCache.data && now - summaryCache.timestamp < CACHE_TTL) {
             return res.json(summaryCache.data);
         }
         const summary = await calculateSummary();
-        summaryCache = { data: summary, timestamp: now };
+        summaryCache = { data: summary, timestamp: now, version: summaryCache.version };
         res.json(summary);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -570,7 +573,9 @@ app.post('/api/scores', async (req, res) => {
         
         // เคลียร์ Cache เพื่อให้ API ดึงข้อมูลใหม่
         scoresCache.timestamp = 0;
+        scoresCache.version++;
         summaryCache.timestamp = 0;
+        summaryCache.version++;
         
         res.json({ success: true, message: 'บันทึกคะแนนสำเร็จ', total_score: total });
     } catch (error) {
@@ -621,7 +626,9 @@ app.post('/api/scores/increment', async (req, res) => {
 
         // เคลียร์แคช
         scoresCache.timestamp = 0;
+        scoresCache.version++;
         summaryCache.timestamp = 0;
+        summaryCache.version++;
 
         // ดึงคะแนนล่าสุดกลับไปตอบสนอง
         const [rows] = await pool.execute(
