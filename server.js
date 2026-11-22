@@ -14,6 +14,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'public/images/logo.png')));
+app.get('/live-popular', (req, res) => res.sendFile(path.join(__dirname, 'public/live-popular.html')));
 
 const upload = multer({
     storage: multer.memoryStorage(),

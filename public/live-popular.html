@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RMUTK FRESHY 2026 - POPULAR VOTE LIVE MONITOR</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <link rel="shortcut icon" type="image/png" href="images/logo.png" />
+
+  <style>
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Prompt", sans-serif;
+      background-color: #050a30;
+      background-image:
+        radial-gradient(circle at 50% 10%, rgba(84, 120, 255, 0.35) 0%, transparent 60%),
+        radial-gradient(circle at 10% 85%, rgba(244, 63, 94, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 90% 85%, rgba(255, 222, 66, 0.22) 0%, transparent 50%);
+      background-attachment: fixed;
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    .glass-panel {
+      background: rgba(13, 24, 120, 0.45);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(84, 120, 255, 0.35);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.12);
+    }
+
+    .gold-glow {
+      text-shadow:
+        0 0 15px rgba(255, 222, 66, 0.9),
+        0 0 35px rgba(255, 180, 0, 0.5);
+    }
+
+    .rose-glow {
+      text-shadow:
+        0 0 15px rgba(244, 63, 94, 0.9),
+        0 0 35px rgba(225, 29, 72, 0.5);
+    }
+
+    .pulse-live {
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+      animation: pulse-ring 1.8s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 14px rgba(239, 68, 68, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      }
+    }
+
+    @keyframes scoreFlash {
+      0% {
+        transform: scale(1);
+        filter: brightness(1);
+      }
+      30% {
+        transform: scale(1.05);
+        filter: brightness(1.6) drop-shadow(0 0 25px rgba(255, 222, 66, 0.9));
+      }
+      100% {
+        transform: scale(1);
+        filter: brightness(1);
+      }
+    }
+
+    .score-updated {
+      animation: scoreFlash 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Podium 1st, 2nd, 3rd glow borders */
+    .podium-gold {
+      border: 2px solid #FFDE42;
+      background: linear-gradient(145deg, rgba(255, 222, 66, 0.18), rgba(9, 16, 84, 0.85));
+      box-shadow: 0 0 45px rgba(255, 222, 66, 0.35), inset 0 0 25px rgba(255, 222, 66, 0.15);
+    }
+
+    .podium-silver {
+      border: 2px solid #CBD5E1;
+      background: linear-gradient(145deg, rgba(203, 213, 225, 0.18), rgba(9, 16, 84, 0.85));
+      box-shadow: 0 0 35px rgba(203, 213, 225, 0.25), inset 0 0 20px rgba(203, 213, 225, 0.1);
+    }
+
+    .podium-bronze {
+      border: 2px solid #F59E0B;
+      background: linear-gradient(145deg, rgba(245, 158, 11, 0.18), rgba(9, 16, 84, 0.85));
+      box-shadow: 0 0 35px rgba(245, 158, 11, 0.25), inset 0 0 20px rgba(245, 158, 11, 0.1);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(5, 10, 48, 0.8);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(84, 120, 255, 0.5);
+      border-radius: 999px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between p-3 md:p-6 select-none">
+
+  <!-- TOP BAR: Brand & Event Header -->
+  <header class="w-full mb-4">
+    <div class="glass-panel rounded-3xl p-3 md:p-4 border border-[#5478FF]/40 flex flex-wrap items-center justify-between gap-3 shadow-2xl relative overflow-hidden">
+      <!-- Glow ambient background inside header -->
+      <div class="absolute -right-16 -top-16 w-56 h-56 bg-gradient-to-br from-[#FFDE42]/20 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-16 -bottom-16 w-56 h-56 bg-gradient-to-tr from-rose-500/20 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Left: Logo & Stage Titles -->
+      <div class="flex items-center gap-3.5 z-10">
+        <img src="images/logo.png" alt="RMUTK FRESHY 2026" class="h-12 md:h-14 object-contain drop-shadow-[0_0_15px_rgba(255,222,66,0.4)] hover:scale-105 transition" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('RMUTK');">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs uppercase tracking-widest text-[#FFDE42] font-black">RMUTK FRESHY 2026</span>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-bold">
+              <span class="w-2 h-2 rounded-full bg-rose-500 pulse-live"></span>
+              LIVE STAGE
+            </span>
+          </div>
+          <h1 class="text-xl md:text-2xl font-black text-white tracking-wide flex items-center gap-2">
+            <i class="fas fa-heart text-rose-400"></i>
+            POPULAR VOTE LEADERBOARD
+          </h1>
+        </div>
+      </div>
+
+      <!-- Center: Auto-Loop Countdown Bar (Active when loop is ON) -->
+      <div id="loop-indicator" class="hidden flex-col items-center justify-center z-10">
+        <div class="text-[11px] font-bold text-amber-200 flex items-center gap-1.5 mb-1">
+          <i class="fas fa-sync-alt fa-spin text-rose-400"></i>
+          <span>สลับหมวดอัตโนมัติใน: <span id="loop-seconds" class="font-black text-white text-xs">12</span>s</span>
+        </div>
+        <div class="w-36 h-1.5 bg-blue-950 rounded-full overflow-hidden border border-[#5478FF]/30">
+          <div id="loop-progress" class="h-full bg-gradient-to-r from-rose-500 to-[#FFDE42] transition-all duration-300" style="width: 100%;"></div>
+        </div>
+      </div>
+
+      <!-- Right: Live Controls & Status Indicators -->
+      <div class="flex items-center gap-2 z-10 flex-wrap">
+        <!-- Live Clock -->
+        <div class="px-3 py-1.5 rounded-xl bg-[#091054]/90 border border-[#5478FF]/40 text-xs font-semibold text-gray-200 flex items-center gap-1.5">
+          <i class="far fa-clock text-[#FFDE42]"></i>
+          <span id="live-clock">--:--:--</span>
+        </div>
+
+        <!-- Blind / Reveal Mode (ซ่อน/เปิดเผยคะแนนบนเวที) -->
+        <button type="button" id="btn-toggle-blind" onclick="toggleBlindMode()"
+          class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/40 active:scale-95"
+          title="ซ่อนคะแนนเพื่อเล่นเกมบิ้วด์อารมณ์บนเวทีก่อนเฉลย">
+          <i class="fas fa-eye-slash text-amber-400" id="blind-icon"></i>
+          <span id="blind-label">ซ่อนคะแนน</span>
+        </button>
+
+        <!-- Auto-Loop Toggle -->
+        <button type="button" id="btn-toggle-loop" onclick="toggleAutoLoop()"
+          class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-[#091054]/90 text-gray-300 hover:text-white border border-[#5478FF]/40 active:scale-95"
+          title="สลับหมวดหมู่แสดงผลอัตโนมัติทุกๆ 12 วินาที">
+          <i class="fas fa-redo text-emerald-400"></i>
+          <span id="loop-label">เปิดวนลูป</span>
+        </button>
+
+        <!-- Sound FX Toggle -->
+        <button type="button" id="btn-toggle-sound" onclick="toggleSound()"
+          class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054]/90 text-gray-400 hover:text-white border border-[#5478FF]/40 active:scale-95"
+          title="เปิด/ปิดเสียงเอฟเฟกต์เมื่อคะแนนเพิ่มขึ้น">
+          <i class="fas fa-volume-mute" id="sound-icon"></i>
+        </button>
+
+        <!-- Fullscreen Button -->
+        <button type="button" onclick="toggleFullScreen()"
+          class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-gradient-to-r from-yellow-500 to-amber-400 text-[#050A30] shadow-md hover:scale-105 active:scale-95 font-black">
+          <i class="fas fa-expand"></i>
+          <span class="hidden sm:inline">เต็มจอ (F11)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Category Tabs Navigation -->
+    <div class="mt-3 flex items-center justify-between gap-2 overflow-x-auto pb-1">
+      <div class="flex items-center gap-2">
+        <button onclick="setCategoryFilter('all')" id="cat-tab-all"
+          class="cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-black transition-all flex items-center gap-2 bg-[#FFDE42] text-[#050A30] shadow-[0_0_15px_rgba(255,222,66,0.4)]">
+          <i class="fas fa-th-large"></i> ทั้งหมด (Overview)
+        </button>
+        <button onclick="setCategoryFilter('miss')" id="cat-tab-miss"
+          class="cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 glass-panel text-gray-300 hover:text-white">
+          <i class="fas fa-female text-pink-400"></i> Miss RMUTK
+        </button>
+        <button onclick="setCategoryFilter('mister')" id="cat-tab-mister"
+          class="cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 glass-panel text-gray-300 hover:text-white">
+          <i class="fas fa-male text-blue-400"></i> Mister RMUTK
+        </button>
+        <button onclick="setCategoryFilter('queen')" id="cat-tab-queen"
+          class="cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 glass-panel text-gray-300 hover:text-white">
+          <i class="fas fa-crown text-purple-400"></i> Miss Queen RMUTK
+        </button>
+        <button onclick="setCategoryFilter('jumbo')" id="cat-tab-jumbo"
+          class="cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 glass-panel text-gray-300 hover:text-white">
+          <i class="fas fa-gem text-amber-400"></i> Miss Jumbo RMUTK
+        </button>
+      </div>
+
+      <!-- Total Votes Stat -->
+      <div class="shrink-0 px-4 py-1.5 rounded-2xl bg-rose-950/40 border border-rose-500/30 flex items-center gap-2">
+        <i class="fas fa-vote-yea text-rose-400 text-sm"></i>
+        <div class="text-[11px] text-gray-300">
+          คะแนนโหวตรวมทั้งหมด: <span id="stat-total-votes" class="font-black text-rose-300 text-sm">0</span> คะแนน
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN MONITOR DISPLAY CONTAINER -->
+  <main id="monitor-content" class="flex-1 w-full my-auto transition-all duration-500">
+    <!-- Content injected dynamically via JavaScript -->
+    <div class="flex flex-col items-center justify-center py-24 text-gray-400">
+      <i class="fas fa-spinner fa-spin text-4xl text-[#FFDE42] mb-3"></i>
+      <p class="text-sm font-semibold tracking-wide">กำลังเชื่อมต่อฐานข้อมูลคะแนนแบบเรียลไทม์...</p>
+    </div>
+  </main>
+
+  <!-- FOOTER: Stage Status & Credit -->
+  <footer class="mt-4 pt-3 border-t border-[#5478FF]/20 flex flex-wrap items-center justify-between text-[11px] text-gray-400 gap-2">
+    <div class="flex items-center gap-3">
+      <span class="inline-flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="connection-status" class="text-emerald-400 font-semibold">ระบบเชื่อมต่อสด (Auto-Sync ทุก 2.5 วินาที)</span>
+      </span>
+      <span>•</span>
+      <span>อัปเดตล่าสุด: <span id="last-updated" class="text-gray-300 font-mono">--:--:--</span></span>
+    </div>
+
+    <div class="flex items-center gap-2 font-medium">
+      <span class="text-[#FFDE42] font-bold">RMUTK FRESHY 2026</span>
+      <span>|</span>
+      <span>ระบบตัดสินและแสดงผลการประกวดอย่างเป็นทางการ</span>
+    </div>
+  </footer>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // ========================================================
+    // State & Configurations
+    // ========================================================
+    let summaryData = null;
+    let allContestants = [];
+    let currentCategory = 'all'; // 'all', 'miss', 'mister', 'queen', 'jumbo'
+    let previousScores = {}; // Map of contestantId -> last score for animation
+    let isBlindMode = false; // Conceal scores for stage suspense
+    let isAutoLoop = false;
+    let loopInterval = null;
+    let loopTimer = null;
+    let loopSecondsRemaining = 12;
+    const LOOP_DURATION_SEC = 12;
+    let isSoundEnabled = false;
+    let audioCtx = null;
+    let pollingTimer = null;
+    const POLLING_INTERVAL_MS = 2500;
+
+    const CATEGORIES_CONFIG = {
+      miss: { name: 'Miss RMUTK', icon: 'fa-female', color: 'pink', badge: 'bg-pink-500/20 text-pink-300 border-pink-500/40' },
+      mister: { name: 'Mister RMUTK', icon: 'fa-male', color: 'blue', badge: 'bg-blue-500/20 text-blue-300 border-blue-500/40' },
+      queen: { name: 'Miss Queen RMUTK', icon: 'fa-crown', color: 'purple', badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40' },
+      jumbo: { name: 'Miss Jumbo RMUTK', icon: 'fa-gem', color: 'amber', badge: 'bg-amber-500/20 text-amber-300 border-amber-500/40' }
+    };
+
+    const LOOP_CATEGORIES = ['all', 'miss', 'mister', 'queen', 'jumbo'];
+
+    // ========================================================
+    // Placeholder SVG Generator
+    // ========================================================
+    function getPlaceholderSvgUri(text) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+        <rect width="100%" height="100%" fill="#091054"/>
+        <circle cx="100" cy="80" r="32" fill="#5478FF" opacity="0.35"/>
+        <circle cx="100" cy="72" r="18" fill="#FFDE42" opacity="0.85"/>
+        <path d="M65 125 Q100 95 135 125" fill="none" stroke="#FFDE42" stroke-width="4.5" stroke-linecap="round" opacity="0.85"/>
+        <text x="50%" y="165" dominant-baseline="middle" text-anchor="middle" fill="#FFDE42" font-family="sans-serif" font-weight="900" font-size="22">${text}</text>
+      </svg>`;
+      return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+    }
+
+    // ========================================================
+    // Web Audio Synthesizer (Zero External Audio File Needed)
+    // ========================================================
+    function playChime() {
+      if (!isSoundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const now = audioCtx.currentTime;
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc1.type = 'triangle';
+        osc1.frequency.setValueAtTime(587.33, now); // D5
+        osc1.frequency.exponentialRampToValueAtTime(880.00, now + 0.15); // A5
+
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(1174.66, now + 0.05); // D6
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc1.start(now);
+        osc2.start(now + 0.05);
+        osc1.stop(now + 0.6);
+        osc2.stop(now + 0.6);
+      } catch (e) {
+        // Audio error ignored
+      }
+    }
+
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      const icon = document.getElementById('sound-icon');
+      const btn = document.getElementById('btn-toggle-sound');
+      if (isSoundEnabled) {
+        icon.className = 'fas fa-volume-up text-[#FFDE42]';
+        btn.classList.add('border-[#FFDE42]');
+        playChime();
+      } else {
+        icon.className = 'fas fa-volume-mute';
+        btn.classList.remove('border-[#FFDE42]');
+      }
+    }
+
+    // ========================================================
+    // Fullscreen Handling
+    // ========================================================
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // ========================================================
+    // Blind Mode (ซ่อน/เฉลยคะแนน)
+    // ========================================================
+    function toggleBlindMode() {
+      isBlindMode = !isBlindMode;
+      const label = document.getElementById('blind-label');
+      const icon = document.getElementById('blind-icon');
+      const btn = document.getElementById('btn-toggle-blind');
+
+      if (isBlindMode) {
+        label.innerText = 'เปิดเผยคะแนน (Reveal)';
+        icon.className = 'fas fa-eye text-[#FFDE42]';
+        btn.classList.add('border-[#FFDE42]', 'bg-amber-500/20');
+      } else {
+        label.innerText = 'ซ่อนคะแนน (Blind)';
+        icon.className = 'fas fa-eye-slash text-amber-400';
+        btn.classList.remove('border-[#FFDE42]', 'bg-amber-500/20');
+        playChime();
+      }
+      renderDisplay();
+    }
+
+    // ========================================================
+    // Auto Loop Controller
+    // ========================================================
+    function toggleAutoLoop() {
+      isAutoLoop = !isAutoLoop;
+      const label = document.getElementById('loop-label');
+      const ind = document.getElementById('loop-indicator');
+      const btn = document.getElementById('btn-toggle-loop');
+
+      if (isAutoLoop) {
+        label.innerText = 'ปิดวนลูป';
+        btn.classList.add('border-emerald-400', 'bg-emerald-500/20');
+        ind.classList.remove('hidden');
+        startLoopTimer();
+      } else {
+        label.innerText = 'เปิดวนลูป';
+        btn.classList.remove('border-emerald-400', 'bg-emerald-500/20');
+        ind.classList.add('hidden');
+        stopLoopTimer();
+      }
+    }
+
+    function startLoopTimer() {
+      stopLoopTimer();
+      loopSecondsRemaining = LOOP_DURATION_SEC;
+      updateLoopUI();
+
+      loopTimer = setInterval(() => {
+        loopSecondsRemaining--;
+        if (loopSecondsRemaining <= 0) {
+          nextCategoryInLoop();
+          loopSecondsRemaining = LOOP_DURATION_SEC;
+        }
+        updateLoopUI();
+      }, 1000);
+    }
+
+    function stopLoopTimer() {
+      if (loopTimer) clearInterval(loopTimer);
+      loopTimer = null;
+    }
+
+    function updateLoopUI() {
+      const secEl = document.getElementById('loop-seconds');
+      const progEl = document.getElementById('loop-progress');
+      if (secEl) secEl.innerText = loopSecondsRemaining;
+      if (progEl) {
+        const pct = Math.max(0, (loopSecondsRemaining / LOOP_DURATION_SEC) * 100);
+        progEl.style.width = pct + '%';
+      }
+    }
+
+    function nextCategoryInLoop() {
+      const idx = LOOP_CATEGORIES.indexOf(currentCategory);
+      const nextIdx = (idx + 1) % LOOP_CATEGORIES.length;
+      setCategoryFilter(LOOP_CATEGORIES[nextIdx], false);
+    }
+
+    // ========================================================
+    // Category Switcher
+    // ========================================================
+    function setCategoryFilter(cat, resetTimer = true) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-tab').forEach(b => {
+        b.className = 'cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-bold transition-all flex items-center gap-2 glass-panel text-gray-300 hover:text-white';
+      });
+
+      const activeBtn = document.getElementById(`cat-tab-${cat}`);
+      if (activeBtn) {
+        activeBtn.className = 'cat-tab px-4 py-2 rounded-2xl text-xs md:text-sm font-black transition-all flex items-center gap-2 bg-[#FFDE42] text-[#050A30] shadow-[0_0_15px_rgba(255,222,66,0.4)]';
+      }
+
+      if (isAutoLoop && resetTimer) {
+        loopSecondsRemaining = LOOP_DURATION_SEC;
+        updateLoopUI();
+      }
+
+      renderDisplay();
+    }
+
+    // ========================================================
+    // Data Fetching & Real-time Synchronization
+    // ========================================================
+    async function fetchLiveData() {
+      try {
+        const res = await fetch('/api/summary?t=' + Date.now());
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        summaryData = data;
+
+        // Check if any score updated for animation & chime
+        let scoreChanged = false;
+        let totalVotes = 0;
+
+        for (const catKey in data.categories || {}) {
+          (data.categories[catKey] || []).forEach(c => {
+            const popScore = c.rounds?.popular?.total || 0;
+            totalVotes += popScore;
+            if (previousScores[c.id] !== undefined && popScore > previousScores[c.id]) {
+              scoreChanged = true;
+            }
+            previousScores[c.id] = popScore;
+          });
+        }
+
+        document.getElementById('stat-total-votes').innerText = totalVotes.toLocaleString();
+        document.getElementById('last-updated').innerText = new Date().toLocaleTimeString('th-TH');
+        document.getElementById('connection-status').innerText = 'ระบบเชื่อมต่อสด (Auto-Sync ทุก 2.5 วินาที)';
+        document.getElementById('connection-status').className = 'text-emerald-400 font-semibold';
+
+        if (scoreChanged) {
+          playChime();
+        }
+
+        renderDisplay();
+      } catch (err) {
+        console.error('Fetch live data error:', err);
+        const statusEl = document.getElementById('connection-status');
+        if (statusEl) {
+          statusEl.innerText = 'กำลังพยายามเชื่อมต่อใหม่...';
+          statusEl.className = 'text-amber-400 font-semibold';
+        }
+      }
+    }
+
+    // ========================================================
+    // Render Display Dispatcher
+    // ========================================================
+    function renderDisplay() {
+      const container = document.getElementById('monitor-content');
+      if (!container) return;
+
+      if (!summaryData || !summaryData.categories) {
+        container.innerHTML = `
+          <div class="flex flex-col items-center justify-center py-24 text-gray-400">
+            <i class="fas fa-spinner fa-spin text-4xl text-[#FFDE42] mb-3"></i>
+            <p class="text-sm font-semibold tracking-wide">กำลังดาวน์โหลดข้อมูลคะแนน...</p>
+          </div>`;
+        return;
+      }
+
+      if (currentCategory === 'all') {
+        renderAllCategoriesView(container);
+      } else {
+        renderSingleCategoryView(container, currentCategory);
+      }
+    }
+
+    // ========================================================
+    // View 1: Single Category (Podium TOP 3 + Remaining List)
+    // ========================================================
+    function renderSingleCategoryView(container, catKey) {
+      const config = CATEGORIES_CONFIG[catKey] || { name: catKey, icon: 'fa-star' };
+      const rawList = summaryData.categories[catKey] || [];
+
+      // Sort by Popular Vote score descending (resigned contestants to the bottom)
+      const list = [...rawList].sort((a, b) => {
+        if (a.status === 'resigned' && b.status !== 'resigned') return 1;
+        if (b.status === 'resigned' && a.status !== 'resigned') return -1;
+        const scoreA = a.rounds?.popular?.total || 0;
+        const scoreB = b.rounds?.popular?.total || 0;
+        return scoreB - scoreA;
+      });
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="glass-panel p-12 rounded-3xl text-center text-gray-400">
+            <i class="fas fa-users-slash text-4xl mb-3 text-gray-500"></i>
+            <p>ยังไม่มีข้อมูลผู้เข้าประกวดในหมวดนี้</p>
+          </div>`;
+        return;
+      }
+
+      const top1 = list[0];
+      const top2 = list[1];
+      const top3 = list[2];
+      const others = list.slice(3);
+
+      const maxScore = Math.max(1, list[0]?.rounds?.popular?.total || 1);
+
+      container.innerHTML = `
+        <div class="space-y-6 animate-fadeIn">
+          <!-- Category Stage Header -->
+          <div class="text-center mb-2">
+            <span class="inline-flex items-center gap-2 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${config.badge}">
+              <i class="fas ${config.icon}"></i> ${config.name}
+            </span>
+            <h2 class="text-2xl md:text-3xl font-black text-[#FFDE42] gold-glow mt-1">
+              ผู้นำคะแนน POPULAR VOTE
+            </h2>
+          </div>
+
+          <!-- TOP 3 PODIUM SECTION -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-end max-w-5xl mx-auto pt-4">
+            <!-- 2nd Place (Silver) -->
+            ${top2 ? renderPodiumCard(top2, 2, 'podium-silver', 'text-slate-300', '🥈 อันดับ 2', 'h-[340px] md:h-[370px]', maxScore) : '<div class="hidden md:block"></div>'}
+
+            <!-- 1st Place (Gold) -->
+            ${top1 ? renderPodiumCard(top1, 1, 'podium-gold', 'text-[#FFDE42]', '👑 ผู้นำอันดับ 1', 'h-[370px] md:h-[410px] md:-translate-y-4', maxScore) : '<div></div>'}
+
+            <!-- 3rd Place (Bronze) -->
+            ${top3 ? renderPodiumCard(top3, 3, 'podium-bronze', 'text-amber-400', '🥉 อันดับ 3', 'h-[320px] md:h-[350px]', maxScore) : '<div class="hidden md:block"></div>'}
+          </div>
+
+          <!-- OTHERS RANKINGS SECTION (อันดับ 4 เป็นต้นไป) -->
+          ${others.length > 0 ? `
+            <div class="mt-8 pt-6 border-t border-[#5478FF]/30">
+              <h3 class="text-xs font-bold text-gray-300 mb-3 flex items-center gap-2 tracking-wider uppercase">
+                <i class="fas fa-list-ol text-[#FFDE42]"></i> ผู้เข้าประกวดอันดับถัดไป (อันดับ 4 - ${list.length})
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                ${others.map((c, idx) => renderRowCard(c, idx + 4, maxScore)).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    // ========================================================
+    // Component: Podium Card (Top 1, 2, 3)
+    // ========================================================
+    function renderPodiumCard(c, rank, borderClass, accentColor, rankTitle, heightClass, maxScore) {
+      const isResigned = c.status === 'resigned';
+      const popScore = c.rounds?.popular?.total || 0;
+      const pct = Math.min(100, Math.round((popScore / maxScore) * 100));
+      const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
+      const displayScore = isBlindMode ? '???' : popScore.toLocaleString();
+
+      return `
+        <div class="relative glass-panel rounded-3xl p-5 flex flex-col justify-between text-center transition-all duration-500 hover:scale-[1.02] ${borderClass} ${heightClass}">
+          <!-- Rank Badge Top Center -->
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-0.5 rounded-full bg-[#050A30] border-2 border-current ${accentColor} text-xs font-black tracking-wider shadow-lg flex items-center gap-1.5 whitespace-nowrap">
+            ${rankTitle}
+          </div>
+
+          <div class="pt-3">
+            <!-- Photo Avatar -->
+            <div class="relative inline-block mx-auto mb-3">
+              <div class="absolute -inset-1 rounded-full bg-current ${accentColor} blur-md opacity-40"></div>
+              <img src="${img}" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');"
+                class="relative w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-current ${accentColor} shadow-xl mx-auto">
+              <span class="absolute -bottom-1.5 -right-1 px-2.5 py-0.5 rounded-lg bg-[#050A30] border border-current ${accentColor} text-xs font-black ${accentColor}">
+                ${c.id}
+              </span>
+            </div>
+
+            <!-- Contestant Names -->
+            <div class="font-bold text-white text-base md:text-lg line-clamp-1 ${isResigned ? 'line-through text-gray-400' : ''}">
+              ${c.name}
+            </div>
+            ${c.nickname ? `<div class="text-xs ${accentColor} font-semibold">"${c.nickname}"</div>` : ''}
+            <div class="text-[11px] text-gray-300 mt-0.5 line-clamp-1">${c.faculty || ''}</div>
+          </div>
+
+          <!-- Bottom: Score Display -->
+          <div class="mt-4 pt-3 border-t border-white/10">
+            <div class="text-[10px] uppercase font-bold tracking-widest text-rose-300 flex items-center justify-center gap-1">
+              <i class="fas fa-heart text-rose-400"></i> POPULAR VOTE
+            </div>
+            <div class="text-3xl md:text-4xl font-black ${accentColor} ${isBlindMode ? '' : 'gold-glow'} tracking-tight my-0.5 score-updated">
+              ${displayScore}
+            </div>
+            <div class="text-[10px] text-gray-400">คะแนนโหวต</div>
+
+            <!-- Visual Bar -->
+            ${!isBlindMode ? `
+              <div class="w-full bg-blue-950/80 rounded-full h-1.5 mt-2.5 overflow-hidden border border-white/10">
+                <div class="h-full bg-gradient-to-r from-rose-500 to-[#FFDE42] transition-all duration-700" style="width: ${pct}%;"></div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // ========================================================
+    // Component: Row Card (อันดับ 4 เป็นต้นไป)
+    // ========================================================
+    function renderRowCard(c, rank, maxScore) {
+      const isResigned = c.status === 'resigned';
+      const popScore = c.rounds?.popular?.total || 0;
+      const pct = Math.min(100, Math.round((popScore / maxScore) * 100));
+      const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
+      const displayScore = isBlindMode ? '???' : popScore.toLocaleString();
+
+      return `
+        <div class="glass-panel p-3 rounded-2xl flex items-center justify-between gap-3 border border-[#5478FF]/30 hover:border-[#FFDE42]/50 transition-all">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <!-- Rank Badge -->
+            <div class="w-7 h-7 rounded-xl bg-blue-950/90 text-gray-300 text-xs font-black flex items-center justify-center shrink-0 border border-[#5478FF]/30">
+              #${rank}
+            </div>
+            <!-- Photo -->
+            <img src="${img}" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${c.id}');"
+              class="w-10 h-10 rounded-full object-cover border border-[#5478FF]/50 shrink-0">
+            <!-- Details -->
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-black text-[#FFDE42]">${c.id}</span>
+                <span class="text-xs font-bold text-white truncate ${isResigned ? 'line-through text-gray-400' : ''}">${c.name}</span>
+              </div>
+              <div class="text-[10px] text-gray-300 truncate">${c.nickname ? `"${c.nickname}" • ` : ''}${c.faculty || ''}</div>
+            </div>
+          </div>
+
+          <!-- Score -->
+          <div class="text-right shrink-0">
+            <div class="text-base font-black text-[#FFDE42]">${displayScore}</div>
+            <div class="text-[9px] text-rose-300">คะแนน</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ========================================================
+    // View 2: All Categories Overview (4 Columns Stage Grid)
+    // ========================================================
+    function renderAllCategoriesView(container) {
+      const keys = ['miss', 'mister', 'queen', 'jumbo'];
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fadeIn">
+          ${keys.map(catKey => {
+            const config = CATEGORIES_CONFIG[catKey];
+            const rawList = summaryData.categories[catKey] || [];
+            const list = [...rawList].sort((a, b) => {
+              if (a.status === 'resigned' && b.status !== 'resigned') return 1;
+              if (b.status === 'resigned' && a.status !== 'resigned') return -1;
+              return (b.rounds?.popular?.total || 0) - (a.rounds?.popular?.total || 0);
+            });
+
+            const leader = list[0];
+            const followers = list.slice(1, 5);
+
+            return `
+              <div class="glass-panel rounded-3xl p-4 flex flex-col justify-between border border-[#5478FF]/40 relative overflow-hidden">
+                <!-- Top Header -->
+                <div class="flex items-center justify-between pb-3 border-b border-[#5478FF]/30 mb-3">
+                  <div class="flex items-center gap-2">
+                    <i class="fas ${config.icon} text-lg text-${config.color}-400"></i>
+                    <h3 class="text-sm font-black text-white">${config.name}</h3>
+                  </div>
+                  <button type="button" onclick="setCategoryFilter('${catKey}')" class="text-[10px] text-amber-300 hover:text-white underline">
+                    ดูทั้งหมด
+                  </button>
+                </div>
+
+                <!-- Leader Spotlight -->
+                ${leader ? `
+                  <div class="bg-gradient-to-b from-[#111FA2]/60 to-[#091054]/90 p-3.5 rounded-2xl border border-[#FFDE42]/50 text-center relative mb-3">
+                    <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-[#FFDE42] text-[#050A30] text-[10px] font-black shadow">
+                      👑 อันดับ 1
+                    </span>
+                    <img src="/api/contestants/${encodeURIComponent(leader.id)}/image" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${leader.id}');"
+                      class="w-16 h-16 rounded-full object-cover border-2 border-[#FFDE42] mx-auto mb-2 mt-1 shadow-md">
+                    <div class="text-xs font-black text-[#FFDE42]">${leader.id}</div>
+                    <div class="text-xs font-bold text-white truncate">${leader.name}</div>
+                    ${leader.nickname ? `<div class="text-[10px] text-amber-300">"${leader.nickname}"</div>` : ''}
+
+                    <div class="mt-2 pt-2 border-t border-white/10 flex items-center justify-center gap-1.5">
+                      <i class="fas fa-heart text-rose-400 text-xs"></i>
+                      <span class="text-xl font-black text-[#FFDE42] gold-glow">
+                        ${isBlindMode ? '???' : (leader.rounds?.popular?.total || 0).toLocaleString()}
+                      </span>
+                      <span class="text-[10px] text-gray-300">คะแนน</span>
+                    </div>
+                  </div>
+                ` : '<div class="py-10 text-center text-xs text-gray-500">ไม่มีข้อมูล</div>'}
+
+                <!-- Next in line (Ranks 2-5) -->
+                <div class="space-y-1.5 flex-1">
+                  ${followers.map((c, idx) => {
+                    const score = c.rounds?.popular?.total || 0;
+                    return `
+                      <div class="flex items-center justify-between p-2 rounded-xl bg-[#091054]/60 border border-white/5 text-xs">
+                        <div class="flex items-center gap-2 truncate">
+                          <span class="text-[10px] font-bold text-gray-400 w-4">#${idx + 2}</span>
+                          <span class="font-bold text-[#FFDE42] text-[11px]">${c.id}</span>
+                          <span class="truncate text-gray-200 text-[11px]">${c.nickname || c.name}</span>
+                        </div>
+                        <span class="font-bold text-rose-300 shrink-0 text-[11px]">
+                          ${isBlindMode ? '???' : score.toLocaleString()}
+                        </span>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // ========================================================
+    // Live Clock & Initialization
+    // ========================================================
+    function updateClock() {
+      const now = new Date();
+      const clockEl = document.getElementById('live-clock');
+      if (clockEl) {
+        clockEl.innerText = now.toLocaleTimeString('th-TH');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateClock();
+      setInterval(updateClock, 1000);
+      fetchLiveData();
+      pollingTimer = setInterval(fetchLiveData, POLLING_INTERVAL_MS);
+    });
+  </script>
+</body>
+
+</html>
