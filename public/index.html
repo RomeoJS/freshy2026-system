@@ -88,6 +88,11 @@
                   (แก้ไขคะแนน)</span>
                 <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-admin2"></i>
               </div>
+              <div onclick="selectRole('staff', 'สตาฟบันทึกคะแนน (Popular Vote Staff)', 'fa-calculator')"
+                class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-pink-300">
+                <span class="flex items-center gap-2.5"><i class="fas fa-calculator text-rose-400"></i> สตาฟบันทึกคะแนน (Popular Vote)</span>
+                <i class="fas fa-check text-[#FFDE42] check-icon hidden" id="check-staff"></i>
+              </div>
               <div onclick="selectRole('judge1', 'กรรมการท่านที่ 1', 'fa-gavel')"
                 class="role-option p-3 px-4 hover:bg-[#5478FF]/30 hover:text-[#FFDE42] cursor-pointer text-sm font-medium transition flex justify-between items-center text-gray-200">
                 <span class="flex items-center gap-2.5"><i class="fas fa-gavel text-[#5478FF]"></i> กรรมการท่านที่
@@ -1456,6 +1461,19 @@
           switchAdmin2Mode('scoring');
           selectAdminEditingJudge('judge1');
           switchRound('blackroom');
+          startAdminPolling();
+        } else if (role === 'staff') {
+          if (adminJudgeBar) adminJudgeBar.classList.add('hidden');
+          if (admin2Switcher) admin2Switcher.classList.add('hidden');
+          document.getElementById('current-role-display').innerText = 'STAFF (นับคะแนน POPULAR VOTE)';
+
+          const adminSec = document.getElementById('admin-section');
+          adminSec.classList.remove('hidden');
+          adminSec.classList.remove('view-animated');
+          void adminSec.offsetWidth;
+          adminSec.classList.add('view-animated');
+          switchAdminView('pre');
+          switchAdminPreRound('popular');
           startAdminPolling();
         } else {
           if (adminJudgeBar) adminJudgeBar.classList.add('hidden');

@@ -186,6 +186,7 @@ initDB();
 const USERS = { 
     'admin': 'admin2026', 
     'admin2': 'admin2026', 
+    'staff': 'staff2026',
     'judge1': '1111', 
     'judge2': '2222', 
     'judge3': '3333', 
@@ -211,7 +212,11 @@ setInterval(async () => {
 
 app.post('/api/login', async (req, res) => {
     const { role, password } = req.body;
-    const isValid = USERS[role] && (USERS[role] === password || (role === 'admin2' && password === 'admin2'));
+    const isValid = USERS[role] && (
+        USERS[role] === password || 
+        (role === 'admin2' && password === 'admin2') ||
+        (role === 'staff' && (password === 'staff2026' || password === '2026'))
+    );
     if (!isValid) {
         return res.json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
     }
@@ -493,10 +498,10 @@ app.post('/api/scores', async (req, res) => {
         return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
     }
 
-    // ตรวจสอบสิทธิ์รอบ Popular Vote: กรรมการไม่มีสิทธิ์กรอกคะแนน ให้ได้เฉพาะแอดมินเท่านั้น (ไม่จำกัดเพดานคะแนน)
+    // ตรวจสอบสิทธิ์รอบ Popular Vote: ให้ได้เฉพาะแอดมินและสตาฟเท่านั้น (ไม่จำกัดเพดานคะแนน)
     if (round_id === 'popular') {
-        if (judge_id !== 'admin' && judge_id !== 'admin2') {
-            return res.status(403).json({ success: false, message: 'กรรมการไม่มีสิทธิ์กรอกคะแนน Popular Vote (เฉพาะแอดมินเท่านั้น)' });
+        if (judge_id !== 'admin' && judge_id !== 'admin2' && judge_id !== 'staff') {
+            return res.status(403).json({ success: false, message: 'กรรมการไม่มีสิทธิ์กรอกคะแนน Popular Vote (เฉพาะแอดมินหรือสตาฟเท่านั้น)' });
         }
     }
 
@@ -636,8 +641,8 @@ async function calculateSummary() {
                 preTotal += score;
             });
 
-            // 3. รอบ Popular Vote (แอดมินกรอกคนเดียว ไม่จำกัดคะแนน กรรมการไม่มีสิทธิ์กรอก)
-            const popRec = contestantScores.find(s => s.round_id === 'popular' && (s.judge_id === 'admin' || s.judge_id === 'admin2')) ||
+            // 3. รอบ Popular Vote (แอดมินหรือสตาฟกรอก ไม่จำกัดคะแนน กรรมการไม่มีสิทธิ์กรอก)
+            const popRec = contestantScores.find(s => s.round_id === 'popular' && (s.judge_id === 'admin' || s.judge_id === 'admin2' || s.judge_id === 'staff')) ||
                            contestantScores.find(s => s.round_id === 'popular');
             const popScore = popRec ? (popRec.total_score || 0) : 0;
             rounds.popular = { judges: { admin: popScore }, total: popScore, score: popScore };

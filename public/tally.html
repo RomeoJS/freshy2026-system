@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>RMUTK FRESHY 2026 - STAFF QUICK TALLY</title>
+  <title>RMUTK FRESHY 2026 - ระบบบันทึกคะแนน POPULAR VOTE (สตาฟ)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -70,38 +70,36 @@
   <div id="passcode-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
     <div class="glass-panel max-w-sm w-full rounded-3xl p-6 border-2 border-[#FFDE42] text-center shadow-[0_0_50px_rgba(255,222,66,0.3)]">
       <div class="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 flex items-center justify-center mx-auto mb-3 text-2xl">
-        <i class="fas fa-lock"></i>
+        <i class="fas fa-user-lock"></i>
       </div>
-      <h2 class="text-xl font-black text-[#FFDE42] mb-1">เข้าสู่ระบบทีมงานนับคะแนน</h2>
-      <p class="text-xs text-gray-300 mb-4">กรุณากรอกรหัสผ่านทีมงาน (Passcode) เพื่อเริ่มการนับคะแนน</p>
+      <h2 class="text-xl font-black text-[#FFDE42] mb-1">เข้าสู่ระบบสตาฟนับคะแนน</h2>
+      <p class="text-xs text-gray-300 mb-4">ระบบบันทึกคะแนน Popular Vote (เฉพาะสตาฟ 1 ท่าน)</p>
       
-      <input type="password" id="input-passcode" placeholder="กรอกรหัสผ่าน (เช่น 2026)"
+      <input type="password" id="input-passcode" placeholder="กรอกรหัสผ่าน (2026)"
         class="input-dark w-full p-3 rounded-xl text-center text-xl font-bold tracking-widest text-[#FFDE42] mb-4" />
-
-      <div class="mb-4 text-left">
-        <label class="block text-xs font-semibold text-gray-300 mb-1">ชื่อโต๊ะ / จุดนับคะแนนของคุณ:</label>
-        <input type="text" id="input-station-name" placeholder="เช่น โต๊ะนับ 1, ซุ้มดอกไม้, จุด A"
-          class="input-dark w-full p-2.5 rounded-xl text-sm" value="โต๊ะนับ 1" />
-      </div>
 
       <button type="button" onclick="submitPasscode()"
         class="w-full py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#050A30] font-black text-sm shadow-lg active:scale-95 transition">
-        <i class="fas fa-sign-in-alt mr-1"></i> ยืนยันเข้าใช้งาน
+        <i class="fas fa-sign-in-alt mr-1"></i> เข้าสู่ระบบสตาฟ
       </button>
       <div id="passcode-error" class="text-xs text-rose-400 font-semibold mt-3 hidden">
-        รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+        รหัสผ่านไม่ถูกต้อง (รหัส: 2026 หรือ staff2026)
       </div>
     </div>
   </div>
 
-  <!-- EDIT STATION MODAL -->
-  <div id="station-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="glass-panel max-w-xs w-full rounded-2xl p-5 border border-[#5478FF]/50 text-center">
-      <h3 class="text-sm font-bold text-[#FFDE42] mb-2">เปลี่ยนชื่อจุดนับคะแนน</h3>
-      <input type="text" id="edit-station-input" class="input-dark w-full p-2 rounded-xl text-xs mb-3 text-center" />
+  <!-- DIRECT SET SCORE MODAL (สำหรับตั้งค่ายอดคะแนนตรง) -->
+  <div id="override-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="glass-panel max-w-xs w-full rounded-2xl p-5 border-2 border-[#FFDE42] text-center">
+      <h3 class="text-sm font-black text-[#FFDE42] mb-1">ตั้งค่ายอดคะแนนโดยตรง</h3>
+      <p class="text-xs text-gray-300 mb-3" id="override-target-name">ผู้เข้าประกวด</p>
+      
+      <input type="number" id="override-score-input" min="0" step="1"
+        class="input-dark w-full p-3 rounded-xl text-center text-2xl font-black text-[#FFDE42] mb-3" />
+
       <div class="flex gap-2">
-        <button type="button" onclick="closeStationModal()" class="flex-1 py-1.5 rounded-lg bg-gray-700 text-xs font-bold">ยกเลิก</button>
-        <button type="button" onclick="saveStationName()" class="flex-1 py-1.5 rounded-lg bg-[#FFDE42] text-[#050A30] text-xs font-bold">บันทึก</button>
+        <button type="button" onclick="closeOverrideModal()" class="flex-1 py-2 rounded-xl bg-gray-700 text-xs font-bold text-gray-300">ยกเลิก</button>
+        <button type="button" onclick="saveOverrideScore()" id="override-save-btn" class="flex-1 py-2 rounded-xl bg-[#FFDE42] text-[#050A30] text-xs font-black shadow">บันทึกยอด</button>
       </div>
     </div>
   </div>
@@ -109,23 +107,22 @@
   <!-- STICKY TOP BAR -->
   <header class="sticky top-0 z-40 bg-[#050A30]/95 backdrop-blur-md border-b border-[#5478FF]/30 p-3 shadow-lg">
     <div class="flex items-center justify-between gap-2">
-      <!-- Brand & Station Name -->
+      <!-- Brand & Staff Scorer Badge -->
       <div class="flex items-center gap-2">
         <img src="images/logo.png" class="h-9 w-9 object-contain drop-shadow" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('T');">
         <div>
           <div class="text-[10px] uppercase font-black tracking-widest text-[#FFDE42]">RMUTK FRESHY 2026</div>
           <div class="flex items-center gap-1.5">
-            <h1 class="text-xs font-black text-white">STAFF TALLY</h1>
-            <span class="text-gray-400 text-xs">•</span>
-            <button type="button" onclick="openStationModal()" class="text-xs font-bold text-amber-300 hover:text-white flex items-center gap-1 bg-[#111FA2]/60 px-2 py-0.5 rounded-md border border-[#5478FF]/40">
-              <span id="current-station-badge">โต๊ะนับ 1</span>
-              <i class="fas fa-pencil-alt text-[9px]"></i>
-            </button>
+            <h1 class="text-xs font-black text-white">POPULAR VOTE STAFF</h1>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              สตาฟหลัก (คนเดียว)
+            </span>
           </div>
         </div>
       </div>
 
-      <!-- Right: Live Indicator & Link to Stage Monitor -->
+      <!-- Right: Link to Stage Monitor & Logout -->
       <div class="flex items-center gap-1.5">
         <a href="/live-popular" target="_blank"
           class="px-2.5 py-1 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white text-[11px] font-bold shadow flex items-center gap-1 active:scale-95"
@@ -190,7 +187,7 @@
       </div>
       <button type="button" onclick="toggleLogModal()" class="text-amber-300 hover:text-white text-[11px] font-bold flex items-center gap-1">
         <i class="fas fa-history"></i>
-        <span>ประวัติการกดบวก (<span id="log-count">0</span>)</span>
+        <span>ประวัติการบันทึก (<span id="log-count">0</span>)</span>
       </button>
     </div>
   </aside>
@@ -200,18 +197,18 @@
     <div class="glass-panel max-w-md w-full rounded-3xl p-5 border border-[#5478FF]/40 max-h-[80vh] flex flex-col">
       <div class="flex justify-between items-center pb-2.5 border-b border-white/10 mb-3">
         <h3 class="text-sm font-black text-[#FFDE42] flex items-center gap-1.5">
-          <i class="fas fa-history text-rose-400"></i> ประวัติการกดบวกคะแนนของเครื่องนี้
+          <i class="fas fa-history text-rose-400"></i> ประวัติการบันทึกคะแนน
         </h3>
         <button type="button" onclick="toggleLogModal()" class="text-gray-400 hover:text-white p-1">
           <i class="fas fa-times"></i>
         </button>
       </div>
       <div id="log-items-container" class="flex-1 overflow-y-auto space-y-1.5 pr-1 text-xs">
-        <div class="text-center py-8 text-gray-400">ยังไม่มีประวัติการกดเพิ่มคะแนน</div>
+        <div class="text-center py-8 text-gray-400">ยังไม่มีประวัติการบันทึกคะแนน</div>
       </div>
       <div class="pt-3 border-t border-white/10 text-right">
         <button type="button" onclick="clearLogHistory()" class="text-[11px] text-gray-400 hover:text-rose-400">
-          <i class="fas fa-trash-alt mr-1"></i> ล้างประวัติในเครื่องนี้
+          <i class="fas fa-trash-alt mr-1"></i> ล้างประวัติในเครื่อง
         </button>
       </div>
     </div>
@@ -230,9 +227,9 @@
     let currentCategory = 'all';
     let searchQuery = '';
     let staffPasscode = localStorage.getItem('staff_passcode') || '';
-    let stationName = localStorage.getItem('staff_station') || 'โต๊ะนับ 1';
     let localLogs = JSON.parse(localStorage.getItem('staff_logs') || '[]');
     let isSubmitting = false;
+    let overrideTargetId = null;
 
     const CATEGORIES = {
       miss: 'Miss RMUTK',
@@ -258,63 +255,38 @@
     function checkAuth() {
       if (!staffPasscode) {
         document.getElementById('passcode-modal').classList.remove('hidden');
-        document.getElementById('input-station-name').value = stationName;
         setTimeout(() => document.getElementById('input-passcode')?.focus(), 100);
       } else {
         document.getElementById('passcode-modal').classList.add('hidden');
-        document.getElementById('current-station-badge').innerText = stationName;
         fetchData();
       }
     }
 
     async function submitPasscode() {
       const input = document.getElementById('input-passcode').value.trim();
-      const station = document.getElementById('input-station-name').value.trim() || 'โต๊ะนับ 1';
       const errEl = document.getElementById('passcode-error');
 
-      // Test passcode against API increment with delta = 0 or check valid list
-      const validCodes = ['admin2026', '2026', 'freshy2026'];
+      const validCodes = ['staff2026', '2026', 'admin2026', 'freshy2026'];
       if (!validCodes.includes(input)) {
         errEl.classList.remove('hidden');
         return;
       }
 
       staffPasscode = input;
-      stationName = station;
       localStorage.setItem('staff_passcode', input);
-      localStorage.setItem('staff_station', station);
 
       errEl.classList.add('hidden');
       document.getElementById('passcode-modal').classList.add('hidden');
-      document.getElementById('current-station-badge').innerText = stationName;
-      showToast(`เข้าสู่ระบบในนาม "${stationName}" เรียบร้อย`);
+      showToast(`เข้าสู่ระบบในฐานะสตาฟบันทึกคะแนนเรียบร้อย`);
       fetchData();
     }
 
     function logoutStaff() {
-      if (confirm('คุณต้องการออกจากระบบทีมงานนับคะแนนหรือไม่?')) {
+      if (confirm('คุณต้องการออกจากระบบสตาฟนับคะแนนหรือไม่?')) {
         localStorage.removeItem('staff_passcode');
         staffPasscode = '';
         checkAuth();
       }
-    }
-
-    function openStationModal() {
-      document.getElementById('edit-station-input').value = stationName;
-      document.getElementById('station-modal').classList.remove('hidden');
-    }
-
-    function closeStationModal() {
-      document.getElementById('station-modal').classList.add('hidden');
-    }
-
-    function saveStationName() {
-      const val = document.getElementById('edit-station-input').value.trim() || 'โต๊ะนับ 1';
-      stationName = val;
-      localStorage.setItem('staff_station', val);
-      document.getElementById('current-station-badge').innerText = val;
-      closeStationModal();
-      showToast(`เปลี่ยนชื่อเป็น "${val}" เรียบร้อย`);
     }
 
     // ==========================================
@@ -327,7 +299,6 @@
         const data = await res.json();
         summaryData = data;
 
-        // Flatten all contestants
         const list = [];
         for (const cat in data.categories || {}) {
           (data.categories[cat] || []).forEach(c => list.push(c));
@@ -396,7 +367,6 @@
         return true;
       });
 
-      // Sort by Contestant ID (e.g. M1, M2, W1, W2)
       filtered.sort((a, b) => {
         return (a.id || '').localeCompare(b.id || '', undefined, { numeric: true, sensitivity: 'base' });
       });
@@ -440,9 +410,13 @@
                 </div>
               </div>
 
-              <!-- Current Total Score Box -->
-              <div class="text-right shrink-0 bg-[#091054]/90 px-3 py-1.5 rounded-xl border border-[#5478FF]/40 min-w-[70px]">
-                <div class="text-[9px] uppercase font-bold text-rose-300">คะแนนรวม</div>
+              <!-- Current Total Score Box (Click to Override Directly) -->
+              <div class="text-right shrink-0 bg-[#091054]/90 px-3 py-1.5 rounded-xl border border-[#5478FF]/40 min-w-[75px] cursor-pointer hover:border-[#FFDE42] transition"
+                onclick="openOverrideModal('${c.id}', '${c.name}', ${popScore})" title="แตะเพื่อแก้ไขยอดคะแนนตรง">
+                <div class="text-[9px] uppercase font-bold text-rose-300 flex items-center justify-end gap-1">
+                  <span>คะแนนรวม</span>
+                  <i class="fas fa-pencil-alt text-[8px] text-amber-300"></i>
+                </div>
                 <div id="score-${c.id}" class="text-xl font-black text-[#FFDE42] tracking-tight">
                   ${popScore.toLocaleString()}
                 </div>
@@ -452,8 +426,11 @@
             <!-- Quick Add Buttons Row -->
             <div class="mt-3 pt-2.5 border-t border-white/10">
               <div class="text-[10px] font-bold text-gray-300 mb-1.5 flex items-center justify-between">
-                <span>แตะเพื่อบวกคะแนนเพิ่มทันที:</span>
-                <span class="text-emerald-400 text-[10px]"><i class="fas fa-bolt"></i> ซิงก์ขึ้นจอเวทีสด</span>
+                <span>แตะบวกคะแนนเพิ่มทันที:</span>
+                <button type="button" onclick="openOverrideModal('${c.id}', '${c.name}', ${popScore})"
+                  class="text-[#FFDE42] hover:text-white text-[10px] font-bold underline flex items-center gap-1">
+                  <i class="fas fa-edit"></i> แก้ไขยอดคะแนนตรง
+                </button>
               </div>
               <div class="grid grid-cols-6 gap-1.5">
                 <button type="button" onclick="quickAddScore('${c.id}', 1, '${c.name}')"
@@ -490,9 +467,9 @@
                   class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shrink-0 active:scale-95 transition flex items-center gap-1 shadow">
                   <i class="fas fa-plus"></i> บวกเพิ่ม
                 </button>
-                <!-- Adjust Button -->
+                <!-- Subtract / Adjust button -->
                 <button type="button" onclick="quickAddScore('${c.id}', -1, '${c.name}')"
-                  class="px-2 py-1.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-300 font-bold text-xs border border-rose-500/30 active:scale-95"
+                  class="px-2.5 py-1.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-300 font-bold text-xs border border-rose-500/30 active:scale-95"
                   title="ลด 1 คะแนนกรณีแตะผิด">
                   -1
                 </button>
@@ -512,7 +489,6 @@
       if (isSubmitting) return;
       isSubmitting = true;
 
-      // Haptic feedback for tactile feel on mobile
       if (navigator.vibrate) {
         navigator.vibrate(35);
       }
@@ -524,14 +500,13 @@
           body: JSON.stringify({
             contestant_id: contestantId,
             delta: delta,
-            staff_name: stationName,
+            staff_name: 'สตาฟ',
             passcode: staffPasscode
           })
         });
 
         const data = await res.json();
         if (data.success) {
-          // Update local display immediately
           const scoreEl = document.getElementById(`score-${contestantId}`);
           if (scoreEl) {
             scoreEl.innerText = Number(data.new_total).toLocaleString();
@@ -539,24 +514,22 @@
             setTimeout(() => scoreEl.classList.remove('score-bump'), 400);
           }
 
-          // Add to local logs
           const logEntry = {
             id: Date.now(),
             time: new Date().toLocaleTimeString('th-TH'),
             contestantId: contestantId,
             delta: delta,
-            newTotal: data.new_total,
-            station: stationName
+            newTotal: data.new_total
           };
           localLogs.unshift(logEntry);
           if (localLogs.length > 50) localLogs.pop();
           localStorage.setItem('staff_logs', JSON.stringify(localLogs));
           updateLogCount();
 
-          showToast(`✓ ${stationName}: ${contestantId} (${delta > 0 ? '+' : ''}${delta}) ➔ รวม ${data.new_total} คะแนน`);
+          showToast(`✓ ${contestantId} (${delta > 0 ? '+' : ''}${delta}) ➔ รวม ${data.new_total} คะแนน`);
         } else {
           if (data.message && data.message.includes('Passcode')) {
-            alert('รหัสผ่านทีมงานไม่ถูกต้องหรือหมดอายุ');
+            alert('รหัสผ่านสตาฟไม่ถูกต้องหรือหมดอายุ');
             logoutStaff();
           } else {
             alert('เกิดข้อผิดพลาด: ' + (data.message || 'ไม่สามารถบันทึกได้'));
@@ -580,6 +553,83 @@
       }
       quickAddScore(contestantId, val, contestantName);
       input.value = '';
+    }
+
+    // ==========================================
+    // Override Score Directly (ตั้งค่ายอดคะแนนตรง)
+    // ==========================================
+    function openOverrideModal(cId, cName, curScore) {
+      overrideTargetId = cId;
+      document.getElementById('override-target-name').innerText = `${cId} - ${cName}`;
+      document.getElementById('override-score-input').value = curScore || 0;
+      document.getElementById('override-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('override-score-input')?.focus(), 50);
+    }
+
+    function closeOverrideModal() {
+      document.getElementById('override-modal').classList.add('hidden');
+      overrideTargetId = null;
+    }
+
+    async function saveOverrideScore() {
+      if (!overrideTargetId) return;
+      const input = document.getElementById('override-score-input');
+      const val = Math.max(0, parseInt(input?.value) || 0);
+
+      const btn = document.getElementById('override-save-btn');
+      const origText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'กำลังบันทึก...';
+
+      try {
+        const res = await fetch('/api/scores', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            judge_id: 'staff',
+            contestant_id: overrideTargetId,
+            round_id: 'popular',
+            score_c1: val,
+            score_c2: 0,
+            score_c3: 0,
+            score_c4: 0,
+            score_c5: 0,
+            score_c6: 0
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          const scoreEl = document.getElementById(`score-${overrideTargetId}`);
+          if (scoreEl) {
+            scoreEl.innerText = val.toLocaleString();
+            scoreEl.classList.add('score-bump');
+            setTimeout(() => scoreEl.classList.remove('score-bump'), 400);
+          }
+
+          const logEntry = {
+            id: Date.now(),
+            time: new Date().toLocaleTimeString('th-TH'),
+            contestantId: overrideTargetId,
+            delta: `ตั้งค่าตรงเป็น ${val}`,
+            newTotal: val
+          };
+          localLogs.unshift(logEntry);
+          localStorage.setItem('staff_logs', JSON.stringify(localLogs));
+          updateLogCount();
+
+          showToast(`✓ กำหนดคะแนน ${overrideTargetId} เป็น ${val} คะแนนเรียบร้อย`);
+          closeOverrideModal();
+          fetchData();
+        } else {
+          alert('เกิดข้อผิดพลาด: ' + (data.message || 'ไม่สามารถบันทึกได้'));
+        }
+      } catch (err) {
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origText;
+      }
     }
 
     // ==========================================
@@ -624,7 +674,7 @@
       if (!container) return;
 
       if (localLogs.length === 0) {
-        container.innerHTML = `<div class="text-center py-8 text-gray-400">ยังไม่มีประวัติการกดเพิ่มคะแนน</div>`;
+        container.innerHTML = `<div class="text-center py-8 text-gray-400">ยังไม่มีประวัติการบันทึกคะแนน</div>`;
         return;
       }
 
@@ -633,7 +683,7 @@
           <div class="flex items-center gap-2">
             <span class="text-[10px] text-gray-400 font-mono">${l.time}</span>
             <span class="px-1.5 py-0.5 rounded bg-[#FFDE42] text-[#050A30] font-black text-[11px]">${l.contestantId}</span>
-            <span class="text-emerald-400 font-bold">${l.delta > 0 ? '+' : ''}${l.delta}</span>
+            <span class="text-emerald-400 font-bold">${typeof l.delta === 'number' ? (l.delta > 0 ? '+' : '') + l.delta : l.delta}</span>
           </div>
           <div class="text-[10px] text-gray-300">
             ยอดรวม: <span class="font-bold text-[#FFDE42]">${l.newTotal}</span>
@@ -657,7 +707,6 @@
     window.addEventListener('DOMContentLoaded', () => {
       updateLogCount();
       checkAuth();
-      // Auto-poll to keep scores updated in real-time across staff phones
       setInterval(() => {
         if (!document.hidden && staffPasscode) {
           fetchData();
