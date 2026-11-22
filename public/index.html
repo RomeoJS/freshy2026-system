@@ -465,31 +465,31 @@
           <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 no-scrollbar">
             <button type="button" onclick="stageRemoteSetCategory('winner')" id="stage-tab-winner"
               class="stage-tab px-3 py-1.5 rounded-xl text-xs font-black transition bg-[#FFDE42] text-[#050A30] shadow">
-              👑 ชนะเลิศ 1 เดียว
+              👑 Winner Popular (1 เดียว)
             </button>
             <button type="button" onclick="stageRemoteSetCategory('jumbo')" id="stage-tab-jumbo"
               class="stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30">
-              1. 💎 Jumbo
+              1. 💎 Top Vote Jumbo
             </button>
             <button type="button" onclick="stageRemoteSetCategory('queen')" id="stage-tab-queen"
               class="stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30">
-              2. 👑 Queen
+              2. 👑 Top Vote Queen
             </button>
             <button type="button" onclick="stageRemoteSetCategory('congeniality')" id="stage-tab-congeniality"
               class="stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30">
-              3. ⭐ Miss Con
+              3. ⭐ Top Vote Miss Con
             </button>
             <button type="button" onclick="stageRemoteSetCategory('mister')" id="stage-tab-mister"
               class="stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30">
-              4. 👔 Mister
+              4. 👔 Top Vote Mister
             </button>
             <button type="button" onclick="stageRemoteSetCategory('miss')" id="stage-tab-miss"
               class="stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30">
-              5. 👗 Miss
+              5. 👗 Top Vote Miss
             </button>
             <button type="button" onclick="stageRemoteSetCategory('all')" id="stage-tab-all"
               class="stage-tab px-3 py-1.5 rounded-xl text-xs font-bold transition bg-[#091054] text-gray-300 hover:text-white border border-[#5478FF]/30">
-              🏆 สรุปผู้เข้าชิงทั้ง 5
+              🏆 สรุป Top Vote ทั้ง 5
             </button>
           </div>
         </div>
@@ -3136,9 +3136,9 @@
 
             let resultBadge = '<span class="text-gray-500 text-xs">-</span>';
             if (isOverallWinner) {
-              resultBadge = '<span class="px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-[#050A30] font-black text-xs shadow-[0_0_15px_rgba(255,222,66,0.6)] inline-flex items-center gap-1 whitespace-nowrap animate-pulse"><i class="fas fa-trophy text-amber-900"></i> 👑 ชนะเลิศ POPULAR VOTE</span>';
+              resultBadge = `<span class="px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-[#050A30] font-black text-xs shadow-[0_0_15px_rgba(255,222,66,0.6)] inline-flex items-center gap-1 whitespace-nowrap animate-pulse"><i class="fas fa-trophy text-amber-900"></i> 👑 Winner Popular ${escapeHtml(c.categoryName || c.category)}</span>`;
             } else if (isCategoryLeader) {
-              resultBadge = '<span class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 text-[11px] font-semibold whitespace-nowrap">⭐ ผู้เข้าชิง (อันดับ 1 หมวด)</span>';
+              resultBadge = `<span class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 text-[11px] font-semibold whitespace-nowrap">⭐ Top Vote (${escapeHtml(c.categoryName || c.category)})</span>`;
             }
 
             rows.push(`
@@ -6369,13 +6369,13 @@
       // ==========================================
       const STAGE_ORDER = ['winner', 'jumbo', 'queen', 'congeniality', 'mister', 'miss', 'all'];
       const STAGE_NAMES = {
-        winner: '👑 ผู้ชนะเลิศ POPULAR VOTE (1 เดียว)',
-        jumbo: '1/5 • ผู้เข้าชิง Miss Jumbo',
-        queen: '2/5 • ผู้เข้าชิง Miss Queen',
-        congeniality: '3/5 • ผู้เข้าชิง Miss Con',
-        mister: '4/5 • ผู้เข้าชิง Mister',
-        miss: '5/5 • ผู้เข้าชิง Miss',
-        all: '🏆 สรุปผู้เข้าชิงทั้ง 5'
+        winner: '👑 Winner Popular (1 เดียว)',
+        jumbo: '1/5 • Top Vote Miss Jumbo',
+        queen: '2/5 • Top Vote Miss Queen',
+        congeniality: '3/5 • Top Vote Miss Con',
+        mister: '4/5 • Top Vote Mister',
+        miss: '5/5 • Top Vote Miss',
+        all: '🏆 สรุป Top Vote ทั้ง 5'
       };
       let currentStageCategory = 'winner';
       let currentStageRevealed = false;
