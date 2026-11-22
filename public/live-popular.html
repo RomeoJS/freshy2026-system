@@ -271,9 +271,14 @@
     // ==========================================
     // Confetti Fireworks (Silent Canvas Particle Burst)
     // ==========================================
+    let activeConfettiAnim = null;
     function launchConfetti() {
       const canvas = document.getElementById('confetti-canvas');
       if (!canvas) return;
+      if (activeConfettiAnim) {
+        cancelAnimationFrame(activeConfettiAnim);
+        activeConfettiAnim = null;
+      }
       const ctx = canvas.getContext('2d');
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -281,22 +286,21 @@
       const particles = [];
       const colors = ['#FFDE42', '#F59E0B', '#F43F5E', '#EC4899', '#3B82F6', '#10B981', '#FFFFFF', '#FFD700'];
 
-      for (let i = 0; i < 220; i++) {
+      for (let i = 0; i < 180; i++) {
         particles.push({
           x: canvas.width / 2 + (Math.random() - 0.5) * 300,
           y: canvas.height * 0.55,
-          vx: (Math.random() - 0.5) * 30,
-          vy: -Math.random() * 24 - 9,
-          size: Math.random() * 9 + 5,
+          vx: (Math.random() - 0.5) * 26,
+          vy: -Math.random() * 22 - 8,
+          size: Math.random() * 8 + 4,
           color: colors[Math.floor(Math.random() * colors.length)],
           rotation: Math.random() * 360,
-          vRot: (Math.random() - 0.5) * 16,
+          vRot: (Math.random() - 0.5) * 14,
           gravity: 0.55,
           opacity: 1
         });
       }
 
-      let animationFrame;
       function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         let activeCount = 0;
@@ -308,7 +312,7 @@
           p.vx *= 0.98;
           p.rotation += p.vRot;
           if (p.y > canvas.height * 0.3) {
-            p.opacity -= 0.0075;
+            p.opacity -= 0.008;
           }
 
           if (p.opacity > 0 && p.y < canvas.height + 50) {
@@ -324,15 +328,28 @@
         });
 
         if (activeCount > 0) {
-          animationFrame = requestAnimationFrame(animate);
+          activeConfettiAnim = requestAnimationFrame(animate);
         } else {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          cancelAnimationFrame(animationFrame);
+          cancelAnimationFrame(activeConfettiAnim);
+          activeConfettiAnim = null;
         }
       }
 
       animate();
     }
+
+    // ==========================================
+    // State Caching to Prevent Unnecessary Re-rendering (แก้ปัญหาป๊อปอัพรัวๆ)
+    // ==========================================
+    let lastRenderedState = {
+      category: null,
+      revealed: null,
+      leaderId: null,
+      leaderScore: null,
+      allHash: null
+    };
+    let isInitialSync = true;
 
     // ==========================================
     // Remote Stage State Sync (รับคำสั่งจากแอดมินอัตโนมัติ)
@@ -346,36 +363,46 @@
 
         if (stageRes.ok) {
           const remoteState = await stageRes.json();
-          let changed = false;
+          let stageChanged = false;
 
-          if (remoteState.category && remoteState.category !== localCategory) {
-            localCategory = remoteState.category;
-            changed = true;
-          }
+          if (isInitialSync) {
+            localCategory = remoteState.category || 'jumbo';
+            localRevealed = Boolean(remoteState.revealed);
+            lastConfettiTrigger = remoteState.confettiTrigger || 0;
+            isInitialSync = false;
+            stageChanged = true;
+          } else {
+            if (remoteState.category && remoteState.category !== localCategory) {
+              localCategory = remoteState.category;
+              stageChanged = true;
+            }
 
-          if (remoteState.revealed !== undefined && remoteState.revealed !== localRevealed) {
-            localRevealed = remoteState.revealed;
-            changed = true;
-            if (localRevealed) {
+            if (remoteState.revealed !== undefined && remoteState.revealed !== localRevealed) {
+              localRevealed = Boolean(remoteState.revealed);
+              stageChanged = true;
+              if (localRevealed) {
+                launchConfetti();
+              }
+            }
+
+            if (remoteState.confettiTrigger && remoteState.confettiTrigger > lastConfettiTrigger) {
+              lastConfettiTrigger = remoteState.confettiTrigger;
               launchConfetti();
             }
           }
 
-          if (remoteState.confettiTrigger && remoteState.confettiTrigger > lastConfettiTrigger) {
-            lastConfettiTrigger = remoteState.confettiTrigger;
-            launchConfetti();
-          }
-
-          if (changed) {
+          if (stageChanged) {
             updateAdminBarUI();
-            renderCeremonyDisplay();
           }
         }
 
         if (sumRes.ok) {
           summaryData = await sumRes.json();
-          renderCeremonyDisplay();
         }
+
+        // เรียก render โดย renderCeremonyDisplay จะตรวจสอบเองว่าข้อมูลเปลี่ยนหรือไม่
+        // ถ้าไม่เปลี่ยนจะไม่แตะต้อง DOM เลย ป้องกันการกระตุกหรือป๊อปอัพซ้ำๆ
+        renderCeremonyDisplay();
 
         const indicator = document.getElementById('remote-indicator');
         if (indicator) {
@@ -418,6 +445,32 @@
 
       const leader = list[0];
       const isRevealed = localRevealed;
+      const leaderId = leader ? leader.id : 'none';
+      const leaderScore = leader?.rounds?.popular?.total || 0;
+
+      // ป้องกันการเรนเดอร์ซ้ำจนป๊อปอัพรัวๆ: ถ้าสถานะและผู้ชนะยังคงเดิม
+      if (
+        lastRenderedState.category === catKey &&
+        lastRenderedState.revealed === isRevealed &&
+        lastRenderedState.leaderId === leaderId
+      ) {
+        // หากเปลี่ยนแค่คะแนน ให้อัปเดตเฉพาะตัวเลข ไม่ต้องทำลาย DOM หรือสั่งอนิเมชันป๊อปอัพใหม่
+        if (lastRenderedState.leaderScore !== leaderScore) {
+          lastRenderedState.leaderScore = leaderScore;
+          const scoreEl = document.getElementById('winner-score-display');
+          if (scoreEl) {
+            scoreEl.textContent = leaderScore.toLocaleString();
+          }
+        }
+        return; // ไม่ต้องทำอะไรเพิ่ม DOM คงที่สมบูรณ์แบบ
+      }
+
+      // บันทึกสถานะล่าสุดที่ทำการเรนเดอร์
+      lastRenderedState.category = catKey;
+      lastRenderedState.revealed = isRevealed;
+      lastRenderedState.leaderId = leaderId;
+      lastRenderedState.leaderScore = leaderScore;
+      lastRenderedState.allHash = null;
 
       container.innerHTML = `
         <div class="max-w-4xl mx-auto w-full space-y-4">
@@ -455,7 +508,7 @@
               </div>
             ` : `
               <!-- ============================================== -->
-              <!-- STATE B: REVEALED WINNER (โชว์เฉพาะผู้ชนะอันดับ 1 ไม่แสดงอันดับรอง) -->
+              <!-- STATE B: REVEALED WINNER (โชว์เฉพาะผู้ชนะอันดับ 1 เล่นอนิเมชันครั้งเดียวตอนเปิด) -->
               <!-- ============================================== -->
               ${leader ? `
                 <div class="animate-pop-in flex flex-col items-center py-2">
@@ -485,8 +538,8 @@
                     <div class="text-[11px] uppercase font-bold tracking-widest text-rose-300 flex items-center justify-center gap-1.5">
                       <i class="fas fa-heart text-rose-400"></i> คะแนน POPULAR VOTE รวม
                     </div>
-                    <div class="text-4xl md:text-5xl font-black text-[#FFDE42] gold-glow my-0.5">
-                      ${(leader.rounds?.popular?.total || 0).toLocaleString()}
+                    <div id="winner-score-display" class="text-4xl md:text-5xl font-black text-[#FFDE42] gold-glow my-0.5">
+                      ${leaderScore.toLocaleString()}
                     </div>
                     <div class="text-xs text-gray-400">คะแนนโหวตอย่างเป็นทางการ</div>
                   </div>
@@ -502,6 +555,50 @@
     // วิว 2: สรุปผลผู้ชนะทั้ง 4 ประเภท (แสดงเฉพาะอันดับ 1 ทั้ง 4 คน ไม่แสดงอันดับรอง)
     function renderAllCategoriesView(container) {
       const keys = ['jumbo', 'queen', 'mister', 'miss'];
+      const allHash = keys.map(catKey => {
+        const rawList = summaryData.categories[catKey] || [];
+        const list = [...rawList].sort((a, b) => {
+          if (a.status === 'resigned' && b.status !== 'resigned') return 1;
+          if (b.status === 'resigned' && a.status !== 'resigned') return -1;
+          return (b.rounds?.popular?.total || 0) - (a.rounds?.popular?.total || 0);
+        });
+        const leader = list[0];
+        return leader ? `${catKey}:${leader.id}:${leader.rounds?.popular?.total || 0}` : `${catKey}:none`;
+      }).join('|');
+
+      // ถ้าไม่มีอะไรเปลี่ยนเลย ไม่ต้องแตะ DOM
+      if (
+        lastRenderedState.category === 'all' &&
+        lastRenderedState.revealed === localRevealed &&
+        lastRenderedState.allHash === allHash
+      ) {
+        return;
+      }
+
+      // ถ้าเปลี่ยนแค่คะแนน อัปเดตเฉพาะตัวเลขคะแนนในแต่ละกล่อง
+      if (
+        lastRenderedState.category === 'all' &&
+        lastRenderedState.revealed === localRevealed &&
+        lastRenderedState.allHash !== null
+      ) {
+        keys.forEach(catKey => {
+          const rawList = summaryData.categories[catKey] || [];
+          const list = [...rawList].sort((a, b) => (b.rounds?.popular?.total || 0) - (a.rounds?.popular?.total || 0));
+          const leader = list[0];
+          const scoreEl = document.getElementById(`all-score-${catKey}`);
+          if (scoreEl && leader) {
+            scoreEl.textContent = (leader.rounds?.popular?.total || 0).toLocaleString();
+          }
+        });
+        lastRenderedState.allHash = allHash;
+        return;
+      }
+
+      lastRenderedState.category = 'all';
+      lastRenderedState.revealed = localRevealed;
+      lastRenderedState.leaderId = null;
+      lastRenderedState.leaderScore = null;
+      lastRenderedState.allHash = allHash;
 
       container.innerHTML = `
         <div class="space-y-4 animate-fadeIn max-w-7xl mx-auto w-full">
@@ -564,7 +661,7 @@
                         <!-- Score Display -->
                         <div class="mt-4 pt-3 border-t border-white/10 bg-[#091054]/80 p-3 rounded-2xl border border-[#5478FF]/30">
                           <div class="text-[9px] uppercase font-bold text-rose-300">คะแนน POPULAR VOTE</div>
-                          <div class="text-3xl font-black text-[#FFDE42] gold-glow my-0.5">
+                          <div id="all-score-${catKey}" class="text-3xl font-black text-[#FFDE42] gold-glow my-0.5">
                             ${popScore.toLocaleString()}
                           </div>
                           <div class="text-[9px] text-gray-400">คะแนน</div>
