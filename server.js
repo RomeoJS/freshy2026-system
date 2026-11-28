@@ -780,7 +780,8 @@ async function calculateSummary() {
             return (a.id || '').localeCompare(b.id || '');
         });
 
-    const MAIN_CATEGORY_KEYS = ['miss', 'mister', 'queen', 'jumbo'];
+    const TOP5_CATEGORY_KEYS = ['miss', 'mister', 'queen', 'congeniality', 'jumbo'];
+    const TOP3_CATEGORY_KEYS = ['miss', 'mister', 'queen', 'jumbo']; // Miss Con แข่งถึงแค่รอบ TOP 5 เท่านั้น
     const top5ByCategory = {};
     const top3ByCategory = {};
     const finalRankingsByCategory = {};
@@ -790,15 +791,41 @@ async function calculateSummary() {
 
     const awardTitles = ['👑 ชนะเลิศ', '🥈 รองชนะเลิศอันดับ 1', '🥉 รองชนะเลิศอันดับ 2'];
 
-    for (const catKey of MAIN_CATEGORY_KEYS) {
+    for (const catKey of TOP5_CATEGORY_KEYS) {
         const catList = categoriesData[catKey] || [];
         const catName = CATEGORIES[catKey] || catKey;
+        const canAdvanceToTop3 = TOP3_CATEGORY_KEYS.includes(catKey);
 
-        // ผู้เข้าประกวดที่สละสิทธิ์ (status === 'resigned') จะไม่ได้รับคัดเลือกเข้าสู่รอบ TOP 5 (คัดสูงสุด 5 อันดับแรกของแต่ละประเภท)
+        // ผู้เข้าประกวดที่สละสิทธิ์ (status === 'resigned') จะไม่ได้รับคัดเลือกเข้าสู่รอบ TOP 5
+        // เกณฑ์คัดเลือก TOP 5 แยกประเภท: 4 อันดับแรกจากคะแนน 2 รอบ (ห้องดำ + Grand) + อันดับ 1 Popular Vote ของประเภทนั้น (เข้ารอบอัตโนมัติ)
         const eligibleForTop5 = catList.filter(c => c.status !== 'resigned');
-        const top5Selected = eligibleForTop5.slice(0, 5);
 
-        const catTop5 = top5Selected.map((finalist, preIdx) => {
+        // หาผู้ที่ได้คะแนน Popular Vote สูงสุดของประเภทนี้ (ต้อง > 0 และไม่สละสิทธิ์)
+        const popCandidates = [...eligibleForTop5].sort((a, b) => {
+            const popA = a.rounds?.popular?.total || 0;
+            const popB = b.rounds?.popular?.total || 0;
+            if (popB !== popA) return popB - popA;
+            if (b.preTotal !== a.preTotal) return b.preTotal - a.preTotal;
+            const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+            const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return (a.id || '').localeCompare(b.id || '');
+        });
+        const popWinner = (popCandidates[0] && (popCandidates[0].rounds?.popular?.total || 0) > 0)
+            ? popCandidates[0]
+            : null;
+
+        let top5Selected;
+        if (popWinner) {
+            const top4FromPre = eligibleForTop5
+                .filter(c => c.id !== popWinner.id)
+                .slice(0, 4);
+            top5Selected = [...top4FromPre, popWinner];
+        } else {
+            top5Selected = eligibleForTop5.slice(0, 5);
+        }
+
+        const catTop5 = top5Selected.map(finalist => {
             const contestantScores = scores.filter(s => s.contestant_id === finalist.id);
             const speedJudges = {};
             let speedTotal = 0;
@@ -808,7 +835,16 @@ async function calculateSummary() {
                 speedJudges[jId] = score;
                 speedTotal += score;
             });
-            return { ...finalist, preRank: preIdx + 1, speedJudges, speedTotal };
+            const isPopularFastTrack = Boolean(popWinner && finalist.id === popWinner.id);
+            return {
+                ...finalist,
+                preRank: eligibleForTop5.findIndex(x => x.id === finalist.id) + 1,
+                isPopularFastTrack,
+                qualifiedBy: isPopularFastTrack ? 'popular' : 'pre',
+                popularTotal: finalist.rounds?.popular?.total || 0,
+                speedJudges,
+                speedTotal
+            };
         });
 
         catTop5.sort((a, b) => {
@@ -819,7 +855,18 @@ async function calculateSummary() {
             if (numA !== numB) return numA - numB;
             return (a.id || '').localeCompare(b.id || '');
         });
-        catTop5.forEach((f, idx) => { f.speedRank = idx + 1; f.isTop3 = idx < 3; });
+        catTop5.forEach((f, idx) => {
+            f.speedRank = idx + 1;
+            f.isTop3 = canAdvanceToTop3 ? (idx < 3) : false;
+            f.stopsAtTop5 = !canAdvanceToTop3;
+        });
+
+        top5ByCategory[catKey] = catTop5;
+        top5Finalists.push(...catTop5);
+
+        if (!canAdvanceToTop3) {
+            continue; // Miss Congeniality สิ้นสุดที่รอบ TOP 5 (Speed) ไม่เข้าสู่รอบ TOP 3 ตอบคำถาม
+        }
 
         // ผู้เข้าประกวดที่สละสิทธิ์จะไม่ได้รับคัดเลือกเข้าสู่รอบ TOP 3 (คัดสูงสุด 3 อันดับแรกของแต่ละประเภท)
         const eligibleForTop3 = catTop5.filter(f => f.status !== 'resigned');
@@ -863,13 +910,95 @@ async function calculateSummary() {
 
         const catRankings = [...catTop3, ...remaining];
 
-        top5ByCategory[catKey] = catTop5;
         top3ByCategory[catKey] = catTop3;
         finalRankingsByCategory[catKey] = catRankings;
 
-        top5Finalists.push(...catTop5);
         top3Finalists.push(...catTop3);
         finalRankings.push(...catRankings);
+    }
+
+    // สรุปผลรอบชุดธีม (ชุด THEME) แยก 3 หมวด: Miss, Mister และ LGBTQ+ (Miss Queen + Miss Con + Miss Jumbo)
+    // เกณฑ์: 1. ตรงตามธีมงาน (20) | 2. บุคลิกภาพ/มั่นใจ (10) | 3. ความสวยงามของเครื่องแต่งกาย (10) | 4. หน้าตา/ผิวพรรณ/รูปร่าง/สัดส่วน (10) = เต็ม 50
+    // คำนวณ: นำคะแนนแต่ละเกณฑ์จากกรรมการทั้ง 5 ท่านมารวมกันแล้วหาร 5 จากนั้นรวมเป็นคะแนนสุทธิเต็ม 50
+    const THEME_GROUPS = [
+        { key: 'miss', name: 'Miss', cats: ['miss'] },
+        { key: 'mister', name: 'Mister', cats: ['mister'] },
+        { key: 'lgbtq', name: 'LGBTQ+', cats: ['queen', 'congeniality', 'jumbo'] }
+    ];
+    const themeByGroup = {};
+    const themeWinners = {};
+    const themeResults = [];
+
+    for (const grp of THEME_GROUPS) {
+        const grpContestants = contestants.filter(c => grp.cats.includes(c.category));
+        const grpList = grpContestants.map(c => {
+            const contestantScores = scores.filter(s => s.contestant_id === c.id && s.round_id === 'theme');
+            const themeJudges = {};
+            const critSums = { c1: 0, c2: 0, c3: 0, c4: 0 };
+            let rawTotal = 0;
+
+            judges.forEach(jId => {
+                const rec = contestantScores.find(s => s.judge_id === jId);
+                if (rec) {
+                    const tot = rec.total_score || 0;
+                    themeJudges[jId] = tot;
+                    rawTotal += tot;
+                    critSums.c1 += (rec.score_c1 || 0);
+                    critSums.c2 += (rec.score_c2 || 0);
+                    critSums.c3 += (rec.score_c3 || 0);
+                    critSums.c4 += (rec.score_c4 || 0);
+                } else {
+                    themeJudges[jId] = null;
+                }
+            });
+
+            const critAvgs = {
+                c1: Number((critSums.c1 / 5).toFixed(2)),
+                c2: Number((critSums.c2 / 5).toFixed(2)),
+                c3: Number((critSums.c3 / 5).toFixed(2)),
+                c4: Number((critSums.c4 / 5).toFixed(2))
+            };
+            const avgScore = Number((critAvgs.c1 + critAvgs.c2 + critAvgs.c3 + critAvgs.c4).toFixed(2));
+
+            return {
+                id: c.id,
+                name: c.name,
+                nickname: c.nickname || '',
+                faculty: c.faculty || '',
+                category: c.category,
+                categoryName: CATEGORIES[c.category] || c.category,
+                themeGroup: grp.key,
+                themeGroupName: grp.name,
+                status: c.status || 'active',
+                image: c.image || 'default.jpg',
+                judges: themeJudges,
+                critSums,
+                critAvgs,
+                rawTotal,
+                avgScore
+            };
+        });
+
+        grpList.sort((a, b) => {
+            const resA = a.status === 'resigned' ? 1 : 0;
+            const resB = b.status === 'resigned' ? 1 : 0;
+            if (resA !== resB) return resA - resB;
+            if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+            if (b.rawTotal !== a.rawTotal) return b.rawTotal - a.rawTotal;
+            const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+            const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return (a.id || '').localeCompare(b.id || '');
+        });
+
+        grpList.forEach((item, idx) => {
+            item.themeRank = idx + 1;
+            item.isWinner = item.status !== 'resigned' && idx === 0 && item.rawTotal > 0;
+        });
+
+        themeByGroup[grp.key] = grpList;
+        themeWinners[grp.key] = grpList.find(x => x.isWinner) || null;
+        themeResults.push(...grpList);
     }
 
     // สรุปผลผู้เข้าชิงอันดับ 1 ของทั้ง 5 ประเภท และคัดเลือกผู้ชนะเลิศ POPULAR VOTE เพียง 1 เดียวจากทั้ง 5 คน
@@ -956,12 +1085,182 @@ async function calculateSummary() {
         top5ByCategory,
         top3ByCategory,
         finalRankingsByCategory,
+        themeByGroup,
+        themeWinners,
+        themeResults,
         missConTalent,
         popularWinner, // ผู้ชนะเลิศ Popular Vote เพียงคนเดียวเท่านั้น
         popularWinners: popularCategoryLeaders, // ตัวแทนอันดับ 1 แต่ละประเภท
         popularCategoryLeaders
     };
 }
+
+// ==================================================
+// Admin Score Simulation & Reset (สำหรับทดสอบ Logic คะแนน)
+// ==================================================
+app.post('/api/admin/simulate-scores', async (req, res) => {
+    const { role, includeConTalent } = req.body || {};
+    if (role !== 'admin' && role !== 'admin2') {
+        return res.status(403).json({ success: false, message: 'เฉพาะ Admin เท่านั้นที่จำลองคะแนนได้' });
+    }
+
+    try {
+        const [contestants] = await pool.execute('SELECT id, category, COALESCE(status, \'active\') AS status FROM contestants');
+        const activeContestants = contestants.filter(c => c.status !== 'resigned');
+        if (activeContestants.length === 0) {
+            return res.status(400).json({ success: false, message: 'ไม่พบผู้เข้าประกวดที่เปิดใช้งานสำหรับจำลองคะแนน' });
+        }
+
+        const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
+
+        // ล้างคะแนนรอบวันจริงเดิมออกก่อน (ยกเว้นรอบความสามารถ Miss Con เว้นแต่เลือกจำลองด้วย)
+        if (includeConTalent) {
+            await pool.execute('DELETE FROM scores');
+        } else {
+            await pool.execute("DELETE FROM scores WHERE round_id != 'congeniality'");
+        }
+
+        const scoreRows = [];
+        const pushRow = (jId, cId, rId, c1 = 0, c2 = 0, c3 = 0, c4 = 0, c5 = 0, c6 = 0) => {
+            const total = (rId === 'popular') ? (c1 + c2 + c3) : (c1 + c2 + c3 + c4 + c5 + c6);
+            scoreRows.push([jId, cId, rId, c1, c2, c3, c4, c5, c6, total]);
+        };
+
+        // 1. จำลองรอบห้องดำ (blackroom), Grand Opening (grand), ชุดธีม (theme) และ Popular Vote
+        const preTotalMap = new Map();
+        for (const c of activeContestants) {
+            let preSum = 0;
+            for (const jId of judges) {
+                const b1 = randInt(6, 10), b2 = randInt(3, 5), b3 = randInt(3, 5), b4 = randInt(3, 5);
+                preSum += (b1 + b2 + b3 + b4);
+                pushRow(jId, c.id, 'blackroom', b1, b2, b3, b4, 0, 0);
+
+                const g1 = randInt(12, 20), g2 = randInt(6, 10), g3 = randInt(6, 10), g4 = randInt(6, 10);
+                preSum += (g1 + g2 + g3 + g4);
+                pushRow(jId, c.id, 'grand', g1, g2, g3, g4, 0, 0);
+
+                const t1 = randInt(12, 20), t2 = randInt(6, 10), t3 = randInt(6, 10), t4 = randInt(6, 10);
+                pushRow(jId, c.id, 'theme', t1, t2, t3, t4, 0, 0);
+            }
+            preTotalMap.set(c.id, preSum);
+        }
+
+        // จำลอง Popular Vote แยกแต่ละหมวด โดยตั้งใจให้มีบางหมวดที่ผู้ได้คะแนนโหวตสูงสุดไม่ได้อยู่ใน Top 4 รอบคัดเลือก เพื่อทดสอบเงื่อนไข 4+1 อัตโนมัติ
+        const byCat = {};
+        for (const c of activeContestants) {
+            if (!byCat[c.category]) byCat[c.category] = [];
+            byCat[c.category].push(c);
+        }
+        for (const [catKey, catList] of Object.entries(byCat)) {
+            const sortedByPre = [...catList].sort((a, b) => (preTotalMap.get(b.id) || 0) - (preTotalMap.get(a.id) || 0));
+            const fastTrackTarget = sortedByPre.length >= 5 ? sortedByPre[sortedByPre.length - 1] : sortedByPre[0];
+            for (const c of catList) {
+                const isTarget = fastTrackTarget && c.id === fastTrackTarget.id;
+                const p1 = isTarget ? randInt(350, 550) : randInt(20, 180);
+                const p2 = isTarget ? randInt(300, 500) : randInt(10, 150);
+                const p3 = isTarget ? randInt(250, 450) : randInt(10, 140);
+                pushRow('admin', c.id, 'popular', p1, p2, p3, 0, 0, 0);
+            }
+        }
+
+        if (includeConTalent) {
+            const conContestants = activeContestants.filter(c => c.category === 'congeniality');
+            for (const c of conContestants) {
+                for (const jId of ['judge1', 'judge2', 'judge3']) {
+                    pushRow(jId, c.id, 'congeniality', randInt(20, 30), randInt(20, 30), randInt(13, 20), randInt(6, 10), randInt(6, 10), 0);
+                }
+            }
+        }
+
+        const batchInsertScores = async (rows) => {
+            if (rows.length === 0) return;
+            const placeholders = rows.map(() => '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').join(', ');
+            const flat = rows.flat();
+            await pool.execute(`
+                INSERT INTO scores (judge_id, contestant_id, round_id, score_c1, score_c2, score_c3, score_c4, score_c5, score_c6, total_score)
+                VALUES ${placeholders}
+                ON DUPLICATE KEY UPDATE
+                    score_c1 = VALUES(score_c1),
+                    score_c2 = VALUES(score_c2),
+                    score_c3 = VALUES(score_c3),
+                    score_c4 = VALUES(score_c4),
+                    score_c5 = VALUES(score_c5),
+                    score_c6 = VALUES(score_c6),
+                    total_score = VALUES(total_score)
+            `, flat);
+        };
+
+        await batchInsertScores(scoreRows);
+
+        // 2. คำนวณ TOP 5 แยกประเภท แล้วจำลองคะแนนรอบ Speed ให้ผู้ผ่านเข้ารอบ TOP 5 ของทุกหมวด (รวม Miss Con)
+        const midSummary = await calculateSummary();
+        const speedRows = [];
+        for (const f of (midSummary.top5 || [])) {
+            for (const jId of judges) {
+                const s1 = randInt(6, 10), s2 = randInt(12, 20), s3 = randInt(6, 10), s4 = randInt(6, 10);
+                const total = s1 + s2 + s3 + s4;
+                speedRows.push([jId, f.id, 'speed', s1, s2, s3, s4, 0, 0, total]);
+            }
+        }
+        await batchInsertScores(speedRows);
+
+        // 3. คำนวณ TOP 3 แยกประเภท (ไม่รวม Miss Con) แล้วจำลองคะแนนรอบตอบคำถามชี้ขาด (qa)
+        const preQaSummary = await calculateSummary();
+        const qaRows = [];
+        for (const f of (preQaSummary.top3 || [])) {
+            for (const jId of judges) {
+                const q1 = randInt(7, 10), q2 = randInt(14, 20), q3 = randInt(14, 20), q4 = randInt(14, 20), q5 = randInt(7, 10), q6 = randInt(14, 20);
+                const total = q1 + q2 + q3 + q4 + q5 + q6;
+                qaRows.push([jId, f.id, 'qa', q1, q2, q3, q4, q5, q6, total]);
+            }
+        }
+        await batchInsertScores(qaRows);
+
+        scoresCache.timestamp = 0;
+        scoresCache.version++;
+        summaryCache.timestamp = 0;
+        summaryCache.version++;
+
+        const finalSummary = await calculateSummary();
+        summaryCache = { data: finalSummary, timestamp: Date.now(), version: summaryCache.version };
+
+        res.json({
+            success: true,
+            message: `จำลองคะแนนทดสอบครบทุกรอบสำเร็จ (${activeContestants.length} คน • TOP 5 ${finalSummary.top5.length} คน • TOP 3 ${finalSummary.top3.length} คน)`,
+            totalRows: scoreRows.length + speedRows.length + qaRows.length,
+            summary: finalSummary
+        });
+    } catch (error) {
+        console.error('❌ Simulate scores error:', error.message);
+        res.status(500).json({ success: false, message: 'จำลองคะแนนไม่สำเร็จ: ' + error.message });
+    }
+});
+
+app.post('/api/admin/clear-scores', async (req, res) => {
+    const { role, scope } = req.body || {};
+    if (role !== 'admin' && role !== 'admin2') {
+        return res.status(403).json({ success: false, message: 'เฉพาะ Admin เท่านั้นที่ล้างคะแนนได้' });
+    }
+    try {
+        if (scope === 'all') {
+            await pool.execute('DELETE FROM scores');
+        } else {
+            await pool.execute("DELETE FROM scores WHERE round_id != 'congeniality'");
+        }
+        scoresCache.timestamp = 0;
+        scoresCache.version++;
+        summaryCache.timestamp = 0;
+        summaryCache.version++;
+        res.json({
+            success: true,
+            message: scope === 'all' ? 'ล้างคะแนนทั้งหมดเรียบร้อย' : 'ล้างคะแนนรอบวันจริงเรียบร้อย (เก็บคะแนนความสามารถ Miss Con ไว้)'
+        });
+    } catch (error) {
+        console.error('❌ Clear scores error:', error.message);
+        res.status(500).json({ success: false, message: 'ล้างคะแนนไม่สำเร็จ: ' + error.message });
+    }
+});
 
 app.get('/api/export', async (req, res) => {
     res.status(500).send('API Export is simplified in this version.');

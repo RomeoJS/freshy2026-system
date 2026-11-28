@@ -196,7 +196,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <button onclick="switchRound('blackroom')" id="tab-round-blackroom"
             class="round-nav-btn p-3 rounded-2xl border-2 border-[#FFDE42] bg-[#FFDE42] text-[#111FA2] text-center transition-all duration-300 font-bold scale-105 shadow-[0_0_20px_rgba(255,222,66,0.5)] group">
             <i class="fas fa-user-secret text-xl mb-1 text-[#111FA2]"></i>
@@ -218,6 +218,13 @@
             <div class="text-[11px] text-rose-300">คะแนนความนิยม (เฉพาะแอดมิน)</div>
           </button>
 
+          <button onclick="switchRound('theme')" id="tab-round-theme"
+            class="round-nav-btn p-3 rounded-2xl glass-panel border border-pink-400/50 text-center transition-all duration-300 hover:border-[#FFDE42] group">
+            <i class="fas fa-tshirt text-xl mb-1 text-pink-400 group-hover:text-[#FFDE42] transition"></i>
+            <div class="text-sm font-bold text-white group-hover:text-[#FFDE42]">รอบชุดธีม (Theme)</div>
+            <div class="text-[11px] text-pink-200">🎭 Miss / Mister / LGBTQ+ (50)</div>
+          </button>
+
           <button onclick="switchRound('speed')" id="tab-round-speed"
             class="round-nav-btn p-3 rounded-2xl glass-panel border border-[#5478FF]/40 text-center transition-all duration-300 hover:border-[#FFDE42] group">
             <i class="fas fa-bolt text-xl mb-1 text-[#5478FF] group-hover:text-[#FFDE42] transition"></i>
@@ -234,11 +241,11 @@
         </div>
       </div>
 
-      <!-- 🌟 แถบกรองหมวดหมู่ (สำหรับรอบคัดเลือก ห้องดำ, Grand Opening, Popular Vote) -->
+      <!-- 🌟 แถบกรองหมวดหมู่ (สำหรับรอบคัดเลือก ห้องดำ, Grand Opening, Popular Vote, TOP 5) -->
       <div id="category-filter-bar" class="flex flex-wrap justify-center gap-2 md:gap-3 mb-6">
         <button onclick="switchCategory('all')" id="tab-cat-all"
           class="cat-nav-btn px-5 py-2 rounded-full border-2 border-[#FFDE42] text-[#111FA2] font-bold bg-[#FFDE42] shadow-[0_0_15px_rgba(255,222,66,0.4)] text-sm transition">
-          ทั้งหมด (23 คน)
+          ทั้งหมด (29 คน)
         </button>
         <button onclick="switchCategory('miss')" id="tab-cat-miss"
           class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
@@ -260,6 +267,38 @@
           class="cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
           Miss Jumbo
         </button>
+      </div>
+
+      <!-- 🎭 แถบกรองหมวดหมู่สำหรับรอบชุดธีม (3 หมวด: Miss / Mister / LGBTQ+) -->
+      <div id="theme-filter-bar" class="hidden flex flex-wrap justify-center gap-2 md:gap-3 mb-6">
+        <button onclick="switchThemeCategory('all')" id="tab-theme-all"
+          class="theme-cat-btn px-5 py-2 rounded-full border-2 border-[#FFDE42] text-[#111FA2] font-bold bg-[#FFDE42] shadow-[0_0_15px_rgba(255,222,66,0.4)] text-sm transition">
+          ทั้งหมด (3 หมวด)
+        </button>
+        <button onclick="switchThemeCategory('miss')" id="tab-theme-miss"
+          class="theme-cat-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+          👗 Miss
+        </button>
+        <button onclick="switchThemeCategory('mister')" id="tab-theme-mister"
+          class="theme-cat-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+          👔 Mister
+        </button>
+        <button onclick="switchThemeCategory('lgbtq')" id="tab-theme-lgbtq"
+          class="theme-cat-btn px-5 py-2 rounded-full glass-panel border border-pink-400/50 text-pink-200 text-sm font-medium transition hover:border-[#FFDE42] hover:text-white">
+          🏳️‍🌈 LGBTQ+ (Miss Queen • Miss Con • Miss Jumbo)
+        </button>
+      </div>
+
+      <!-- แบนเนอร์พิเศษสำหรับรอบชุดธีม (Theme) -->
+      <div id="theme-banner"
+        class="hidden glass-panel p-4 rounded-2xl mb-6 border-2 border-pink-400 bg-gradient-to-r from-[#111FA2]/90 via-[#1f104e]/90 to-[#111FA2]/90 text-center shadow-[0_0_25px_rgba(244,114,182,0.3)]">
+        <h4 class="text-lg font-bold text-pink-300 flex items-center justify-center gap-2">
+          <i class="fas fa-tshirt text-xl text-[#FFDE42]"></i> การประกวดรอบชุดธีม (รางวัลพิเศษแยกต่างหาก • คัด TOP 1 แต่ละหมวด)
+        </h4>
+        <p class="text-xs text-gray-200 mt-1">
+          <b>ไม่นำไปรวมคะแนนกับรอบอื่นๆ</b> | แบ่ง 3 หมวดหมู่: <b>Miss</b> • <b>Mister</b> • <b>LGBTQ+</b> (รวม Miss Queen, Miss Con, Miss Jumbo) คัดผู้ชนะ <b>TOP 1</b> ของแต่ละหมวด (รวม 5 ก. ÷ 5 เต็ม 50)<br>
+          <span class="text-[#FFDE42] font-semibold">เกณฑ์:</span> 1. การแต่งกายตรงตามธีมงาน (20) | 2. บุคลิกภาพ / ความมั่นใจ (10) | 3. ความสวยงามของเครื่องแต่งกาย (10) | 4. หน้าตา / ผิวพรรณ / รูปร่าง / สัดส่วน (10)
+        </p>
       </div>
 
       <!-- แบนเนอร์พิเศษสำหรับแก้ไขคะแนนรอบความสามารถ Miss Congeniality (แยกเก็บต่างหาก • เฉพาะ Admin แก้ไขคะแนน) -->
@@ -289,9 +328,9 @@
           <i class="fas fa-bolt text-xl text-[#FFDE42]"></i> รอบ 5 คนสุดท้าย แยกแต่ละประเภท (TOP 5 - Speed คัดเหลือประเภทละ 3 คน)
         </h4>
         <p class="text-xs text-gray-300 mt-1">
-          คัดจากผู้มีคะแนนรอบแรก (ห้องดำ + Grand Opening) สูงสุด 5 อันดับแรกของแต่ละประเภท | คะแนนเต็ม 50 คะแนนต่อกรรมการ<br>
+          คัด 4 อันดับแรกจากคะแนน 2 รอบ (ห้องดำ + Grand Opening) + อันดับ 1 Popular Vote ของแต่ละประเภท (เข้ารอบอัตโนมัติ) | เต็ม 50 คะแนนต่อกรรมการ<br>
           <span class="text-[#FFDE42] font-semibold">เกณฑ์:</span> 1.ภาษากาย/บุคลิกภาพ (10) |
-          2.ปฏิภาณไหวพริบ/พูด/สื่อสาร (20) | 3.ความมั่นใจ/แก้ปัญหา (10) | 4.ชุดนักศึกษา (10)
+          2.ปฏิภาณไหวพริบ/พูด/สื่อสาร (20) | 3.ความมั่นใจ/แก้ปัญหา (10) | 4.ความสวยงามของเครื่องแต่งกาย (10)
         </p>
       </div>
 
@@ -329,9 +368,9 @@
           <div class="text-[10px] text-gray-400">วันจริงทุกหมวด ก.1–ก.5 (รอบความสามารถ Miss Con 3 ท่าน)</div>
         </div>
         <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
-          <div class="text-xs text-gray-300 mb-1">รอบคัดเลือก 2 รอบแรก</div>
+          <div class="text-xs text-gray-300 mb-1">รอบคัดเลือก 2 รอบแรก + Popular</div>
           <div class="text-2xl font-bold text-emerald-400">ห้องดำ + Grand</div>
-          <div class="text-[10px] text-gray-400">25 + 50 = 75 คะแนน (คัด TOP 5)</div>
+          <div class="text-[10px] text-gray-400">คัด 4 คน (2 รอบ) + 1 คน Top Popular/ประเภท</div>
         </div>
         <div class="glass-panel p-4 rounded-2xl border border-[#5478FF]/30 text-center">
           <div class="text-xs text-gray-300 mb-1">รอบชิงชนะเลิศ</div>
@@ -351,6 +390,10 @@
           <button onclick="switchAdminView('speed')" id="admin-tab-speed"
             class="admin-only-tab px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel">
             <i class="fas fa-bolt text-yellow-300"></i> ⚡ ผลรอบ TOP 5 (Speed)
+          </button>
+          <button onclick="switchAdminView('theme')" id="admin-tab-theme"
+            class="admin-only-tab px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-pink-200 hover:text-white glass-panel border border-pink-400/40">
+            <i class="fas fa-tshirt text-pink-300"></i> 🎭 ผลรอบชุดธีม (Theme)
           </button>
           <button onclick="switchAdminView('pre')" id="admin-tab-pre"
             class="px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 text-gray-300 hover:text-white glass-panel">
@@ -391,6 +434,10 @@
             class="btn-link px-4 py-2 bg-gradient-to-r from-rose-500 via-pink-500 to-purple-600 hover:from-rose-400 hover:to-purple-500 text-white font-black transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-[0_0_15px_rgba(244,63,94,0.4)] hover:-translate-y-0.5 active:scale-95">
             <i class="fas fa-tv text-amber-300"></i> จอสด Popular Vote (Monitor)
           </a>
+          <button onclick="openSimulateScoresModal()"
+            class="admin-only-btn px-4 py-2 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
+            <i class="fas fa-flask text-yellow-300"></i> จำลองคะแนน (Test)
+          </button>
           <button onclick="refreshAdminData()"
             class="px-4 py-2 bg-[#5478FF] hover:bg-blue-400 text-white font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 hover:shadow-blue-500/30">
             <i class="fas fa-sync-alt"></i> อัปเดตล่าสุด
@@ -569,6 +616,7 @@
                 <option value="miss">Miss</option>
                 <option value="mister">Mister</option>
                 <option value="queen">Miss Queen</option>
+                <option value="congeniality">Miss Congeniality (ถึงแค่รอบ TOP 5)</option>
                 <option value="jumbo">Miss Jumbo</option>
               </select>
               <button type="button" onclick="printCurrentSpeedScoreSheet()"
@@ -602,7 +650,60 @@
         </div>
       </div>
 
-      <!-- วิว 3: ตารางคะแนนรอบคัดเลือก 2 รอบแรก (ห้องดำ 25 + Grand 50) -->
+      <!-- วิว 2.5: 🎭 ผลคะแนนรอบชุดธีม (ชุด THEME • รางวัลพิเศษแยกต่างหาก • คัด TOP 1 ของแต่ละหมวด) -->
+      <div id="admin-view-theme" class="hidden space-y-6">
+        <div class="glass-panel p-6 rounded-3xl border border-pink-400/70 shadow-xl overflow-x-auto">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-5">
+            <div class="text-center sm:text-left">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400/50 text-pink-200 text-[11px] font-bold mb-2">
+                <i class="fas fa-gift text-[#FFDE42]"></i> รางวัลพิเศษแยกต่างหาก (ไม่รวมคะแนนกับรอบอื่นๆ) • คัด TOP 1 ของแต่ละหมวด
+              </div>
+              <h3 class="text-xl font-bold text-pink-300 flex items-center justify-center sm:justify-start gap-2">
+                <i class="fas fa-tshirt text-2xl text-[#FFDE42]"></i> ผลการตัดสินรอบชุดธีม (ชุด THEME • แยก 3 หมวดหมู่)
+              </h3>
+              <p class="text-xs text-gray-300 mt-1">
+                แบ่งเป็น <b>Miss</b>, <b>Mister</b> และ <b>LGBTQ+</b> (รวม Miss Queen, Miss Con, Miss Jumbo) — นำคะแนนแต่ละเกณฑ์จากกรรมการ 5 ท่านรวมกันแล้วหาร 5 (เต็ม 50 คะแนน) คัดผู้ชนะ <b>TOP 1</b> ของแต่ละหมวด
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-2 shrink-0">
+              <select id="admin-theme-category-filter" onchange="renderAdminThemeTable()"
+                class="input-dark p-2 rounded-xl text-xs font-semibold">
+                <option value="all">ทุกหมวด (แยก 3 กลุ่ม: Miss / Mister / LGBTQ+)</option>
+                <option value="miss">Miss</option>
+                <option value="mister">Mister</option>
+                <option value="lgbtq">LGBTQ+ (Miss Queen • Miss Con • Miss Jumbo)</option>
+              </select>
+              <button type="button" onclick="printCurrentThemeScoreSheet()"
+                class="px-4 py-2.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 shrink-0">
+                <i class="fas fa-print"></i> พิมพ์ใบคะแนนรอบชุดธีม
+              </button>
+            </div>
+          </div>
+
+          <!-- การ์ดสรุปผู้ชนะ TOP 1 รอบชุดธีมของทั้ง 3 หมวด -->
+          <div id="theme-top1-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"></div>
+
+          <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
+            <thead class="text-xs uppercase font-bold">
+              <tr class="bg-pink-500 text-white">
+                <th class="px-3 py-3 rounded-tl-xl text-center">อันดับ</th>
+                <th class="px-3 py-3 text-center">รูปภาพ</th>
+                <th class="px-3 py-3">รหัส / ชื่อ-นามสกุล</th>
+                <th class="px-3 py-3 text-center">ประเภทเดิม</th>
+                <th class="px-2 py-3 text-center bg-pink-900/90 border-l border-pink-400/40">ข้อ 1<br><span class="text-[9px] font-normal">ตรงธีม (20)</span></th>
+                <th class="px-2 py-3 text-center bg-pink-900/90">ข้อ 2<br><span class="text-[9px] font-normal">บุคลิกฯ (10)</span></th>
+                <th class="px-2 py-3 text-center bg-pink-900/90">ข้อ 3<br><span class="text-[9px] font-normal">เครื่องแต่งกาย (10)</span></th>
+                <th class="px-2 py-3 text-center bg-pink-900/90">ข้อ 4<br><span class="text-[9px] font-normal">หน้าตา/รูปร่าง (10)</span></th>
+                <th class="px-3 py-3 text-center bg-slate-900/80 text-blue-200 border-l border-white/20">รวม 5 ก.<br><span class="text-[9px] font-normal">(เต็ม 250)</span></th>
+                <th class="px-3 py-3 text-center bg-[#111FA2] text-[#FFDE42] rounded-tr-xl font-extrabold">คะแนนสุทธิ (÷5)<br><span class="text-[9px] font-normal text-amber-200">(เต็ม 50)</span></th>
+              </tr>
+            </thead>
+            <tbody id="theme-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- วิว 3: ตารางคะแนนรอบคัดเลือก (ห้องดำ 25 + Grand 50 + Popular Vote) -->
       <div id="admin-view-pre" class="hidden space-y-4">
         <div class="glass-panel p-5 rounded-2xl border border-[#5478FF]/30">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
@@ -610,11 +711,11 @@
               <h3 id="admin-pre-header-title" class="text-xl font-bold text-[#FFDE42] flex items-center gap-2">
                 <i class="fas fa-list-ol"></i> ตารางคะแนนรอบคัดเลือก (ห้องดำ + Grand Opening + Popular Vote)
               </h3>
-              <p id="admin-pre-header-desc" class="text-xs text-gray-300 mt-0.5">รอบห้องดำ (25 คะแนน), รอบ Grand Opening (50 คะแนน) และรอบ Popular Vote (ไม่จำกัดคะแนน • แอดมินเป็นผู้กรอก) รวมเพื่อคัดหา TOP 5</p>
+              <p id="admin-pre-header-desc" class="text-xs text-gray-300 mt-0.5">รอบห้องดำ (25 คะแนน) + Grand Opening (50 คะแนน) คัด 4 คน และอันดับ 1 Popular Vote แต่ละประเภทเข้ารอบ TOP 5 อัตโนมัติ</p>
             </div>
             <select id="admin-category-filter" onchange="renderAdminPreTable()"
               class="input-dark p-2 rounded-xl text-xs font-semibold shrink-0">
-              <option value="all">ทุกหมวดหมู่รอบคัดเลือก (23 คน)</option>
+              <option value="all">ทุกหมวดหมู่รอบคัดเลือก (ทุกประเภท)</option>
               <option value="miss">Miss</option>
               <option value="mister">Mister</option>
               <option value="queen">Miss Queen</option>
@@ -908,7 +1009,7 @@
         </div>
 
         <p class="text-[11px] text-amber-300/90 text-center mb-4 flex items-center justify-center gap-1">
-          <i class="fas fa-info-circle"></i> เกณฑ์ Popular Vote เป็นรางวัลพิเศษแยกต่างหาก ไม่รวมในรอบคัดเลือก TOP 5
+          <i class="fas fa-info-circle"></i> อันดับ 1 Popular Vote ของแต่ละประเภทจะผ่านเข้ารอบ TOP 5 อัตโนมัติ (4 คนจากคะแนน 2 รอบ + 1 คนจาก Popular Vote)
         </p>
 
         <!-- ปุ่มการทำงาน -->
@@ -1114,6 +1215,13 @@
                 </div>
               </label>
               <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#091054]/80 border border-[#5478FF]/40 hover:border-[#FFDE42] cursor-pointer transition select-none">
+                <input type="checkbox" class="print-round-cb w-4 h-4 accent-[#FFDE42] rounded cursor-pointer" value="theme" onchange="updatePrintCriteriaPreviewInfo()" />
+                <div class="leading-tight">
+                  <div class="text-xs font-bold text-white">รอบชุดธีม (Theme)</div>
+                  <div class="text-[10px] text-pink-300">เต็ม 50 คะแนน (4 เกณฑ์)</div>
+                </div>
+              </label>
+              <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#091054]/80 border border-[#5478FF]/40 hover:border-[#FFDE42] cursor-pointer transition select-none">
                 <input type="checkbox" class="print-round-cb w-4 h-4 accent-[#FFDE42] rounded cursor-pointer" value="speed" onchange="updatePrintCriteriaPreviewInfo()" />
                 <div class="leading-tight">
                   <div class="text-xs font-bold text-white">4. รอบ TOP 5 - Speed</div>
@@ -1215,6 +1323,7 @@
               <option value="blackroom">1️⃣ ใบคะแนนรอบที่ 1: รอบห้องดำ (4 เกณฑ์ เต็ม 25 • ก.1–ก.5)</option>
               <option value="grand">2️⃣ ใบคะแนนรอบที่ 2: Grand Opening (4 เกณฑ์ เต็ม 50 • ก.1–ก.5)</option>
               <option value="popular">3️⃣ ใบคะแนนรอบที่ 3: Popular Vote (คะแนนความนิยม เต็ม 50 • ก.1–ก.5)</option>
+              <option value="theme">🎭 ใบคะแนนรอบชุดธีม (4 เกณฑ์ เต็ม 50 • แยก Miss / Mister / LGBTQ+)</option>
               <option value="speed">4️⃣ ใบคะแนนรอบที่ 4: TOP 5 Speed (4 เกณฑ์ เต็ม 50 • ก.1–ก.5)</option>
               <option value="qa">5️⃣ ใบคะแนนรอบที่ 5: TOP 3 ตอบคำถามชี้ขาด (6 เกณฑ์ เต็ม 100 • ก.1–ก.5)</option>
               <option value="all_pack">📚 พิมพ์ครบชุดทั้งหมด (ทั้ง 5 รอบ + รวม 3 รอบแรก + ใบสรุปรวมทุกรอบ)</option>
@@ -1235,6 +1344,7 @@
               <option value="queen">เฉพาะหมวด Miss Queen</option>
               <option value="congeniality">เฉพาะหมวด Miss Congeniality (วันจริง)</option>
               <option value="jumbo">เฉพาะหมวด Miss Jumbo</option>
+              <option value="lgbtq">เฉพาะกลุ่ม LGBTQ+ (Miss Queen + Miss Con + Miss Jumbo • รอบชุดธีม)</option>
             </select>
           </div>
 
@@ -1266,6 +1376,70 @@
             class="w-2/3 py-3 rounded-xl bg-gradient-to-r from-[#FFDE42] via-yellow-300 to-[#FFDE42] text-[#111FA2] font-bold shadow-[0_0_15px_rgba(255,222,66,0.5)] hover:scale-[1.02] active:scale-95 transition text-sm flex items-center justify-center gap-2">
             <i class="fas fa-print"></i> <span id="print-score-btn-label">พิมพ์ใบคะแนน (A4 แนวตั้ง)</span>
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: จำลองคะแนนทดสอบ Logic การคำนวณ (Admin Test Sandbox) -->
+    <div id="simulate-scores-modal"
+      class="modal-backdrop fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden"
+      onclick="closeSimulateScoresModal()">
+      <div
+        class="modal-dialog glass-panel max-w-lg w-full rounded-3xl p-6 md:p-7 border-2 border-cyan-400 shadow-[0_0_50px_rgba(34,211,238,0.35)] relative"
+        onclick="event.stopPropagation()">
+        <button type="button" onclick="closeSimulateScoresModal()"
+          class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-cyan-400 text-white hover:text-[#111FA2] flex items-center justify-center transition-all duration-200"
+          title="ปิดหน้าต่าง (Esc)">
+          <i class="fas fa-times text-base"></i>
+        </button>
+
+        <div class="flex items-center gap-3 mb-4 pr-8">
+          <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 flex items-center justify-center shrink-0">
+            <i class="fas fa-flask text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-bold text-[#FFDE42] gold-glow">จำลองคะแนนทดสอบระบบ (Simulate)</h3>
+            <p class="text-xs text-gray-300">สร้างคะแนนสมมติให้ผู้เข้าประกวดทุกประเภทเพื่อทดสอบ Logic การคัดเลือก</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 text-left text-xs text-gray-200 mb-5">
+          <div class="p-3.5 rounded-2xl bg-[#091054]/80 border border-cyan-400/30 space-y-1.5">
+            <div class="font-bold text-cyan-300"><i class="fas fa-check-circle mr-1"></i> สิ่งที่ระบบจะจำลองให้ครบทุกรอบ:</div>
+            <ul class="list-disc list-inside space-y-1 text-gray-300">
+              <li>รอบห้องดำ (25), Grand Opening (50) และรอบชุดธีม (50) ของกรรมการ 5 ท่าน</li>
+              <li>รอบ Popular Vote (ตั้งใจให้บางหมวดมีตัวแทนโหวตสูงสุดนอก Top 4 เพื่อทดสอบสิทธิ์ <b>4+1 อัตโนมัติ</b>)</li>
+              <li>รอบ <b>TOP 5 Speed</b> แยกครบทั้ง 5 ประเภท (รวม <b>Miss Congeniality</b> ที่สิ้นสุดที่รอบ TOP 5)</li>
+              <li>รอบ <b>TOP 3 ตอบคำถาม</b> แยก 4 ประเภท (Miss, Mister, Miss Queen, Miss Jumbo)</li>
+            </ul>
+          </div>
+
+          <label class="flex items-center gap-2.5 p-3 rounded-xl bg-[#050A30]/80 border border-amber-400/30 cursor-pointer select-none">
+            <input type="checkbox" id="sim-include-con-talent" class="w-4 h-4 accent-[#FFDE42] rounded cursor-pointer" />
+            <span class="text-xs text-amber-200 font-semibold">จำลองคะแนน "รอบความสามารถพิเศษ Miss Con (จบแล้ว)" ด้วย (ปกติจะไม่แตะต้อง)</span>
+          </label>
+
+          <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 flex items-start gap-2">
+            <i class="fas fa-exclamation-triangle mt-0.5 text-amber-300 shrink-0"></i>
+            <span>การจำลองจะเขียนทับคะแนนในฐานข้อมูล (ยกเว้นรอบความสามารถ Miss Con หากไม่ได้ติ๊กเลือก) และสามารถกดล้างคะแนนออกได้ทันทีหลังทดสอบเสร็จ</span>
+          </div>
+        </div>
+
+        <div class="space-y-2.5">
+          <button type="button" id="btn-run-simulate-scores" onclick="runSimulateScores()"
+            class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-[#050A30] font-black text-sm shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
+            <i class="fas fa-bolt"></i> เริ่มจำลองคะแนนครบทุกรอบทันที
+          </button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button type="button" onclick="runClearScores('main_only')"
+              class="py-2.5 px-3 rounded-xl bg-rose-950/70 hover:bg-rose-900 text-rose-200 border border-rose-500/40 font-bold text-xs transition active:scale-95 flex items-center justify-center gap-1.5">
+              <i class="fas fa-eraser"></i> ล้างคะแนนทดสอบ (วันจริง)
+            </button>
+            <button type="button" onclick="runClearScores('all')"
+              class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-rose-950 text-gray-300 hover:text-rose-200 border border-white/15 font-bold text-xs transition active:scale-95 flex items-center justify-center gap-1.5">
+              <i class="fas fa-trash-alt"></i> ล้างคะแนนทั้งหมดทุกรอบ
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1399,9 +1573,10 @@
         }, 200);
       }
 
-      let currentRound = 'blackroom'; // 'blackroom', 'grand', 'popular', 'speed', 'qa'
+      let currentRound = 'blackroom'; // 'blackroom', 'grand', 'popular', 'theme', 'speed', 'qa'
       let currentCategory = 'all'; // 'all', 'miss', 'mister', 'queen', 'congeniality', 'jumbo'
-      let adminCurrentView = 'top3'; // 'top3', 'speed', 'pre', 'manage'
+      let currentThemeCategory = 'all'; // 'all', 'miss', 'mister', 'lgbtq'
+      let adminCurrentView = 'top3'; // 'top3', 'speed', 'theme', 'pre', 'con', 'manage'
       let adminPreRoundView = 'blackroom'; // 'blackroom', 'grand', 'popular', 'all'
 
       let allScores = [];
@@ -1410,10 +1585,11 @@
       let pendingSubmitData = null;
 
       const ROUNDS = [
-        { id: 'blackroom', name: '1. รอบห้องดำ', fullTitle: 'รอบห้องดำ (รอบคัดเลือก 23 คน)', max: 25 },
-        { id: 'grand', name: '2. Grand Opening', fullTitle: 'รอบ Grand Opening รอบแนะนำตัว (23 คน)', max: 50 },
-        { id: 'popular', name: '3. Popular Vote', fullTitle: 'รอบ Popular Vote (รางวัลพิเศษแยกต่างหาก • แบ่ง 3 ช่อง: ออนไลน์ / รอบแรก / รอบสอง)', max: 99999, unlimited: true },
-        { id: 'speed', name: '4. TOP 5 (Speed)', fullTitle: 'รอบ 5 คนสุดท้าย (Speed คัดเหลือ 3 คน)', max: 50 },
+        { id: 'blackroom', name: '1. รอบห้องดำ', fullTitle: 'รอบห้องดำ (รอบคัดเลือก)', max: 25 },
+        { id: 'grand', name: '2. Grand Opening', fullTitle: 'รอบ Grand Opening รอบแนะนำตัว', max: 50 },
+        { id: 'popular', name: '3. Popular Vote', fullTitle: 'รอบ Popular Vote (แบ่ง 3 ช่อง: ออนไลน์ / รอบแรก / รอบสอง)', max: 99999, unlimited: true },
+        { id: 'theme', name: 'รอบชุดธีม (Theme)', fullTitle: 'การประกวดรอบชุดธีม (แบ่ง 3 หมวด: Miss / Mister / LGBTQ+)', max: 50 },
+        { id: 'speed', name: '4. TOP 5 (Speed)', fullTitle: 'รอบ 5 คนสุดท้าย (Speed คัดเหลือ 3 คน • Miss Con ถึงรอบนี้)', max: 50 },
         { id: 'qa', name: '5. TOP 3 ตอบคำถาม', fullTitle: 'รอบ 3 คนสุดท้าย ตัดสินชี้ขาด (ล้างคะแนนเดิม)', max: 100 }
       ];
 
@@ -1435,11 +1611,17 @@
           { id: 'c2', name: '2. รอบแรก', max: 99999, short: 'รอบแรก', desc: 'คะแนน Popular Vote / มาลัย รอบแรก (ไม่จำกัดคะแนน)' },
           { id: 'c3', name: '3. รอบสอง', max: 99999, short: 'รอบสอง', desc: 'คะแนน Popular Vote / มาลัย รอบสอง (ไม่จำกัดคะแนน)' }
         ],
+        theme: [
+          { id: 'c1', name: '1. การแต่งกายตรงตามธีมงาน', max: 20, short: 'ตรงตามธีม' },
+          { id: 'c2', name: '2. บุคลิกภาพ / ความมั่นใจ', max: 10, short: 'บุคลิกฯ' },
+          { id: 'c3', name: '3. ความสวยงามของเครื่องแต่งกาย', max: 10, short: 'เครื่องแต่งกาย' },
+          { id: 'c4', name: '4. หน้าตา / ผิวพรรณ / รูปร่าง / สัดส่วน', max: 10, short: 'หน้าตา/รูปร่าง' }
+        ],
         speed: [
           { id: 'c1', name: '1. ภาษากาย / บุคลิกภาพ', max: 10, short: 'ภาษากาย' },
           { id: 'c2', name: '2. ปฏิภาณไหวพริบ / การพูด / การสื่อสาร', max: 20, short: 'ไหวพริบ/พูด' },
           { id: 'c3', name: '3. ความมั่นใจ การแก้ไขปัญหาเฉพาะหน้า', max: 10, short: 'มั่นใจ/แก้ปัญหา' },
-          { id: 'c4', name: '4. ความสวยงามของเครื่องแต่งกาย (รอบชุดนักศึกษา)', max: 10, short: 'ชุดนักศึกษา' }
+          { id: 'c4', name: '4. ความสวยงามของเครื่องแต่งกาย', max: 10, short: 'เครื่องแต่งกาย' }
         ],
         qa: [
           { id: 'c1', name: '1. ภาษากาย / บุคลิกภาพ', max: 10, short: 'ภาษากาย' },
@@ -1470,11 +1652,11 @@
       }
 
       function getMainRoundRecord(judgeId, contestantId, roundId, category) {
-        if (category === 'congeniality' && roundId !== 'congeniality') {
-          return null; // Miss Con แยกเฉพาะรอบความสามารถพิเศษ ไม่ปนกับรอบคัดเลือก/วันจริง
-        }
         const rec = (allScores || []).find(s => s.judge_id === judgeId && s.contestant_id === contestantId && s.round_id === roundId);
         if (!rec) return null;
+        if (category === 'congeniality' && roundId === 'blackroom' && isLegacyConTalentBlackroomRec(rec)) {
+          return null;
+        }
         return rec;
       }
 
@@ -1608,7 +1790,7 @@
           if (isStaff) {
             preHeaderDesc.innerText = 'สตาฟมีสิทธิ์กรอกคะแนน Popular Vote (ออนไลน์, รอบแรก, รอบสอง) คัดเลือกผู้ชนะอันดับ 1 ของแต่ละประเภท';
           } else {
-            preHeaderDesc.innerText = 'รอบห้องดำ (25 คะแนน), รอบ Grand Opening (50 คะแนน) และรอบ Popular Vote (ไม่จำกัดคะแนน • แอดมินเป็นผู้กรอก) รวมเพื่อคัดหา TOP 5';
+            preHeaderDesc.innerText = 'รอบห้องดำ (25 คะแนน) + Grand Opening (50 คะแนน) คัด 4 คน และอันดับ 1 Popular Vote แต่ละประเภทเข้ารอบ TOP 5 อัตโนมัติ';
           }
         }
       }
@@ -2018,17 +2200,22 @@
         });
 
         const catBar = document.getElementById('category-filter-bar');
+        const themeBar = document.getElementById('theme-filter-bar');
         const roundsBar = document.getElementById('judge-rounds-bar');
         const conCatTab = document.getElementById('tab-cat-congeniality');
         const allCatTab = document.getElementById('tab-cat-all');
         const conBanner = document.getElementById('congeniality-banner');
+        const themeBanner = document.getElementById('theme-banner');
         const speedBanner = document.getElementById('speed-banner');
         const top3Banner = document.getElementById('top3-banner');
         const hintEl = document.getElementById('round-criteria-info');
+        const totalCountLabel = (allContestants && allContestants.length > 0) ? `${allContestants.length} คน` : 'ทั้งหมด';
 
         if (rId === 'congeniality') {
           if (roundsBar) roundsBar.classList.add('hidden');
           if (catBar) catBar.classList.add('hidden');
+          if (themeBar) themeBar.classList.add('hidden');
+          if (themeBanner) themeBanner.classList.add('hidden');
           if (conCatTab) conCatTab.classList.remove('hidden');
           if (speedBanner) speedBanner.classList.add('hidden');
           if (top3Banner) top3Banner.classList.add('hidden');
@@ -2044,49 +2231,75 @@
             conBanner.classList.add('view-animated');
           }
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">รอบความสามารถ Miss Congeniality (100 คะแนน):</span> ความสามารถ/ทักษะ (30) | สร้างสรรค์/นำเสนอ (30) | บุคลิก/มั่นใจ (20) | เสน่ห์/โดดเด่น (10) | ตอบคำถาม (10)';
+        } else if (rId === 'theme') {
+          if (roundsBar) roundsBar.classList.remove('hidden');
+          if (conBanner) conBanner.classList.add('hidden');
+          if (catBar) catBar.classList.add('hidden');
+          if (themeBar) themeBar.classList.remove('hidden');
+          if (speedBanner) speedBanner.classList.add('hidden');
+          if (top3Banner) top3Banner.classList.add('hidden');
+          document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
+          document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
+          if (themeBanner) {
+            themeBanner.classList.remove('hidden');
+            themeBanner.classList.remove('view-animated');
+            void themeBanner.offsetWidth;
+            themeBanner.classList.add('view-animated');
+          }
+          hintEl.innerHTML = '<span class="text-pink-300 font-semibold">เกณฑ์รอบชุดธีม (50 คะแนน):</span> ตรงตามธีมงาน (20) | บุคลิกภาพ/มั่นใจ (10) | เครื่องแต่งกาย (10) | หน้าตา/ผิวพรรณ/รูปร่าง (10)';
+          switchThemeCategory(currentThemeCategory || 'all');
+          return;
         } else if (rId === 'blackroom') {
           if (roundsBar) roundsBar.classList.remove('hidden');
           if (conBanner) conBanner.classList.add('hidden');
+          if (themeBanner) themeBanner.classList.add('hidden');
+          if (themeBar) themeBar.classList.add('hidden');
           if (conCatTab) conCatTab.classList.remove('hidden');
-          if (allCatTab) allCatTab.textContent = 'ทั้งหมด (23 คน)';
+          if (allCatTab) allCatTab.textContent = `ทั้งหมด (${totalCountLabel})`;
           document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
           document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
           catBar.classList.remove('hidden');
           if (speedBanner) speedBanner.classList.add('hidden');
           if (top3Banner) top3Banner.classList.add('hidden');
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบห้องดำ (25 คะแนน):</span> First Impression (10) | บุคลิกภาพ/มั่นใจ (5) | เครื่องแต่งกาย (5) | เสน่ห์/มั่นใจ (5)';
-          switchCategory(currentCategory === 'congeniality' ? 'all' : (currentCategory || 'all'));
+          switchCategory(currentCategory || 'all');
           return;
         } else if (rId === 'grand') {
           if (roundsBar) roundsBar.classList.remove('hidden');
           if (conBanner) conBanner.classList.add('hidden');
+          if (themeBanner) themeBanner.classList.add('hidden');
+          if (themeBar) themeBar.classList.add('hidden');
           if (conCatTab) conCatTab.classList.remove('hidden');
-          if (allCatTab) allCatTab.textContent = 'ทั้งหมด (23 คน)';
+          if (allCatTab) allCatTab.textContent = `ทั้งหมด (${totalCountLabel})`;
           document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
           document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
           catBar.classList.remove('hidden');
           if (speedBanner) speedBanner.classList.add('hidden');
           if (top3Banner) top3Banner.classList.add('hidden');
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ Grand Opening (50 คะแนน):</span> หน้าตา/ผิวพรรณ/รูปร่าง (20) | บุคลิกภาพ/มั่นใจ (10) | เครื่องแต่งกาย (10) | แนะนำตัว/ภาษากาย (10)';
-          switchCategory(currentCategory === 'congeniality' ? 'all' : (currentCategory || 'all'));
+          switchCategory(currentCategory || 'all');
           return;
         } else if (rId === 'popular') {
           if (roundsBar) roundsBar.classList.remove('hidden');
           if (conBanner) conBanner.classList.add('hidden');
+          if (themeBanner) themeBanner.classList.add('hidden');
+          if (themeBar) themeBar.classList.add('hidden');
           if (conCatTab) conCatTab.classList.remove('hidden');
-          if (allCatTab) allCatTab.textContent = 'ทั้งหมด (23 คน)';
+          if (allCatTab) allCatTab.textContent = `ทั้งหมด (${totalCountLabel})`;
           document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
           document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
           catBar.classList.remove('hidden');
           if (speedBanner) speedBanner.classList.add('hidden');
           if (top3Banner) top3Banner.classList.add('hidden');
           hintEl.innerHTML = '<span class="text-rose-400 font-semibold"><i class="fas fa-heart mr-1"></i> เกณฑ์รอบ Popular Vote:</span> คะแนนความนิยมจากการโหวต (ไม่จำกัดเพดานคะแนน • บันทึกโดยแอดมินเท่านั้น)';
-          switchCategory(currentCategory === 'congeniality' ? 'all' : (currentCategory || 'all'));
+          switchCategory(currentCategory || 'all');
           return;
         } else if (rId === 'speed') {
           if (roundsBar) roundsBar.classList.remove('hidden');
           if (conBanner) conBanner.classList.add('hidden');
-          if (conCatTab) conCatTab.classList.add('hidden');
+          if (themeBanner) themeBanner.classList.add('hidden');
+          if (themeBar) themeBar.classList.add('hidden');
+          if (conCatTab) conCatTab.classList.remove('hidden'); // Miss Congeniality แข่งถึงรอบ TOP 5 ได้
           if (allCatTab) allCatTab.textContent = 'ทั้งหมด (TOP 5 แยกประเภท)';
           document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
           document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
@@ -2098,13 +2311,15 @@
             speedBanner.classList.add('view-animated');
           }
           if (top3Banner) top3Banner.classList.add('hidden');
-          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5 Speed (50 คะแนน):</span> ภาษากาย (10) | ไหวพริบ/พูด (20) | มั่นใจ/แก้ปัญหา (10) | ชุดนักศึกษา (10)';
-          switchCategory(currentCategory === 'congeniality' ? 'all' : (currentCategory || 'all'));
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5 Speed (50 คะแนน):</span> ภาษากาย (10) | ไหวพริบ/พูด (20) | มั่นใจ/แก้ปัญหา (10) | ความสวยงามของเครื่องแต่งกาย (10)';
+          switchCategory(currentCategory || 'all');
           return;
         } else if (rId === 'qa') {
           if (roundsBar) roundsBar.classList.remove('hidden');
           if (conBanner) conBanner.classList.add('hidden');
-          if (conCatTab) conCatTab.classList.add('hidden');
+          if (themeBanner) themeBanner.classList.add('hidden');
+          if (themeBar) themeBar.classList.add('hidden');
+          if (conCatTab) conCatTab.classList.add('hidden'); // Miss Congeniality ไม่เข้าสู่รอบ TOP 3 ตอบคำถาม
           if (allCatTab) allCatTab.textContent = 'ทั้งหมด (TOP 3 แยกประเภท)';
           document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
           document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
@@ -2129,6 +2344,8 @@
         if (!hintEl) return;
         if (currentRound === 'congeniality') {
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">รอบความสามารถ Miss Congeniality (100 คะแนน):</span> ความสามารถ/ทักษะ (30) | สร้างสรรค์/นำเสนอ (30) | บุคลิก/มั่นใจ (20) | เสน่ห์/โดดเด่น (10) | ตอบคำถาม (10)';
+        } else if (currentRound === 'theme') {
+          hintEl.innerHTML = '<span class="text-pink-300 font-semibold">เกณฑ์รอบชุดธีม (50 คะแนน):</span> ตรงตามธีมงาน (20) | บุคลิกภาพ/มั่นใจ (10) | เครื่องแต่งกาย (10) | หน้าตา/ผิวพรรณ/รูปร่าง (10)';
         } else if (currentRound === 'blackroom') {
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบห้องดำ (25 คะแนน):</span> First Impression (10) | บุคลิกภาพ/มั่นใจ (5) | เครื่องแต่งกาย (5) | เสน่ห์/มั่นใจ (5)';
         } else if (currentRound === 'grand') {
@@ -2136,16 +2353,30 @@
         } else if (currentRound === 'popular') {
           hintEl.innerHTML = '<span class="text-rose-400 font-semibold"><i class="fas fa-heart mr-1"></i> เกณฑ์รอบ Popular Vote:</span> คะแนนความนิยมจากการโหวต (ไม่จำกัดเพดานคะแนน • บันทึกโดยแอดมินเท่านั้น)';
         } else if (currentRound === 'speed') {
-          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5 Speed (50 คะแนน):</span> ภาษากาย (10) | ไหวพริบ/พูด (20) | มั่นใจ/แก้ปัญหา (10) | ชุดนักศึกษา (10)';
+          hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5 Speed (50 คะแนน):</span> ภาษากาย (10) | ไหวพริบ/พูด (20) | มั่นใจ/แก้ปัญหา (10) | ความสวยงามของเครื่องแต่งกาย (10)';
         } else if (currentRound === 'qa') {
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 3 ตัดสิน (100 คะแนน):</span> ภาษากาย(10) | ไหวพริบ(20) | มั่นใจ(20) | เสน่ห์ตัวแทนมหาลัย(20) | ประทับใจรวม(10) | ตรงคำถาม/ครบถ้วน(20)';
         }
       }
 
+      function switchThemeCategory(themeCat) {
+        currentThemeCategory = themeCat;
+        ['all', 'miss', 'mister', 'lgbtq'].forEach(c => {
+          const btn = document.getElementById(`tab-theme-${c}`);
+          if (!btn) return;
+          if (c === themeCat) {
+            btn.className = "theme-cat-btn px-5 py-2 rounded-full border-2 border-[#FFDE42] text-[#111FA2] font-bold bg-[#FFDE42] transition-all duration-300 scale-105 shadow-[0_0_18px_rgba(255,222,66,0.5)] text-sm active:scale-95";
+          } else {
+            btn.className = "theme-cat-btn px-5 py-2 rounded-full glass-panel border border-pink-400/40 text-gray-200 text-sm font-medium transition-all duration-300 hover:border-[#FFDE42] hover:text-white hover:-translate-y-0.5 active:scale-95";
+          }
+        });
+        updateRoundCriteriaHint();
+        renderJudgeCards();
+      }
+
       function switchCategory(cat) {
-        if (cat === 'congeniality') {
-          switchRound('congeniality');
-          return;
+        if (currentRound === 'qa' && cat === 'congeniality') {
+          cat = 'all';
         }
 
         currentCategory = cat;
@@ -2181,11 +2412,19 @@
         renderJudgeCards();
       }
 
+      const TOP5_CATEGORIES = ['miss', 'mister', 'queen', 'congeniality', 'jumbo'];
       const MAIN_CATEGORIES = ['miss', 'mister', 'queen', 'jumbo'];
+      const THEME_LGBTQ_CATEGORIES = ['queen', 'congeniality', 'jumbo'];
+
+      function getThemeGroupForCategory(cat) {
+        if (cat === 'miss') return { key: 'miss', name: 'Miss' };
+        if (cat === 'mister') return { key: 'mister', name: 'Mister' };
+        return { key: 'lgbtq', name: 'LGBTQ+' };
+      }
 
       function getAutoTop5Local() {
         const result = [];
-        MAIN_CATEGORIES.forEach(catKey => {
+        TOP5_CATEGORIES.forEach(catKey => {
           const eligible = (allContestants || []).filter(c => c.category === catKey && c.status !== 'resigned');
           const withScores = eligible.map(c => {
             let sum = 0;
@@ -2195,7 +2434,10 @@
                 if (rec) sum += (rec.total_score || 0);
               });
             }
-            return { ...c, categoryName: CATEGORIES[c.category] || c.category, preTotal: sum };
+            const popRec = (allScores || []).find(s => s.contestant_id === c.id && s.round_id === 'popular' && (s.judge_id === 'admin' || s.judge_id === 'admin2' || s.judge_id === 'staff'))
+              || (allScores || []).find(s => s.contestant_id === c.id && s.round_id === 'popular');
+            const popularTotal = popRec ? (popRec.total_score || ((popRec.score_c1 || 0) + (popRec.score_c2 || 0) + (popRec.score_c3 || 0))) : 0;
+            return { ...c, categoryName: CATEGORIES[c.category] || c.category, preTotal: sum, popularTotal };
           });
           withScores.sort((a, b) => {
             if (b.preTotal !== a.preTotal) return b.preTotal - a.preTotal;
@@ -2204,8 +2446,33 @@
             if (numA !== numB) return numA - numB;
             return (a.id || '').localeCompare(b.id || '');
           });
-          withScores.slice(0, 5).forEach((c, idx) => {
-            result.push({ ...c, preRank: idx + 1 });
+
+          const popSorted = [...withScores].sort((a, b) => {
+            if (b.popularTotal !== a.popularTotal) return b.popularTotal - a.popularTotal;
+            if (b.preTotal !== a.preTotal) return b.preTotal - a.preTotal;
+            const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+            const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return (a.id || '').localeCompare(b.id || '');
+          });
+          const popWinner = (popSorted[0] && popSorted[0].popularTotal > 0) ? popSorted[0] : null;
+
+          let selected;
+          if (popWinner) {
+            const top4Pre = withScores.filter(c => c.id !== popWinner.id).slice(0, 4);
+            selected = [...top4Pre, popWinner];
+          } else {
+            selected = withScores.slice(0, 5);
+          }
+
+          selected.forEach(c => {
+            const isPopularFastTrack = Boolean(popWinner && c.id === popWinner.id);
+            result.push({
+              ...c,
+              preRank: withScores.findIndex(x => x.id === c.id) + 1,
+              isPopularFastTrack,
+              qualifiedBy: isPopularFastTrack ? 'popular' : 'pre'
+            });
           });
         });
         return result;
@@ -2249,10 +2516,19 @@
         let targetList = [];
         const isQa = currentRound === 'qa';
         const isSpeed = currentRound === 'speed';
+        const isTheme = currentRound === 'theme';
         const isConTalent = currentRound === 'congeniality';
 
         if (isConTalent) {
           targetList = (allContestants || []).filter(c => c.category === 'congeniality');
+        } else if (isTheme) {
+          if (currentThemeCategory === 'all') {
+            targetList = allContestants || [];
+          } else if (currentThemeCategory === 'lgbtq') {
+            targetList = (allContestants || []).filter(c => THEME_LGBTQ_CATEGORIES.includes(c.category));
+          } else {
+            targetList = (allContestants || []).filter(c => c.category === currentThemeCategory);
+          }
         } else if (isQa) {
           if (summaryData && summaryData.top3 && summaryData.top3.length > 0) {
             targetList = summaryData.top3;
@@ -2268,17 +2544,14 @@
           } else {
             targetList = getAutoTop5Local();
           }
-          if (currentCategory && currentCategory !== 'all' && currentCategory !== 'congeniality') {
+          if (currentCategory && currentCategory !== 'all') {
             targetList = targetList.filter(c => c.category === currentCategory);
           }
         } else {
-          // รอบคัดเลือกหลัก (ห้องดำ, Grand Opening, Popular Vote) แสดงเฉพาะ 4 หมวดหลัก (Miss, Mister, Queen, Jumbo)
-          const mainContestants = (allContestants || []).filter(c => c.category !== 'congeniality');
+          // รอบคัดเลือกหลัก (ห้องดำ, Grand Opening, Popular Vote) แสดงครบทั้ง 5 หมวด (รวม Miss Congeniality)
+          const mainContestants = allContestants || [];
           if (currentCategory === 'all') {
             targetList = mainContestants;
-          } else if (currentCategory === 'congeniality') {
-            switchRound('congeniality');
-            return;
           } else {
             targetList = mainContestants.filter(c => c.category === currentCategory);
           }
@@ -2375,8 +2648,10 @@
                       👑 TOP 3 (${catTitle}) ${contestant.speedRank ? `• อันดับ ${contestant.speedRank} Speed` : ''}
                     </div>
                   ` : (isSpeed ? `
-                    <div class="mt-1 px-3 py-1 bg-yellow-500/20 rounded-lg text-amber-300 text-xs border border-yellow-500/30 font-medium">
-                      ⚡ TOP 5 (${catTitle}) • คะแนนรอบแรก: <strong>${contestant.preTotal || 0}</strong>
+                    <div class="mt-1 px-3 py-1 ${contestant.isPopularFastTrack ? 'bg-rose-500/20 text-rose-200 border-rose-400/40' : 'bg-yellow-500/20 text-amber-300 border-yellow-500/30'} rounded-lg text-xs border font-medium">
+                      ${contestant.isPopularFastTrack
+                        ? `❤️ TOP 5 (${catTitle}) • เข้ารอบอัตโนมัติ (Popular Vote: <strong>${(contestant.popularTotal || contestant.rounds?.popular?.total || 0).toLocaleString()}</strong>)`
+                        : `⚡ TOP 5 (${catTitle}) • คะแนน 2 รอบ: <strong>${contestant.preTotal || 0}</strong>`}
                     </div>
                   ` : ''))}
 
@@ -2637,6 +2912,7 @@
           closePrintCriteriaModal();
           closePrintScoreModal();
           closePopularVoteModal();
+          closeSimulateScoresModal();
         }
       });
 
@@ -2721,7 +2997,7 @@
       function switchAdminView(view) {
         if (currentUser === 'staff' && view !== 'pre') return;
         adminCurrentView = view;
-        const views = ['top3', 'speed', 'pre', 'con', 'manage'];
+        const views = ['top3', 'speed', 'theme', 'pre', 'con', 'manage'];
 
         views.forEach(v => {
           const btn = document.getElementById(`admin-tab-${v}`);
@@ -2734,9 +3010,13 @@
               void section.offsetWidth;
               section.classList.add('view-animated');
             } else {
-              btn.className = v === 'con'
-                ? "px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 text-amber-200 hover:text-white glass-panel border border-amber-400/40 active:scale-95"
-                : "px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 text-gray-300 hover:text-white glass-panel active:scale-95";
+              if (v === 'con') {
+                btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 text-amber-200 hover:text-white glass-panel border border-amber-400/40 active:scale-95";
+              } else if (v === 'theme') {
+                btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 text-pink-200 hover:text-white glass-panel border border-pink-400/40 active:scale-95";
+              } else {
+                btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 text-gray-300 hover:text-white glass-panel active:scale-95";
+              }
               section.classList.add('hidden');
               section.classList.remove('view-animated');
             }
@@ -2764,6 +3044,9 @@
             break;
           case 'speed':
             renderAdminSpeedTable();
+            break;
+          case 'theme':
+            renderAdminThemeTable();
             break;
           case 'pre':
             renderAdminPreTable();
@@ -3004,7 +3287,7 @@
         tbody.innerHTML = rows.join('');
       }
 
-      // วิว 2: ⚡ ผลคะแนนรอบ TOP 5 แยกประเภท (Speed)
+      // วิว 2: ⚡ ผลคะแนนรอบ TOP 5 แยกประเภท (Speed — รวม Miss Congeniality ซึ่งแข่งถึงรอบนี้)
       function renderAdminSpeedTable() {
         const tbody = document.getElementById('speed-table-body');
         if (!tbody || !summaryData) return;
@@ -3013,7 +3296,7 @@
         const selectedCat = document.getElementById('admin-speed-category-filter')?.value || 'all';
         const byCat = summaryData.top5ByCategory || {};
         const fallbackTop5 = summaryData.top5 || [];
-        const catKeysToRender = selectedCat === 'all' ? MAIN_CATEGORIES : [selectedCat];
+        const catKeysToRender = selectedCat === 'all' ? TOP5_CATEGORIES : [selectedCat];
 
         const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
         const rows = [];
@@ -3024,17 +3307,18 @@
             : fallbackTop5.filter(f => f.category === catKey);
           if (catTop5.length === 0) return;
 
+          const isConCat = catKey === 'congeniality';
           const catLabel = CATEGORIES[catKey] || catKey;
           rows.push(`
             <tr class="bg-gradient-to-r from-amber-950/90 via-amber-900/70 to-amber-950/90 border-y-2 border-amber-400/60">
               <td colspan="12" class="px-4 py-2.5 font-extrabold text-amber-300 text-sm tracking-wide">
-                <i class="fas fa-bolt text-[#FFDE42] mr-1.5"></i> ประเภท ${escapeHtml(catLabel)} — TOP 5 รอบ Speed (${catTop5.length} คน • คัด 3 อันดับแรกเข้า TOP 3)
+                <i class="fas fa-bolt text-[#FFDE42] mr-1.5"></i> ประเภท ${escapeHtml(catLabel)} — TOP 5 รอบ Speed (${catTop5.length} คน • ${isConCat ? 'แข่งถึงรอบ TOP 5 เท่านั้น' : 'คัด 3 อันดับแรกเข้า TOP 3'})
               </td>
             </tr>
           `);
 
           catTop5.forEach((f, idx) => {
-            const isTop3 = idx < 3;
+            const isTop3 = !isConCat && idx < 3;
             const rankNum = f.speedRank || (idx + 1);
             const imagePath = `/api/contestants/${encodeURIComponent(f.id)}/image`;
 
@@ -3044,26 +3328,36 @@
               speedCells += `<td class="px-2 py-3 text-center font-medium bg-amber-950/30 ${score > 0 ? 'text-amber-200 font-bold' : 'text-gray-600'}">${score}</td>`;
             });
 
+            let statusCellHtml;
+            if (isConCat) {
+              statusCellHtml = rankNum === 1 && (f.speedTotal || 0) > 0
+                ? '<span class="px-2.5 py-1 rounded-full bg-[#FFDE42]/20 text-[#FFDE42] border border-[#FFDE42]/50 text-xs font-bold whitespace-nowrap">👑 อันดับ 1 (จบที่ TOP 5)</span>'
+                : `<span class="px-2 py-0.5 rounded-full bg-blue-900/60 text-gray-200 text-xs font-semibold whitespace-nowrap">อันดับ ${rankNum} (จบที่ TOP 5)</span>`;
+            } else {
+              statusCellHtml = isTop3
+                ? `<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-1"></i> ผ่านเข้า TOP 3</span>`
+                : `<span class="px-2 py-0.5 rounded-full bg-blue-900/60 text-gray-300 text-xs font-semibold whitespace-nowrap">${idx === 3 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4'}</span>`;
+            }
+
             rows.push(`
-              <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop3 ? 'bg-amber-500/10' : ''}">
-                <td class="px-3 py-3 text-center font-extrabold text-base ${isTop3 ? 'text-amber-300' : 'text-gray-400'}">${rankNum}</td>
+              <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${(isTop3 || (isConCat && rankNum === 1 && (f.speedTotal || 0) > 0)) ? 'bg-amber-500/10' : ''}">
+                <td class="px-3 py-3 text-center font-extrabold text-base ${(isTop3 || (isConCat && rankNum === 1)) ? 'text-amber-300' : 'text-gray-400'}">${rankNum}</td>
                 <td class="px-3 py-3 text-center">
                   <img src="${imagePath}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
                 </td>
                 <td class="px-3 py-3">
                   <div class="font-bold text-white text-sm">${escapeHtml(f.name)}</div>
                   <div class="text-xs text-[#FFDE42]">${f.id} • ${escapeHtml(f.categoryName || catLabel)}</div>
+                  ${f.isPopularFastTrack
+                    ? `<div class="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-200 border border-rose-400/40 text-[10px] font-bold"><i class="fas fa-heart text-rose-400"></i> เข้ารอบอัตโนมัติ (Popular Vote: ${(f.popularTotal || f.rounds?.popular?.total || 0).toLocaleString()})</div>`
+                    : `<div class="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-200 border border-blue-400/30 text-[10px] font-semibold">คัดจากคะแนน 2 รอบ (Top 4)</div>`}
                   ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${f.id}', 'speed')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนน Speed</button>` : ''}
                 </td>
                 <td class="px-3 py-3 text-center text-xs font-semibold text-gray-200">${escapeHtml(f.categoryName || catLabel)}</td>
                 <td class="px-3 py-3 text-center font-bold text-blue-200 bg-blue-950/30">${f.preTotal || 0}</td>
                 ${speedCells}
                 <td class="px-3 py-3 text-center font-bold text-[#FFDE42] bg-amber-950/60 border-l border-[#FFDE42]/30 text-base">${f.speedTotal || 0}</td>
-                <td class="px-3 py-3 text-center">
-                  ${isTop3
-                ? `<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-1"></i> ผ่านเข้า TOP 3</span>`
-                : `<span class="px-2 py-0.5 rounded-full bg-blue-900/60 text-gray-300 text-xs font-semibold whitespace-nowrap">${idx === 3 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4'}</span>`}
-                </td>
+                <td class="px-3 py-3 text-center">${statusCellHtml}</td>
               </tr>
             `);
           });
@@ -3074,6 +3368,201 @@
           return;
         }
         tbody.innerHTML = rows.join('');
+      }
+
+      // วิว 2.5: 🎭 ผลคะแนนรอบชุดธีม (รางวัลพิเศษแยกต่างหาก • คัด TOP 1 ของแต่ละหมวด: Miss, Mister, LGBTQ+)
+      function renderAdminThemeTable() {
+        const tbody = document.getElementById('theme-table-body');
+        const cardsWrap = document.getElementById('theme-top1-cards');
+        if (!tbody || !summaryData) return;
+        tbody.innerHTML = '';
+
+        const selectedGroup = document.getElementById('admin-theme-category-filter')?.value || 'all';
+        const byGroup = summaryData.themeByGroup || {};
+        const groupsMeta = {
+          miss: { title: '👗 หมวด Miss', sub: 'Miss' },
+          mister: { title: '👔 หมวด Mister', sub: 'Mister' },
+          lgbtq: { title: '🏳️‍🌈 หมวด LGBTQ+', sub: 'รวม Miss Queen • Miss Congeniality • Miss Jumbo' }
+        };
+
+        if (cardsWrap) {
+          const winners = summaryData.themeWinners || {};
+          cardsWrap.innerHTML = ['miss', 'mister', 'lgbtq'].map(gKey => {
+            const w = winners[gKey] || (byGroup[gKey] || []).find(x => x.isWinner);
+            const meta = groupsMeta[gKey];
+            if (!w) {
+              return `
+                <div class="p-4 rounded-2xl bg-[#091054]/70 border border-pink-400/30 flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-xl bg-pink-500/15 border border-pink-400/40 flex items-center justify-center text-pink-300 shrink-0">
+                    <i class="fas fa-crown text-lg opacity-60"></i>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="text-xs font-bold text-pink-300">${meta.title} (TOP 1)</div>
+                    <div class="text-xs text-gray-400 mt-0.5">รอการบันทึกคะแนนรอบชุดธีม</div>
+                  </div>
+                </div>
+              `;
+            }
+            const wImg = `/api/contestants/${encodeURIComponent(w.id)}/image`;
+            return `
+              <div class="p-4 rounded-2xl bg-gradient-to-br from-yellow-500/15 via-[#091054]/90 to-pink-500/15 border-2 border-[#FFDE42]/70 shadow-[0_0_20px_rgba(255,222,66,0.2)] flex items-center gap-3.5">
+                <img src="${wImg}" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${w.id}');" class="w-14 h-14 rounded-2xl object-cover border-2 border-[#FFDE42] shrink-0 cursor-pointer" onclick="openImageModal('${w.id}')">
+                <div class="min-w-0 flex-1">
+                  <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFDE42] text-[#111FA2] font-black text-[10px] mb-1">
+                    👑 TOP 1 ${meta.title.replace(/^[^\s]+\s/, '')}
+                  </div>
+                  <div class="font-bold text-white text-sm truncate">${escapeHtml(w.name)}</div>
+                  <div class="text-xs text-pink-200">${w.id} • ${escapeHtml(w.categoryName)}</div>
+                </div>
+                <div class="text-right shrink-0">
+                  <div class="text-[10px] text-gray-300">สุทธิ (÷5)</div>
+                  <div class="text-xl font-black text-[#FFDE42]">${Number(w.avgScore || 0).toFixed(2)}</div>
+                  <div class="text-[9px] text-gray-400">/ 50.00</div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+        const keysToRender = selectedGroup === 'all' ? ['miss', 'mister', 'lgbtq'] : [selectedGroup];
+        const rows = [];
+
+        keysToRender.forEach(gKey => {
+          const list = byGroup[gKey] || [];
+          if (list.length === 0) return;
+
+          const meta = groupsMeta[gKey] || { title: gKey, sub: '' };
+          rows.push(`
+            <tr class="bg-gradient-to-r from-pink-950/90 via-purple-900/70 to-pink-950/90 border-y-2 border-pink-400/60">
+              <td colspan="10" class="px-4 py-2.5 font-extrabold text-pink-200 text-sm tracking-wide">
+                ${meta.title} <span class="text-xs font-normal text-pink-300/90 ml-1">(${meta.sub} • ${list.length} คน)</span>
+              </td>
+            </tr>
+          `);
+
+          list.forEach((item, idx) => {
+            const isResigned = item.status === 'resigned';
+            const isWinner = item.isWinner;
+            const img = `/api/contestants/${encodeURIComponent(item.id)}/image`;
+            const hasScore = (item.rawTotal || 0) > 0;
+            const fmtCrit = (critKey) => {
+              if (!hasScore) return '<span class="text-gray-600">-</span>';
+              const avg = item.critAvgs?.[critKey] ?? 0;
+              const sum = item.critSums?.[critKey] ?? 0;
+              return `<div class="font-bold text-pink-200">${Number(avg).toFixed(2)}</div><div class="text-[9px] text-gray-400">(${sum}÷5)</div>`;
+            };
+
+            rows.push(`
+              <tr class="border-b border-[#5478FF]/20 hover:bg-pink-500/10 transition-colors ${isResigned ? 'bg-rose-950/20 opacity-70' : (isWinner ? 'bg-gradient-to-r from-yellow-500/20 via-pink-500/10 to-yellow-500/20' : '')}">
+                <td class="px-3 py-3 text-center font-extrabold text-base ${isWinner ? 'text-[#FFDE42]' : 'text-gray-300'}">${isWinner ? '👑 1' : (item.themeRank || idx + 1)}</td>
+                <td class="px-3 py-3 text-center">
+                  <img src="${img}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${item.id}');" class="w-10 h-10 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42]' : 'border-pink-400/60'} mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${item.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
+                </td>
+                <td class="px-3 py-3">
+                  <div class="font-bold text-white text-sm ${isResigned ? 'line-through text-gray-400' : ''}">${escapeHtml(item.name)}</div>
+                  <div class="text-xs text-[#FFDE42]">${item.id} • ${escapeHtml(item.categoryName)}</div>
+                  ${isWinner ? `<div class="mt-1"><span class="px-2 py-0.5 rounded-full bg-yellow-400 text-[#111FA2] font-extrabold text-[10px]">👑 ชนะเลิศชุดธีม (${meta.title.replace(/^[^\s]+\s/, '')})</span></div>` : ''}
+                  ${isResigned ? '<div class="mt-1"><span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold">สละสิทธิ์</span></div>' : ''}
+                  ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${item.id}', 'theme')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนชุดธีม</button>` : ''}
+                </td>
+                <td class="px-3 py-3 text-center text-xs font-semibold text-pink-200">${escapeHtml(item.categoryName)}</td>
+                <td class="px-2 py-2 text-center bg-pink-950/30 border-l border-pink-400/20">${fmtCrit('c1')}</td>
+                <td class="px-2 py-2 text-center bg-pink-950/30">${fmtCrit('c2')}</td>
+                <td class="px-2 py-2 text-center bg-pink-950/30">${fmtCrit('c3')}</td>
+                <td class="px-2 py-2 text-center bg-pink-950/30">${fmtCrit('c4')}</td>
+                <td class="px-3 py-3 text-center font-bold text-blue-200 bg-slate-900/50 border-l border-white/15">${hasScore ? item.rawTotal : '-'}</td>
+                <td class="px-3 py-3 text-center font-extrabold text-lg text-[#FFDE42] bg-[#111FA2]/70">${hasScore ? Number(item.avgScore || 0).toFixed(2) : '-'}</td>
+              </tr>
+            `);
+          });
+        });
+
+        if (rows.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลผู้เข้าประกวดหรือคะแนนรอบชุดธีม</td></tr>';
+          return;
+        }
+        tbody.innerHTML = rows.join('');
+      }
+
+      function printCurrentThemeScoreSheet() {
+        const curFilter = document.getElementById('admin-theme-category-filter')?.value || 'all';
+        const category = curFilter === 'all' ? 'split_categories' : curFilter;
+        printStyledScoreSheets({ scope: 'theme', category, initialMode: 'filled' });
+      }
+
+      function openSimulateScoresModal() {
+        const modal = document.getElementById('simulate-scores-modal');
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => modal.classList.add('open'));
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeSimulateScoresModal() {
+        const modal = document.getElementById('simulate-scores-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          modal.classList.remove('open');
+          setTimeout(() => modal.classList.add('hidden'), 220);
+          document.body.style.overflow = '';
+        }
+      }
+
+      async function runSimulateScores() {
+        const btn = document.getElementById('btn-run-simulate-scores');
+        const includeConTalent = Boolean(document.getElementById('sim-include-con-talent')?.checked);
+        if (!confirm('ยืนยันการจำลองคะแนนทดสอบครบทุกรอบ? (คะแนนรอบวันจริงที่มีอยู่จะถูกแทนที่ด้วยคะแนนจำลอง)')) return;
+
+        const origHtml = btn ? btn.innerHTML : '';
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังจำลองคะแนนทุกรอบ...';
+        }
+        try {
+          const res = await fetch('/api/admin/simulate-scores', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: currentUser, includeConTalent })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            closeSimulateScoresModal();
+            await fetchScores(true);
+            showToast(`🧪 ${data.message}`);
+          } else {
+            alert('จำลองคะแนนไม่สำเร็จ: ' + (data.message || 'Unknown error'));
+          }
+        } catch (e) {
+          alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์เพื่อจำลองคะแนนได้: ' + e.message);
+        } finally {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+          }
+        }
+      }
+
+      async function runClearScores(scope) {
+        const msg = scope === 'all'
+          ? '⚠️ ยืนยันล้างคะแนน "ทั้งหมดทุกรอบ" รวมทั้ง Miss Congeniality (รอบความสามารถ)?'
+          : 'ยืนยันล้างคะแนนรอบวันจริงทั้งหมด (จะเก็บคะแนนรอบความสามารถ Miss Con ไว้)?';
+        if (!confirm(msg)) return;
+
+        try {
+          const res = await fetch('/api/admin/clear-scores', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: currentUser, scope })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            closeSimulateScoresModal();
+            await fetchScores(true);
+            showToast(`🧹 ${data.message}`);
+          } else {
+            alert('ล้างคะแนนไม่สำเร็จ: ' + (data.message || 'Unknown error'));
+          }
+        } catch (e) {
+          alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้: ' + e.message);
+        }
       }
 
       function printCurrentTop3ScoreSheet() {
@@ -3150,12 +3639,22 @@
           'bg-blue-900/70', 'bg-purple-900/60', 'bg-indigo-900/60', 'bg-cyan-900/60', 'bg-teal-900/60'
         ];
 
-        const topBadge = '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-0.5"></i> ผ่านเข้ารอบ TOP 5</span>';
+        const topBadge = '<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-0.5"></i> TOP 5 (คะแนน 2 รอบ)</span>';
+        const topPopBadge = '<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-200 border border-rose-400/50 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-heart text-rose-400 mr-0.5"></i> TOP 5 (Popular Vote)</span>';
         const resignedBadge = '<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold whitespace-nowrap"><i class="fas fa-ban mr-0.5"></i> สละสิทธิ์</span>';
         const noBadge = '<span class="text-[10px] text-gray-500">-</span>';
 
+        const getTop5BadgeForContestant = (c) => {
+          const isResigned = c.status === 'resigned';
+          if (isResigned) return { isTop5: false, badge: resignedBadge };
+          const entry = summaryData.top5 && summaryData.top5.find(f => f.id === c.id);
+          const hasQualifyScore = c.preTotal > 0 || (entry && entry.isPopularFastTrack);
+          if (!entry || !hasQualifyScore) return { isTop5: false, badge: noBadge };
+          return { isTop5: true, badge: entry.isPopularFastTrack ? topPopBadge : topBadge };
+        };
+
         if (adminPreRoundView === 'all') {
-          // สรุปรวมรอบคัดเลือก (ห้องดำ + Grand Opening 5 กรรมการ รวมเต็ม 375 • แยก Popular Vote ออกต่างหาก)
+          // สรุปรวมรอบคัดเลือก (ห้องดำ + Grand Opening 5 กรรมการ รวมเต็ม 375 • คัด 4 คน + 1 คน Top Popular Vote ต่อประเภท)
           thead.innerHTML = `
           <tr class="bg-[#111FA2] text-[#FFDE42] text-xs uppercase">
             <th class="px-3 py-3 text-center">รหัส</th>
@@ -3172,7 +3671,7 @@
           const rows = [];
           list.forEach(c => {
             const isResigned = c.status === 'resigned';
-            const isTop5 = !isResigned && summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
+            const { isTop5, badge: top5BadgeHtml } = getTop5BadgeForContestant(c);
             const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
             const toggleBtn = isResigned
               ? `<button type="button" onclick="confirmToggleStatus('${c.id}', 'active', '${escapeHtml(c.name)}')" class="px-2 py-0.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold transition flex items-center gap-1 mx-auto active:scale-95"><i class="fas fa-undo"></i> คืนสิทธิ์</button>`
@@ -3190,7 +3689,7 @@
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.blackroom?.total || 0}</td>
               <td class="px-3 py-3 text-center text-gray-200 font-medium">${c.rounds.grand?.total || 0}</td>
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/50">${c.preTotal || 0}</td>
-              <td class="px-3 py-3 text-center">${isResigned ? resignedBadge : (isTop5 ? topBadge : noBadge)}</td>
+              <td class="px-3 py-3 text-center">${top5BadgeHtml}</td>
               <td class="px-3 py-3 text-center">${toggleBtn}</td>
             </tr>`);
           });
@@ -3247,15 +3746,18 @@
             const c3 = c.rounds?.popular?.score_c3 || 0;
             const popVal = c.rounds?.popular?.total || (c1 + c2 + c3);
 
-            // Popular Vote มีได้แค่คนเดียวเท่านั้นจากผู้เข้าประกวดทั้งหมด
+            // Popular Vote มีได้แค่คนเดียวเท่านั้นจากผู้เข้าประกวดทั้งหมด (และอันดับ 1 ของแต่ละหมวดหลักเข้ารอบ TOP 5 อัตโนมัติ)
             const isOverallWinner = popVal > 0 && summaryData?.popularWinner && summaryData.popularWinner.id === c.id;
             const isCategoryLeader = popVal > 0 && summaryData?.popularCategoryLeaders && summaryData.popularCategoryLeaders[c.category]?.id === c.id;
+            const isTop5Pop = !isResigned && popVal > 0 && summaryData?.top5?.some(f => f.id === c.id && f.isPopularFastTrack);
 
             let resultBadge = '<span class="text-gray-500 text-xs">-</span>';
             if (isOverallWinner) {
-              resultBadge = `<span class="px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-[#050A30] font-black text-xs shadow-[0_0_15px_rgba(255,222,66,0.6)] inline-flex items-center gap-1 whitespace-nowrap animate-pulse"><i class="fas fa-trophy text-amber-900"></i> 👑 Winner Popular ${escapeHtml(c.categoryName || c.category)}</span>`;
+              resultBadge = `<div class="flex flex-col items-center gap-1"><span class="px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-[#050A30] font-black text-xs shadow-[0_0_15px_rgba(255,222,66,0.6)] inline-flex items-center gap-1 whitespace-nowrap animate-pulse"><i class="fas fa-trophy text-amber-900"></i> 👑 Winner Popular ${escapeHtml(c.categoryName || c.category)}</span>${isTop5Pop ? '<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-200 border border-rose-400/40 text-[10px] font-bold whitespace-nowrap">⚡ เข้ารอบ TOP 5 อัตโนมัติ</span>' : ''}</div>`;
             } else if (isCategoryLeader) {
-              resultBadge = `<span class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 text-[11px] font-semibold whitespace-nowrap">⭐ Top Vote (${escapeHtml(c.categoryName || c.category)})</span>`;
+              resultBadge = `<div class="flex flex-col items-center gap-1"><span class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 text-[11px] font-semibold whitespace-nowrap">⭐ Top Vote (${escapeHtml(c.categoryName || c.category)})</span>${isTop5Pop ? '<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-200 border border-rose-400/40 text-[10px] font-bold whitespace-nowrap">⚡ เข้ารอบ TOP 5 อัตโนมัติ</span>' : ''}</div>`;
+            } else if (isTop5Pop) {
+              resultBadge = '<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-200 border border-rose-400/40 text-[10px] font-bold whitespace-nowrap">⚡ เข้ารอบ TOP 5 อัตโนมัติ</span>';
             }
 
             rows.push(`
@@ -3355,7 +3857,7 @@
           const rows = [];
           list.forEach(c => {
             const isResigned = c.status === 'resigned';
-            const isTop5 = !isResigned && summaryData.top5 && summaryData.top5.some(f => f.id === c.id) && c.preTotal > 0;
+            const { isTop5, badge: top5BadgeHtml } = getTop5BadgeForContestant(c);
             const img = `/api/contestants/${encodeURIComponent(c.id)}/image`;
             const toggleBtn = isResigned
               ? `<button type="button" onclick="confirmToggleStatus('${c.id}', 'active', '${escapeHtml(c.name)}')" class="px-2 py-0.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/40 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold transition flex items-center gap-1 mx-auto active:scale-95"><i class="fas fa-undo"></i> คืนสิทธิ์</button>`
@@ -3389,7 +3891,7 @@
               <td class="px-3 py-3 text-center text-[11px] text-gray-300 whitespace-nowrap">${c.categoryName}</td>
               ${judeCells}
               <td class="px-3 py-3 text-center font-bold text-base text-[#FFDE42] bg-[#111FA2]/60 border-l-2 border-[#FFDE42]/30">${roundTotal || '-'}</td>
-              <td class="px-3 py-3 text-center">${isResigned ? resignedBadge : (isTop5 ? topBadge : noBadge)}</td>
+              <td class="px-3 py-3 text-center">${top5BadgeHtml}</td>
               <td class="px-3 py-3 text-center">${toggleBtn}</td>
             </tr>`);
           });
@@ -3893,6 +4395,8 @@
             scopeEl.value = adminPreRoundView === 'all' ? 'pre_summary' : (adminPreRoundView || 'blackroom');
           } else if (adminCurrentView === 'speed') {
             scopeEl.value = 'speed';
+          } else if (adminCurrentView === 'theme') {
+            scopeEl.value = 'theme';
           } else if (adminCurrentView === 'top3') {
             scopeEl.value = 'overall';
           } else {
@@ -3905,6 +4409,9 @@
             catEl.value = curFilter === 'all' ? 'split_categories' : curFilter;
           } else if (adminCurrentView === 'speed') {
             const curFilter = document.getElementById('admin-speed-category-filter')?.value || 'all';
+            catEl.value = curFilter === 'all' ? 'split_categories' : curFilter;
+          } else if (adminCurrentView === 'theme') {
+            const curFilter = document.getElementById('admin-theme-category-filter')?.value || 'all';
             catEl.value = curFilter === 'all' ? 'split_categories' : curFilter;
           } else if (adminCurrentView === 'top3') {
             const curFilter = document.getElementById('admin-top3-category-filter')?.value || 'all';
@@ -3943,13 +4450,14 @@
         const hintEl = document.getElementById('print-score-summary-hint');
         const btnLabel = document.getElementById('print-score-btn-label');
 
-        const needsCat = ['blackroom', 'grand', 'popular', 'pre_summary', 'speed', 'qa', 'all_pack'].includes(scope);
+        const needsCat = ['blackroom', 'grand', 'popular', 'theme', 'pre_summary', 'speed', 'qa', 'all_pack'].includes(scope);
         if (catWrap) catWrap.classList.toggle('hidden', !needsCat);
 
         const activeCats = Object.keys(CATEGORIES).filter(k => (allContestants || []).some(c => c.category === k));
         const activeMainCats = MAIN_CATEGORIES.filter(k => (allContestants || []).some(c => c.category === k));
         const catPageCount = cat === 'split_categories' ? Math.max(1, activeCats.length || 5) : 1;
         const mainCatPageCount = cat === 'split_categories' ? Math.max(1, activeMainCats.length || 4) : 1;
+        const themePageCount = cat === 'split_categories' ? 3 : 1;
 
         let pages = 1;
         let desc = '';
@@ -3966,15 +4474,18 @@
           else if (scope === 'grand') rName = 'รอบที่ 2: Grand Opening (เต็ม 50)';
           else rName = 'รอบที่ 3: Popular Vote (เต็ม 50)';
           desc = `พิมพ์ <b>ใบคะแนน${rName}</b> จำนวน <b>${pages} ชุด</b> แยกตารางเกณฑ์ย่อย (÷5) และตารางอ้างอิงกรรมการ ก.1–ก.5`;
+        } else if (scope === 'theme') {
+          pages = themePageCount;
+          desc = `พิมพ์ <b>ใบคะแนนรอบชุดธีม (เต็ม 50 • แยก 3 หมวด: Miss / Mister / LGBTQ+)</b> จำนวน <b>${pages} ชุด</b> พร้อมตารางเกณฑ์ย่อย 4 ข้อ (÷5) และตารางอ้างอิงกรรมการ ก.1–ก.5`;
         } else if (scope === 'speed') {
-          pages = mainCatPageCount;
-          desc = `พิมพ์ <b>ใบคะแนนรอบที่ 4: TOP 5 Speed แยกประเภท (เต็ม 50)</b> จำนวน <b>${pages} ชุด</b> พร้อมตารางเกณฑ์ย่อย 4 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และสถานะผ่านเข้า TOP 3`;
+          pages = catPageCount;
+          desc = `พิมพ์ <b>ใบคะแนนรอบที่ 4: TOP 5 Speed แยกประเภท (เต็ม 50 • รวม Miss Con)</b> จำนวน <b>${pages} ชุด</b> พร้อมตารางเกณฑ์ย่อย 4 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5`;
         } else if (scope === 'qa') {
           pages = mainCatPageCount;
           desc = `พิมพ์ <b>ใบคะแนนรอบที่ 5: TOP 3 ตอบคำถามชี้ขาด แยกประเภท (เต็ม 100)</b> จำนวน <b>${pages} ชุด</b> พร้อมตารางเกณฑ์ย่อย 6 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และรางวัลเกียรติยศ`;
         } else if (scope === 'all_pack') {
-          pages = (catPageCount * 4) + (mainCatPageCount * 2) + 1;
-          desc = `พิมพ์ <b>ครบชุดทั้งหมด (${pages} ชุด)</b> — รอบห้องดำ, Grand Opening, Popular Vote, รวม 3 รอบคัดเลือก, รอบ TOP 5 Speed (แยกประเภท), รอบ TOP 3 ตอบคำถาม (แยกประเภท) และใบสรุปคะแนนรวมทุกรอบอย่างเป็นทางการ`;
+          pages = (catPageCount * 5) + themePageCount + mainCatPageCount + 1;
+          desc = `พิมพ์ <b>ครบชุดทั้งหมด (${pages} ชุด)</b> — รอบห้องดำ, Grand Opening, Popular Vote, รอบชุดธีม, รวม 3 รอบคัดเลือก, รอบ TOP 5 Speed, รอบ TOP 3 ตอบคำถาม และใบสรุปคะแนนรวมทุกรอบอย่างเป็นทางการ`;
         }
 
         if (hintEl) hintEl.innerHTML = desc;
@@ -4011,7 +4522,8 @@
         const top5List = (summaryData?.top5 && summaryData.top5.length > 0) ? summaryData.top5 : getAutoTop5Local();
         const top3List = (summaryData?.top3 && summaryData.top3.length > 0) ? summaryData.top3 : getAutoTop3Local();
         const finalRankingsList = (summaryData?.finalRankings && summaryData.finalRankings.length > 0) ? summaryData.finalRankings : top5List;
-        const top5IdSet = new Set(top5List.filter(x => (x.preTotal || 0) > 0).map(x => x.id));
+        const top5Map = new Map(top5List.map(x => [x.id, x]));
+        const top5IdSet = new Set(top5List.filter(x => (x.preTotal || 0) > 0 || x.isPopularFastTrack).map(x => x.id));
         const top3IdSet = new Set(top3List.filter(x => (x.speedTotal || 0) > 0 || (x.preTotal || 0) > 0).map(x => x.id));
 
         const getByIdOrder = (list) => (list || []).slice().sort((a, b) => {
@@ -4024,6 +4536,23 @@
           return (a.id || '').localeCompare(b.id || '');
         });
 
+        const getThemeCategoryGroups = () => {
+          if (category === 'split_categories') {
+            return [
+              { catKey: 'miss', badge: 'หมวด Miss', contestants: (allContestants || []).filter(c => c.category === 'miss'), showCatCol: false },
+              { catKey: 'mister', badge: 'หมวด Mister', contestants: (allContestants || []).filter(c => c.category === 'mister'), showCatCol: false },
+              { catKey: 'lgbtq', badge: 'หมวด LGBTQ+ (Queen • Con • Jumbo)', contestants: (allContestants || []).filter(c => THEME_LGBTQ_CATEGORIES.includes(c.category)), showCatCol: true }
+            ].filter(g => g.contestants.length > 0);
+          } else if (category === 'lgbtq') {
+            return [{ catKey: 'lgbtq', badge: 'หมวด LGBTQ+ (Queen • Con • Jumbo)', contestants: (allContestants || []).filter(c => THEME_LGBTQ_CATEGORIES.includes(c.category)), showCatCol: true }];
+          } else if (category === 'all') {
+            return [{ catKey: 'all', badge: 'รวมทุกหมวด (Miss • Mister • LGBTQ+)', contestants: allContestants || [], showCatCol: true }];
+          } else {
+            const catName = CATEGORIES[category] || category;
+            return [{ catKey: category, badge: `ประเภท ${catName}`, contestants: (allContestants || []).filter(c => c.category === category), showCatCol: false }];
+          }
+        };
+
         const getCategoryGroups = (excludeCon = false) => {
           const catEntries = Object.entries(CATEGORIES).filter(([k]) => !excludeCon || k !== 'congeniality');
           if (category === 'split_categories') {
@@ -4035,6 +4564,9 @@
               }
             });
             return groups;
+          } else if (category === 'lgbtq') {
+            const list = (allContestants || []).filter(c => THEME_LGBTQ_CATEGORIES.includes(c.category));
+            return [{ catKey: 'lgbtq', badge: 'กลุ่ม LGBTQ+ (Queen • Con • Jumbo)', contestants: list, showCatCol: true }];
           } else if (category === 'all') {
             const list = excludeCon
               ? (allContestants || []).filter(c => c.category !== 'congeniality')
@@ -4108,6 +4640,13 @@
             formulaDesc: 'นำคะแนนรวมของกรรมการทั้ง 5 ท่านมา<strong>หาร 5</strong> เป็น <strong>คะแนนรวมสุทธิเต็ม 50 คะแนน</strong> (คะแนนดิบรวม 5 ก. เต็ม 250 คะแนน)',
             statusTitle: 'สถานะ'
           },
+          theme: {
+            pill: 'รอบชุดธีม (ชุด THEME • รางวัลแยกต่างหาก)',
+            maxPerJudge: 50,
+            maxAll5: 250,
+            formulaDesc: '<strong>รางวัลพิเศษแยกต่างหาก (ไม่รวมคะแนนกับรอบอื่นๆ) • คัด TOP 1 ของแต่ละหมวด</strong> — นำคะแนนแต่ละเกณฑ์จากกรรมการทั้ง 5 ท่านมา<strong>รวมกันแล้วหาร 5</strong> แล้วนำทั้ง 4 ช่องมารวมกันเป็น <strong>คะแนนสุทธิเต็ม 50 คะแนน</strong>',
+            statusTitle: 'ผลรางวัล TOP 1'
+          },
           speed: {
             pill: 'รอบที่ 4: TOP 5 Speed',
             maxPerJudge: 50,
@@ -4132,6 +4671,7 @@
           const isCompact = (contestants || []).length > 10;
           const isQa = roundId === 'qa';
           const isSpeed = roundId === 'speed';
+          const isTheme = roundId === 'theme';
 
           const computed = (contestants || []).map(c => {
             const jTotals = {};
@@ -4197,17 +4737,21 @@
             const displayRank = (showCatCol && (isSpeed || isQa))
               ? (isQa ? (c.finalRank || (inCatIdx + 1)) : (c.speedRank || (inCatIdx + 1)))
               : (idx + 1);
-            const isTop3InGroup = isSpeed ? (c.isTop3 !== undefined ? c.isTop3 : (displayRank <= 3)) : (displayRank <= 3);
-            const isHighlightRow = (isQa && displayRank === 1 && hasScore) || (isSpeed && isTop3InGroup && hasScore) || (!isQa && !isSpeed && idx === 0 && hasScore);
+            const isConStopTop5 = isSpeed && c.category === 'congeniality';
+            const isTop3InGroup = isSpeed ? (!isConStopTop5 && (c.isTop3 !== undefined ? c.isTop3 : (displayRank <= 3))) : (displayRank <= 3);
+            const isHighlightRow = (isQa && displayRank === 1 && hasScore) || (isSpeed && (isConStopTop5 ? displayRank === 1 : isTop3InGroup) && hasScore) || (!isQa && !isSpeed && idx === 0 && hasScore);
             const rawName = c.name || '';
             const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
             const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
 
             let statusText = '-';
-            if (hasScore) {
+            if (hasScore || (isSpeed && c.isPopularFastTrack)) {
               if (isQa) statusText = qaAwards[displayRank - 1] || '-';
-              else if (isSpeed) statusText = isTop3InGroup ? '👑 เข้า TOP 3' : (displayRank === 4 ? 'รองฯ อันดับ 3' : 'รองฯ อันดับ 4');
-              else statusText = top5IdSet.has(c.id) ? '★ TOP 5' : `อันดับ ${idx + 1}`;
+              else if (isTheme) statusText = idx === 0 ? '👑 TOP 1 ชนะเลิศชุดธีม' : `อันดับ ${idx + 1}`;
+              else if (isSpeed) statusText = isConStopTop5
+                ? (displayRank === 1 ? '👑 อันดับ 1 (จบ TOP 5)' : `อันดับ ${displayRank} (จบ TOP 5)`)
+                : (isTop3InGroup ? '👑 เข้า TOP 3' : (displayRank === 4 ? 'รองฯ อันดับ 3' : 'รองฯ อันดับ 4'));
+              else statusText = top5IdSet.has(c.id) ? (top5Map.get(c.id)?.isPopularFastTrack ? '❤️ TOP 5 (Pop)' : '★ TOP 5') : `อันดับ ${idx + 1}`;
             }
 
             const critCells = criteriaList.map(cr => `<td>${formatAvgCell(hasScore, critAvgs[cr.id], critSums[cr.id])}</td>`).join('');
@@ -4401,7 +4945,8 @@
           const t1Filled = computed.map((item, idx) => {
             const { c, blackSum, blackAvg, grandSum, grandAvg, popularSum, popularAvg, preTotal, preAvg } = item;
             const hasScore = preTotal > 0;
-            const isTop5 = hasScore && top5IdSet.has(c.id);
+            const top5Entry = top5Map.get(c.id);
+            const isTop5 = top5IdSet.has(c.id);
             const rawName = c.name || '';
             const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
             const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
@@ -4416,7 +4961,7 @@
                 <td>${formatAvgCell(popularSum > 0, popularAvg, popularSum)}</td>
                 <td class="bold">${hasScore ? preTotal : '-'}</td>
                 <td class="col-final">${hasScore ? preAvg.toFixed(2) : '-'}</td>
-                <td class="col-award">${isTop5 ? '👑 ผ่าน TOP 5' : '-'}</td>
+                <td class="col-award">${isTop5 ? (top5Entry?.isPopularFastTrack ? '❤️ TOP 5 (Popular)' : '👑 ผ่าน TOP 5') : '-'}</td>
               </tr>
             `;
           }).join('');
@@ -4424,7 +4969,7 @@
           const t2Filled = computed.map((item, idx) => {
             const { c, jCombined, preTotal, preAvg } = item;
             const hasScore = preTotal > 0;
-            const isTop5 = hasScore && top5IdSet.has(c.id);
+            const isTop5 = top5IdSet.has(c.id);
             const rawName = c.name || '';
             const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
             const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
@@ -4718,7 +5263,7 @@
             bodyHtml: `
               <div class="formula-box">
                 <strong>โครงสร้างคะแนน 5 รอบหลัก (กรรมการ 5 ท่าน ก.1–ก.5 • คัด TOP 5 / TOP 3 แยกแต่ละประเภท):</strong>
-                <strong>รอบคัดเลือก</strong> = ห้องดำ (25×5 = 125) + Grand Opening (50×5 = 250) + Popular Vote (50×5 = 250) ➔ คัด <strong>TOP 5 แยกประเภท</strong> (ประเภทละ 5 คน)
+                <strong>รอบคัดเลือก</strong> = ห้องดำ (25×5 = 125) + Grand Opening (50×5 = 250) คัด <strong>4 อันดับแรก</strong> + <strong>อันดับ 1 Popular Vote</strong> ของแต่ละประเภท (เข้ารอบอัตโนมัติ) ➔ รวมเป็น <strong>TOP 5 แยกประเภท</strong> (ประเภทละ 5 คน)
                 • <strong>รอบ Speed</strong> (50×5 = 250) คัด <strong>TOP 3 แยกประเภท</strong> (ประเภทละ 3 คน)
                 • <strong>รอบชิง TOP 3 ตอบคำถาม</strong> (ล้างคะแนนเดิม • 100×5 = 500 ➔ ÷ 5 = <strong>คะแนนสุทธิเต็ม 100</strong> ตัดสินชนะเลิศแต่ละประเภท)
               </div>
@@ -4778,13 +5323,16 @@
         const sheets = [];
         const catGroups = getCategoryGroups(false);
         const mainCatGroups = getCategoryGroups(true);
+        const themeGroups = getThemeCategoryGroups();
 
         if (scope === 'blackroom' || scope === 'grand' || scope === 'popular') {
           catGroups.forEach(g => sheets.push(buildSingleRoundSheet(scope, g.contestants, g.badge, g.showCatCol)));
+        } else if (scope === 'theme') {
+          themeGroups.forEach(g => sheets.push(buildSingleRoundSheet('theme', g.contestants, g.badge, g.showCatCol)));
         } else if (scope === 'pre_summary') {
           catGroups.forEach(g => sheets.push(buildPreSummarySheet(g.contestants, g.badge, g.showCatCol)));
         } else if (scope === 'speed') {
-          mainCatGroups.forEach(g => {
+          catGroups.forEach(g => {
             const list = g.catKey === 'all' ? top5List : top5List.filter(x => x.category === g.catKey);
             sheets.push(buildSingleRoundSheet('speed', list, g.catKey === 'all' ? 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย แยกประเภท (ทุกหมวด)' : `ผู้ผ่านเข้ารอบ TOP 5 (${g.badge})`, g.showCatCol));
           });
@@ -4799,8 +5347,9 @@
           catGroups.forEach(g => sheets.push(buildSingleRoundSheet('blackroom', g.contestants, g.badge, g.showCatCol)));
           catGroups.forEach(g => sheets.push(buildSingleRoundSheet('grand', g.contestants, g.badge, g.showCatCol)));
           catGroups.forEach(g => sheets.push(buildSingleRoundSheet('popular', g.contestants, g.badge, g.showCatCol)));
+          themeGroups.forEach(g => sheets.push(buildSingleRoundSheet('theme', g.contestants, g.badge, g.showCatCol)));
           catGroups.forEach(g => sheets.push(buildPreSummarySheet(g.contestants, g.badge, g.showCatCol)));
-          mainCatGroups.forEach(g => {
+          catGroups.forEach(g => {
             const list = g.catKey === 'all' ? top5List : top5List.filter(x => x.category === g.catKey);
             sheets.push(buildSingleRoundSheet('speed', list, g.catKey === 'all' ? 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย แยกประเภท (ทุกหมวด)' : `ผู้ผ่านเข้ารอบ TOP 5 (${g.badge})`, g.showCatCol));
           });
@@ -5124,7 +5673,7 @@
       // ==========================================
       // Print Criteria Sheet by Category (A4 Portrait)
       // ==========================================
-      const PRINT_ROUND_ORDER = ['blackroom', 'grand', 'popular', 'speed', 'qa'];
+      const PRINT_ROUND_ORDER = ['blackroom', 'grand', 'popular', 'theme', 'speed', 'qa'];
 
       function getSelectedPrintRounds() {
         const checked = Array.from(document.querySelectorAll('.print-round-cb:checked')).map(cb => cb.value);
@@ -5140,7 +5689,7 @@
       }
 
       function setPrintRoundPreset(preset) {
-        if (preset === 'all') setPrintRoundsChecked(['blackroom', 'grand', 'popular', 'speed', 'qa']);
+        if (preset === 'all') setPrintRoundsChecked(['blackroom', 'grand', 'popular', 'theme', 'speed', 'qa']);
         else if (preset === 'pre') setPrintRoundsChecked(['blackroom', 'grand', 'popular']);
         else if (preset === 'final') setPrintRoundsChecked(['speed', 'qa']);
       }
@@ -5257,6 +5806,9 @@
             const curFilter = document.getElementById('admin-speed-category-filter')?.value || 'all';
             catSelect.value = curFilter === 'all' ? 'finalists_split' : curFilter;
             setPrintRoundsChecked(['speed']);
+          } else if (adminCurrentView === 'theme') {
+            catSelect.value = 'all';
+            setPrintRoundsChecked(['theme']);
           } else if (adminCurrentView === 'top3') {
             const curFilter = document.getElementById('admin-top3-category-filter')?.value || 'all';
             catSelect.value = curFilter === 'all' ? 'finalists_split' : curFilter;
@@ -5335,7 +5887,8 @@
           });
         } else if (selectedCat === 'finalists_split') {
           const isOnlyQa = selectedRounds.length === 1 && selectedRounds[0] === 'qa';
-          MAIN_CATEGORIES.forEach(catKey => {
+          const catsLoop = isOnlyQa ? MAIN_CATEGORIES : TOP5_CATEGORIES;
+          catsLoop.forEach(catKey => {
             const catName = CATEGORIES[catKey] || catKey;
             const srcList = isOnlyQa ? top3List : top5List;
             const list = srcList.filter(c => c.category === catKey);
@@ -5407,6 +5960,7 @@
           blackroom: 'รอบที่ 1: รอบห้องดำ (เต็ม 25)',
           grand: 'รอบที่ 2: Grand Opening (เต็ม 50)',
           popular: 'รอบที่ 3: Popular Vote (เต็ม 50)',
+          theme: 'รอบชุดธีม / ชุด THEME (เต็ม 50)',
           speed: 'รอบที่ 4: TOP 5 Speed (เต็ม 50)',
           qa: 'รอบที่ 5: TOP 3 ตอบคำถามชี้ขาด (เต็ม 100)'
         };
@@ -5414,6 +5968,7 @@
           blackroom: '1. ห้องดำ',
           grand: '2. Grand',
           popular: '3. Popular',
+          theme: 'ชุดธีม',
           speed: '4. Speed',
           qa: '5. ตอบคำถาม'
         };
@@ -5426,7 +5981,7 @@
           if (group.catKey === 'finalists') {
             return roundId === 'qa' ? (top3List.length > 0 ? top3List : group.contestants) : (top5List.length > 0 ? top5List : group.contestants);
           }
-          if (roundId === 'speed' && MAIN_CATEGORIES.includes(group.catKey)) {
+          if (roundId === 'speed' && TOP5_CATEGORIES.includes(group.catKey)) {
             const catTop5 = top5List.filter(c => c.category === group.catKey);
             return catTop5.length > 0 ? catTop5 : group.contestants;
           }
