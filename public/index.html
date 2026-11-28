@@ -341,7 +341,7 @@
           <i class="fas fa-crown text-xl"></i> รอบ 3 คนสุดท้าย แยกแต่ละประเภท ตัดสินชี้ขาด (TOP 3 ตอบคำถาม)
         </h4>
         <p class="text-xs text-amber-200 mt-1 font-semibold">
-          ✨ คัดผู้มีคะแนนรอบ Speed สูงสุด 3 อันดับแรกของแต่ละประเภท (ล้างคะแนนรอบก่อนหน้า เพื่อตัดสินชี้ขาดผู้ชนะของแต่ละประเภท 100%)
+          ✨ คัดผู้มีคะแนนรอบ Speed สูงสุด 3 อันดับแรกของแต่ละประเภท (เฉพาะ Miss / Mister / Miss Queen / Miss Jumbo — ไม่รวม Miss Congeniality • ล้างคะแนนรอบก่อนหน้า ตัดสินชี้ขาด 100%)
         </p>
         <p class="text-xs text-gray-300 mt-0.5">
           <span class="text-[#FFDE42]">เกณฑ์:</span> 1.ภาษากาย(10) | 2.ไหวพริบ/สื่อสาร(20) | 3.มั่นใจ/แก้ปัญหา(20) |
@@ -2390,6 +2390,9 @@
             } else {
               btn.className = "cat-nav-btn px-5 py-2 rounded-full glass-panel border border-[#5478FF]/40 text-gray-300 text-sm font-medium transition-all duration-300 hover:border-[#FFDE42] hover:text-white hover:-translate-y-0.5 active:scale-95";
             }
+            if (currentRound === 'qa' && c === 'congeniality') {
+              btn.classList.add('hidden');
+            }
           }
         });
 
@@ -2531,7 +2534,7 @@
           }
         } else if (isQa) {
           if (summaryData && summaryData.top3 && summaryData.top3.length > 0) {
-            targetList = summaryData.top3;
+            targetList = summaryData.top3.filter(c => MAIN_CATEGORIES.includes(c.category));
           } else {
             targetList = getAutoTop3Local();
           }
@@ -4445,10 +4448,28 @@
 
       function updatePrintScorePreviewInfo() {
         const scope = document.getElementById('print-score-scope')?.value || 'overall';
-        const cat = document.getElementById('print-score-category')?.value || 'split_categories';
+        const catSelect = document.getElementById('print-score-category');
         const catWrap = document.getElementById('print-score-category-wrap');
         const hintEl = document.getElementById('print-score-summary-hint');
         const btnLabel = document.getElementById('print-score-btn-label');
+
+        if (catSelect) {
+          const isQaScope = scope === 'qa';
+          const isThemeScope = scope === 'theme';
+          Array.from(catSelect.options).forEach(opt => {
+            if (opt.value === 'congeniality') {
+              opt.hidden = isQaScope;
+              opt.disabled = isQaScope;
+            } else if (opt.value === 'lgbtq') {
+              opt.hidden = !isThemeScope;
+              opt.disabled = !isThemeScope;
+            }
+          });
+          if ((isQaScope && (catSelect.value === 'congeniality' || catSelect.value === 'lgbtq')) || (!isThemeScope && catSelect.value === 'lgbtq')) {
+            catSelect.value = 'split_categories';
+          }
+        }
+        const cat = catSelect?.value || 'split_categories';
 
         const needsCat = ['blackroom', 'grand', 'popular', 'theme', 'pre_summary', 'speed', 'qa', 'all_pack'].includes(scope);
         if (catWrap) catWrap.classList.toggle('hidden', !needsCat);
@@ -5167,12 +5188,13 @@
           const allOverview = (allContestants || []).map(c => {
             let blackSum = 0, grandSum = 0, popularSum = 0, speedSum = 0, qaSum = 0;
             let hasSpeed = false, hasQa = false;
+            const isTop3Cat = MAIN_CATEGORIES.includes(c.category);
             judges.forEach(jId => {
               const rB = getMainRoundRecord(jId, c.id, 'blackroom', c.category);
               const rG = getMainRoundRecord(jId, c.id, 'grand', c.category);
               const rP = getMainRoundRecord(jId, c.id, 'popular', c.category);
               const rS = getMainRoundRecord(jId, c.id, 'speed', c.category);
-              const rQ = getMainRoundRecord(jId, c.id, 'qa', c.category);
+              const rQ = isTop3Cat ? getMainRoundRecord(jId, c.id, 'qa', c.category) : null;
               if (rB) blackSum += (rB.total_score || 0);
               if (rG) grandSum += (rG.total_score || 0);
               if (rP) popularSum += (rP.total_score || 0);
@@ -5337,10 +5359,12 @@
             sheets.push(buildSingleRoundSheet('speed', list, g.catKey === 'all' ? 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย แยกประเภท (ทุกหมวด)' : `ผู้ผ่านเข้ารอบ TOP 5 (${g.badge})`, g.showCatCol));
           });
         } else if (scope === 'qa') {
-          mainCatGroups.forEach(g => {
-            const list = g.catKey === 'all' ? top3List : top3List.filter(x => x.category === g.catKey);
-            sheets.push(buildSingleRoundSheet('qa', list, g.catKey === 'all' ? 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย แยกประเภท (ทุกหมวด)' : `ผู้ผ่านเข้ารอบ TOP 3 (${g.badge})`, g.showCatCol));
-          });
+          mainCatGroups
+            .filter(g => g.catKey !== 'congeniality' && g.catKey !== 'lgbtq')
+            .forEach(g => {
+              const list = g.catKey === 'all' ? top3List.filter(x => MAIN_CATEGORIES.includes(x.category)) : top3List.filter(x => x.category === g.catKey);
+              sheets.push(buildSingleRoundSheet('qa', list, g.catKey === 'all' ? 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย แยกประเภท (ทุกหมวด)' : `ผู้ผ่านเข้ารอบ TOP 3 (${g.badge})`, g.showCatCol));
+            });
         } else if (scope === 'overall') {
           sheets.push(buildOverallSummarySheet());
         } else if (scope === 'all_pack') {
@@ -5695,9 +5719,22 @@
       }
 
       function updatePrintCriteriaPreviewInfo() {
-        const selectedCat = document.getElementById('print-criteria-category')?.value || 'all';
-        const isConSelected = selectedCat === 'congeniality_talent';
+        const catSelectEl = document.getElementById('print-criteria-category');
         const selectedRounds = getSelectedPrintRounds();
+        const isOnlyQa = selectedRounds.length === 1 && selectedRounds[0] === 'qa';
+        if (catSelectEl) {
+          Array.from(catSelectEl.options).forEach(opt => {
+            if (opt.value === 'congeniality') {
+              opt.hidden = isOnlyQa;
+              opt.disabled = isOnlyQa;
+            }
+          });
+          if (isOnlyQa && catSelectEl.value === 'congeniality') {
+            catSelectEl.value = 'all';
+          }
+        }
+        const selectedCat = catSelectEl?.value || 'all';
+        const isConSelected = selectedCat === 'congeniality_talent';
         const roundsWrap = document.getElementById('print-criteria-rounds-wrap');
         const conNotice = document.getElementById('print-criteria-con-notice');
         const layoutWrap = document.getElementById('print-criteria-layout-wrap');
@@ -5724,31 +5761,39 @@
           }
         }
 
+        const calcPagesForRounds = (roundCount) => {
+          if (roundCount <= 0) return 0;
+          if (roundCount === 1 || layout === 'summary_one_page') return 1;
+          return layout === 'paired' ? Math.ceil(roundCount / 2) : roundCount;
+        };
+
         let totalPages = 0;
         if (isConSelected) {
           totalPages = 1;
         } else {
-          let pagesPerNormalCat = 0;
-          if (selectedRounds.length === 1 || (selectedRounds.length > 1 && layout === 'summary_one_page')) {
-            pagesPerNormalCat = 1;
-          } else if (selectedRounds.length > 1) {
-            pagesPerNormalCat = layout === 'paired' ? Math.ceil(selectedRounds.length / 2) : selectedRounds.length;
-          }
-
           if (selectedCat === 'all') {
-            const nonEmptyCats = Object.keys(CATEGORIES).filter(k => (allContestants || []).some(c => c.category === k));
-            const activeCats = nonEmptyCats.length > 0 ? nonEmptyCats : Object.keys(CATEGORIES);
-            totalPages = activeCats.length * pagesPerNormalCat;
+            const catKeysPool = isOnlyQa ? MAIN_CATEGORIES : Object.keys(CATEGORIES);
+            const nonEmptyCats = catKeysPool.filter(k => (allContestants || []).some(c => c.category === k));
+            const activeCats = nonEmptyCats.length > 0 ? nonEmptyCats : catKeysPool;
+            totalPages = activeCats.reduce((sum, k) => {
+              const rCount = k === 'congeniality' ? selectedRounds.filter(r => r !== 'qa').length : selectedRounds.length;
+              return sum + calcPagesForRounds(rCount);
+            }, 0);
           } else if (selectedCat === 'finalists_split') {
-            const nonEmptyMainCats = MAIN_CATEGORIES.filter(k => (allContestants || []).some(c => c.category === k));
-            const activeMainCats = nonEmptyMainCats.length > 0 ? nonEmptyMainCats : MAIN_CATEGORIES;
-            totalPages = activeMainCats.length * pagesPerNormalCat;
+            const catsPool = isOnlyQa ? MAIN_CATEGORIES : TOP5_CATEGORIES;
+            const nonEmptyCats = catsPool.filter(k => (allContestants || []).some(c => c.category === k));
+            const activeCats = nonEmptyCats.length > 0 ? nonEmptyCats : catsPool;
+            totalPages = activeCats.reduce((sum, k) => {
+              const rCount = k === 'congeniality' ? selectedRounds.filter(r => r !== 'qa').length : selectedRounds.length;
+              return sum + calcPagesForRounds(rCount);
+            }, 0);
           } else {
-            totalPages = pagesPerNormalCat;
+            const rCount = selectedCat === 'congeniality' ? selectedRounds.filter(r => r !== 'qa').length : selectedRounds.length;
+            totalPages = calcPagesForRounds(rCount);
           }
         }
 
-        const isDisabled = !isConSelected && selectedRounds.length === 0;
+        const isDisabled = !isConSelected && (selectedRounds.length === 0 || totalPages === 0);
         if (btnSubmit) {
           btnSubmit.disabled = isDisabled;
           btnSubmit.classList.toggle('opacity-50', isDisabled);
@@ -5766,7 +5811,7 @@
             hintEl.innerHTML = 'กรุณาติ๊กเลือกอย่างน้อย <b>1 รอบการประกวด</b> เพื่อสร้างใบเกณฑ์สำหรับพิมพ์';
           } else {
             const catText = selectedCat === 'all'
-              ? 'ทุกประเภท (5 หมวด วันจริง)'
+              ? (isOnlyQa ? 'ทุกประเภท TOP 3 (4 หมวดหลัก • ไม่รวม Miss Con)' : 'ทุกประเภท (5 หมวด วันจริง)')
               : (selectedCat === 'finalists_split'
                   ? 'ผู้ผ่านเข้ารอบ (แยกหน้าทีละประเภท)'
                   : (selectedCat === 'finalists' ? 'ผู้ผ่านเข้ารอบ (รวมทุกประเภท)' : `ประเภท ${CATEGORIES[selectedCat] || selectedCat}`));
@@ -5929,26 +5974,36 @@
           return;
         }
 
-        // สร้างรายการหน้าทั้งหมดตามโหมดการจัดหน้า
+        // สร้างรายการหน้าทั้งหมดตามโหมดการจัดหน้า (Miss Congeniality สิ้นสุดที่ TOP 5 ไม่พิมพ์รอบ TOP 3 qa)
         const renderPages = [];
         catGroups.forEach(group => {
           if (group.catKey === 'congeniality_talent') {
             renderPages.push({ group, mode: 'detail', rounds: ['congeniality'], compact: false });
-          } else if (selectedRounds.length === 1) {
-            renderPages.push({ group, mode: 'detail', rounds: [selectedRounds[0]], compact: false });
+            return;
+          }
+          const groupRounds = group.catKey === 'congeniality'
+            ? selectedRounds.filter(r => r !== 'qa')
+            : selectedRounds;
+          if (groupRounds.length === 0) return;
+          if (groupRounds.length === 1) {
+            renderPages.push({ group, mode: 'detail', rounds: [groupRounds[0]], compact: false });
           } else if (layout === 'summary_one_page') {
-            renderPages.push({ group, mode: 'summary_one_page', rounds: selectedRounds, compact: true });
+            renderPages.push({ group, mode: 'summary_one_page', rounds: groupRounds, compact: true });
           } else if (layout === 'paired') {
-            for (let i = 0; i < selectedRounds.length; i += 2) {
-              const chunk = selectedRounds.slice(i, i + 2);
+            for (let i = 0; i < groupRounds.length; i += 2) {
+              const chunk = groupRounds.slice(i, i + 2);
               renderPages.push({ group, mode: 'detail', rounds: chunk, compact: chunk.length > 1 });
             }
           } else {
-            selectedRounds.forEach(rId => {
+            groupRounds.forEach(rId => {
               renderPages.push({ group, mode: 'detail', rounds: [rId], compact: false });
             });
           }
         });
+        if (renderPages.length === 0) {
+          alert('Miss Congeniality ไม่เข้าร่วมรอบ TOP 3 ตอบคำถาม กรุณาเลือกหมวดหมู่หรือรอบอื่น');
+          return;
+        }
 
         const printWindow = window.open('', '_blank', 'width=850,height=1050');
         if (!printWindow) {
@@ -5979,15 +6034,17 @@
 
         function getContestantsForRound(group, roundId) {
           if (group.catKey === 'finalists') {
-            return roundId === 'qa' ? (top3List.length > 0 ? top3List : group.contestants) : (top5List.length > 0 ? top5List : group.contestants);
+            const top3OnlyMain = (top3List.length > 0 ? top3List : group.contestants).filter(c => MAIN_CATEGORIES.includes(c.category));
+            return roundId === 'qa' ? top3OnlyMain : (top5List.length > 0 ? top5List : group.contestants);
           }
           if (roundId === 'speed' && TOP5_CATEGORIES.includes(group.catKey)) {
             const catTop5 = top5List.filter(c => c.category === group.catKey);
             return catTop5.length > 0 ? catTop5 : group.contestants;
           }
-          if (roundId === 'qa' && MAIN_CATEGORIES.includes(group.catKey)) {
+          if (roundId === 'qa') {
+            if (!MAIN_CATEGORIES.includes(group.catKey)) return [];
             const catTop3 = top3List.filter(c => c.category === group.catKey);
-            return catTop3.length > 0 ? catTop3 : group.contestants;
+            return catTop3.length > 0 ? catTop3 : group.contestants.filter(c => MAIN_CATEGORIES.includes(c.category));
           }
           return group.contestants;
         }
