@@ -282,28 +282,27 @@
         </div>
       </div>
 
-      <!-- แบนเนอร์พิเศษสำหรับรอบ Speed (Top 5) -->
+      <!-- แบนเนอร์พิเศษสำหรับรอบ Speed (Top 5 แยกประเภท) -->
       <div id="speed-banner"
         class="hidden glass-panel p-4 rounded-2xl mb-6 border-2 border-amber-400 bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/90 to-[#111FA2]/90 text-center shadow-[0_0_25px_rgba(251,191,36,0.3)]">
         <h4 class="text-lg font-bold text-amber-300 flex items-center justify-center gap-2">
-          <i class="fas fa-bolt text-xl text-[#FFDE42]"></i> รอบ 5 คนสุดท้าย (TOP 5 - Speed คัดเหลือ 3 คน)
+          <i class="fas fa-bolt text-xl text-[#FFDE42]"></i> รอบ 5 คนสุดท้าย แยกแต่ละประเภท (TOP 5 - Speed คัดเหลือประเภทละ 3 คน)
         </h4>
         <p class="text-xs text-gray-300 mt-1">
-          คัดจากผู้มีคะแนนรอบแรก (ห้องดำ + Grand Opening) สูงสุด 5 อันดับแรก | คะแนนเต็ม 50 คะแนนต่อกรรมการ<br>
+          คัดจากผู้มีคะแนนรอบแรก (ห้องดำ + Grand Opening) สูงสุด 5 อันดับแรกของแต่ละประเภท | คะแนนเต็ม 50 คะแนนต่อกรรมการ<br>
           <span class="text-[#FFDE42] font-semibold">เกณฑ์:</span> 1.ภาษากาย/บุคลิกภาพ (10) |
           2.ปฏิภาณไหวพริบ/พูด/สื่อสาร (20) | 3.ความมั่นใจ/แก้ปัญหา (10) | 4.ชุดนักศึกษา (10)
         </p>
       </div>
 
-      <!-- แบนเนอร์พิเศษสำหรับรอบ TOP 3 ตอบคำถาม -->
+      <!-- แบนเนอร์พิเศษสำหรับรอบ TOP 3 ตอบคำถาม (แยกประเภท) -->
       <div id="top3-banner"
         class="hidden glass-panel p-4 rounded-2xl mb-6 border-2 border-[#FFDE42] bg-gradient-to-r from-[#111FA2]/90 via-[#091054]/90 to-[#111FA2]/90 text-center shadow-[0_0_30px_rgba(255,222,66,0.35)]">
         <h4 class="text-lg font-bold text-[#FFDE42] gold-glow flex items-center justify-center gap-2">
-          <i class="fas fa-crown text-xl"></i> รอบ 3 คนสุดท้าย ตัดสินชี้ขาด (TOP 3 ตอบคำถาม)
+          <i class="fas fa-crown text-xl"></i> รอบ 3 คนสุดท้าย แยกแต่ละประเภท ตัดสินชี้ขาด (TOP 3 ตอบคำถาม)
         </h4>
         <p class="text-xs text-amber-200 mt-1 font-semibold">
-          ✨ คะแนนรอบก่อนหน้าถูกล้างใหม่ทั้งหมด เพื่อตัดสินชี้ขาด The Winner Freshy 2026 จากรอบนี้เท่านั้น (เต็ม 100
-          คะแนน)
+          ✨ คัดผู้มีคะแนนรอบ Speed สูงสุด 3 อันดับแรกของแต่ละประเภท (ล้างคะแนนรอบก่อนหน้า เพื่อตัดสินชี้ขาดผู้ชนะของแต่ละประเภท 100%)
         </p>
         <p class="text-xs text-gray-300 mt-0.5">
           <span class="text-[#FFDE42]">เกณฑ์:</span> 1.ภาษากาย(10) | 2.ไหวพริบ/สื่อสาร(20) | 3.มั่นใจ/แก้ปัญหา(20) |
@@ -495,26 +494,33 @@
         </div>
       </div>
 
-      <!-- วิว 1: 🏆 ผลการตัดสินชี้ขาด (TOP 3 ตอบคำถาม & รางวัลทั้งหมด) -->
+      <!-- วิว 1: 🏆 ผลการตัดสินชี้ขาด (TOP 3 ตอบคำถามแยกประเภท & รางวัลทั้งหมด) -->
       <div id="admin-view-top3" class="space-y-6">
         <div
           class="glass-panel p-6 rounded-3xl border-2 border-[#FFDE42] shadow-[0_0_40px_rgba(255,222,66,0.2)] overflow-x-auto">
           <div class="flex flex-col lg:flex-row items-center justify-between gap-3 mb-6">
             <div class="text-center lg:text-left">
               <h3 class="text-2xl font-bold text-[#FFDE42] gold-glow flex items-center justify-center lg:justify-start gap-2">
-                <i class="fas fa-trophy text-3xl"></i> ผลการตัดสินอย่างเป็นทางการ: รอบตอบคำถาม (TOP 3 ตัดสิน)
+                <i class="fas fa-trophy text-3xl"></i> ผลการตัดสินอย่างเป็นทางการ: รอบตอบคำถาม (TOP 3 แยกประเภท)
               </h3>
               <p class="text-xs text-amber-200 mt-1 font-semibold">
-                * คะแนนรอบ 5 คนถูกล้างทั้งหมดเพื่อเข้าสู่รอบ 3 คนสุดท้าย — ตัดสินชี้ขาดตำแหน่ง The Winner
-                จากรอบตอบคำถามนี้ 100%
+                * คัดเลือก TOP 3 สูงสุดแยกตามประเภท (Miss / Mister / Miss Queen / Miss Jumbo) — ตัดสินชี้ขาดผู้ชนะแต่ละประเภทจากรอบตอบคำถามนี้ 100%
               </p>
             </div>
             <div class="flex flex-wrap items-center justify-center gap-2 shrink-0">
+              <select id="admin-top3-category-filter" onchange="renderAdminTop3Table()"
+                class="input-dark p-2 rounded-xl text-xs font-semibold">
+                <option value="all">ทุกหมวดหมู่ (แยกตามประเภท)</option>
+                <option value="miss">Miss</option>
+                <option value="mister">Mister</option>
+                <option value="queen">Miss Queen</option>
+                <option value="jumbo">Miss Jumbo</option>
+              </select>
               <button type="button" onclick="printStyledScoreSheets({ scope: 'overall', category: 'all', initialMode: 'filled' })"
                 class="px-4 py-2.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
                 <i class="fas fa-award"></i> พิมพ์ใบสรุปรวมทุกรอบ
               </button>
-              <button type="button" onclick="printStyledScoreSheets({ scope: 'qa', category: 'all', initialMode: 'filled' })"
+              <button type="button" onclick="printCurrentTop3ScoreSheet()"
                 class="px-3.5 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-amber-200 border border-amber-400/50 font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95">
                 <i class="fas fa-print"></i> ใบคะแนนรอบ TOP 3
               </button>
@@ -544,22 +550,32 @@
         </div>
       </div>
 
-      <!-- วิว 2: ⚡ ผลคะแนนรอบ TOP 5 (Speed) -->
+      <!-- วิว 2: ⚡ ผลคะแนนรอบ TOP 5 แยกประเภท (Speed) -->
       <div id="admin-view-speed" class="hidden space-y-6">
         <div class="glass-panel p-6 rounded-3xl border border-amber-400 shadow-xl overflow-x-auto">
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6">
             <div class="text-center sm:text-left">
               <h3 class="text-xl font-bold text-amber-300 flex items-center justify-center sm:justify-start gap-2">
-                <i class="fas fa-bolt text-2xl text-[#FFDE42]"></i> ผลการตัดสินรอบ 5 คนสุดท้าย (Speed)
+                <i class="fas fa-bolt text-2xl text-[#FFDE42]"></i> ผลการตัดสินรอบ 5 คนสุดท้าย แยกประเภท (TOP 5 - Speed)
               </h3>
               <p class="text-xs text-gray-300 mt-1">
-                เต็ม 50 คะแนนต่อกรรมการ (รวม 250 คะแนน) — คัดเลือก 3 อันดับแรกผ่านเข้าสู่รอบตอบคำถามตัดสิน (TOP 3)
+                เต็ม 50 คะแนนต่อกรรมการ (รวม 250 คะแนน) — คัดเลือก 3 อันดับแรกของแต่ละประเภทผ่านเข้าสู่รอบตอบคำถามตัดสิน (TOP 3)
               </p>
             </div>
-            <button type="button" onclick="printStyledScoreSheets({ scope: 'speed', category: 'all', initialMode: 'filled' })"
-              class="px-4 py-2.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 shrink-0">
-              <i class="fas fa-print"></i> พิมพ์ใบคะแนนรอบ Speed
-            </button>
+            <div class="flex flex-wrap items-center justify-center gap-2 shrink-0">
+              <select id="admin-speed-category-filter" onchange="renderAdminSpeedTable()"
+                class="input-dark p-2 rounded-xl text-xs font-semibold">
+                <option value="all">ทุกหมวดหมู่ (แยกตามประเภท)</option>
+                <option value="miss">Miss</option>
+                <option value="mister">Mister</option>
+                <option value="queen">Miss Queen</option>
+                <option value="jumbo">Miss Jumbo</option>
+              </select>
+              <button type="button" onclick="printCurrentSpeedScoreSheet()"
+                class="px-4 py-2.5 bg-gradient-to-r from-[#FFDE42] to-amber-400 hover:from-yellow-300 hover:to-amber-300 text-[#111FA2] font-bold transition-all duration-300 rounded-xl text-xs flex items-center gap-1.5 shadow-md hover:-translate-y-0.5 active:scale-95 shrink-0">
+                <i class="fas fa-print"></i> พิมพ์ใบคะแนนรอบ Speed
+              </button>
+            </div>
           </div>
 
           <table class="w-full text-sm text-left text-gray-200 border-separate border-spacing-0">
@@ -1041,7 +1057,8 @@
               <option value="queen">Miss Queen</option>
               <option value="congeniality">Miss Congeniality (วันจริง 4 รอบ)</option>
               <option value="jumbo">Miss Jumbo</option>
-              <option value="finalists">ผู้ผ่านเข้ารอบ TOP 5 / TOP 3 (ตามคะแนนปัจจุบัน)</option>
+              <option value="finalists_split">ผู้ผ่านเข้ารอบ TOP 5 / TOP 3 (แยกหน้าทีละประเภท)</option>
+              <option value="finalists">ผู้ผ่านเข้ารอบ TOP 5 / TOP 3 (รวมทุกประเภทในหน้าเดียว)</option>
               <option value="congeniality_talent">⭐ Miss Congeniality — รอบความสามารถพิเศษ (เกณฑ์ 5 ข้อ เต็ม 100 • จบแล้ว)</option>
             </select>
           </div>
@@ -2002,6 +2019,8 @@
 
         const catBar = document.getElementById('category-filter-bar');
         const roundsBar = document.getElementById('judge-rounds-bar');
+        const conCatTab = document.getElementById('tab-cat-congeniality');
+        const allCatTab = document.getElementById('tab-cat-all');
         const conBanner = document.getElementById('congeniality-banner');
         const speedBanner = document.getElementById('speed-banner');
         const top3Banner = document.getElementById('top3-banner');
@@ -2010,6 +2029,7 @@
         if (rId === 'congeniality') {
           if (roundsBar) roundsBar.classList.add('hidden');
           if (catBar) catBar.classList.add('hidden');
+          if (conCatTab) conCatTab.classList.remove('hidden');
           if (speedBanner) speedBanner.classList.add('hidden');
           if (top3Banner) top3Banner.classList.add('hidden');
           document.getElementById('btn-admin-judge-4')?.classList.add('hidden');
@@ -2027,6 +2047,8 @@
         } else if (rId === 'blackroom') {
           if (roundsBar) roundsBar.classList.remove('hidden');
           if (conBanner) conBanner.classList.add('hidden');
+          if (conCatTab) conCatTab.classList.remove('hidden');
+          if (allCatTab) allCatTab.textContent = 'ทั้งหมด (23 คน)';
           document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
           document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
           catBar.classList.remove('hidden');
@@ -2038,6 +2060,8 @@
         } else if (rId === 'grand') {
           if (roundsBar) roundsBar.classList.remove('hidden');
           if (conBanner) conBanner.classList.add('hidden');
+          if (conCatTab) conCatTab.classList.remove('hidden');
+          if (allCatTab) allCatTab.textContent = 'ทั้งหมด (23 คน)';
           document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
           document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
           catBar.classList.remove('hidden');
@@ -2049,6 +2073,8 @@
         } else if (rId === 'popular') {
           if (roundsBar) roundsBar.classList.remove('hidden');
           if (conBanner) conBanner.classList.add('hidden');
+          if (conCatTab) conCatTab.classList.remove('hidden');
+          if (allCatTab) allCatTab.textContent = 'ทั้งหมด (23 คน)';
           document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
           document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
           catBar.classList.remove('hidden');
@@ -2060,9 +2086,11 @@
         } else if (rId === 'speed') {
           if (roundsBar) roundsBar.classList.remove('hidden');
           if (conBanner) conBanner.classList.add('hidden');
+          if (conCatTab) conCatTab.classList.add('hidden');
+          if (allCatTab) allCatTab.textContent = 'ทั้งหมด (TOP 5 แยกประเภท)';
           document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
           document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
-          catBar.classList.add('hidden');
+          catBar.classList.remove('hidden');
           if (speedBanner) {
             speedBanner.classList.remove('hidden');
             speedBanner.classList.remove('view-animated');
@@ -2071,12 +2099,16 @@
           }
           if (top3Banner) top3Banner.classList.add('hidden');
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 5 Speed (50 คะแนน):</span> ภาษากาย (10) | ไหวพริบ/พูด (20) | มั่นใจ/แก้ปัญหา (10) | ชุดนักศึกษา (10)';
+          switchCategory(currentCategory === 'congeniality' ? 'all' : (currentCategory || 'all'));
+          return;
         } else if (rId === 'qa') {
           if (roundsBar) roundsBar.classList.remove('hidden');
           if (conBanner) conBanner.classList.add('hidden');
+          if (conCatTab) conCatTab.classList.add('hidden');
+          if (allCatTab) allCatTab.textContent = 'ทั้งหมด (TOP 3 แยกประเภท)';
           document.getElementById('btn-admin-judge-4')?.classList.remove('hidden');
           document.getElementById('btn-admin-judge-5')?.classList.remove('hidden');
-          catBar.classList.add('hidden');
+          catBar.classList.remove('hidden');
           if (speedBanner) speedBanner.classList.add('hidden');
           if (top3Banner) {
             top3Banner.classList.remove('hidden');
@@ -2085,6 +2117,8 @@
             top3Banner.classList.add('view-animated');
           }
           hintEl.innerHTML = '<span class="text-[#FFDE42] font-semibold">เกณฑ์รอบ TOP 3 ตัดสิน (100 คะแนน):</span> ภาษากาย(10) | ไหวพริบ(20) | มั่นใจ(20) | เสน่ห์ตัวแทนมหาลัย(20) | ประทับใจรวม(10) | ตรงคำถาม/ครบถ้วน(20)';
+          switchCategory(currentCategory === 'congeniality' ? 'all' : (currentCategory || 'all'));
+          return;
         }
 
         renderJudgeCards();
@@ -2130,7 +2164,8 @@
 
         // หากอยู่ในรอบ congeniality แต่คลิกหมวดอื่น ให้กลับมายังรอบห้องดำ
         if (currentRound === 'congeniality') {
-          currentRound = 'blackroom';
+          switchRound('blackroom');
+          return;
         }
 
         const roundsBar = document.getElementById('judge-rounds-bar');
@@ -2146,38 +2181,62 @@
         renderJudgeCards();
       }
 
+      const MAIN_CATEGORIES = ['miss', 'mister', 'queen', 'jumbo'];
+
       function getAutoTop5Local() {
-        const eligible = (allContestants || []).filter(c => c.category !== 'congeniality' && c.status !== 'resigned');
-        let allWithScores = eligible.map(c => {
-          let sum = 0;
-          for (let i = 1; i <= 5; i++) {
-            ['blackroom', 'grand'].forEach(rId => {
-              const rec = getMainRoundRecord(`judge${i}`, c.id, rId, c.category);
-              if (rec) sum += (rec.total_score || 0);
-            });
-          }
-          return { ...c, categoryName: CATEGORIES[c.category] || c.category, preTotal: sum };
+        const result = [];
+        MAIN_CATEGORIES.forEach(catKey => {
+          const eligible = (allContestants || []).filter(c => c.category === catKey && c.status !== 'resigned');
+          const withScores = eligible.map(c => {
+            let sum = 0;
+            for (let i = 1; i <= 5; i++) {
+              ['blackroom', 'grand'].forEach(rId => {
+                const rec = getMainRoundRecord(`judge${i}`, c.id, rId, c.category);
+                if (rec) sum += (rec.total_score || 0);
+              });
+            }
+            return { ...c, categoryName: CATEGORIES[c.category] || c.category, preTotal: sum };
+          });
+          withScores.sort((a, b) => {
+            if (b.preTotal !== a.preTotal) return b.preTotal - a.preTotal;
+            const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+            const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return (a.id || '').localeCompare(b.id || '');
+          });
+          withScores.slice(0, 5).forEach((c, idx) => {
+            result.push({ ...c, preRank: idx + 1 });
+          });
         });
-        allWithScores.sort((a, b) => b.preTotal - a.preTotal);
-        return allWithScores.slice(0, 5);
+        return result;
       }
 
       function getAutoTop3Local() {
         const top5 = (summaryData && summaryData.top5 && summaryData.top5.length > 0) ? summaryData.top5 : getAutoTop5Local();
-        const eligibleTop5 = (top5 || []).filter(c => c.status !== 'resigned');
-        let withSpeed = eligibleTop5.map(c => {
-          let sum = 0;
-          for (let i = 1; i <= 5; i++) {
-            const rec = (allScores || []).find(s => s.judge_id === `judge${i}` && s.contestant_id === c.id && s.round_id === 'speed');
-            if (rec) sum += (rec.total_score || 0);
-          }
-          return { ...c, speedTotal: sum };
+        const result = [];
+        MAIN_CATEGORIES.forEach(catKey => {
+          const eligibleTop5 = (top5 || []).filter(c => c.category === catKey && c.status !== 'resigned');
+          const withSpeed = eligibleTop5.map(c => {
+            let sum = 0;
+            for (let i = 1; i <= 5; i++) {
+              const rec = (allScores || []).find(s => s.judge_id === `judge${i}` && s.contestant_id === c.id && s.round_id === 'speed');
+              if (rec) sum += (rec.total_score || 0);
+            }
+            return { ...c, speedTotal: sum };
+          });
+          withSpeed.sort((a, b) => {
+            if (b.speedTotal !== a.speedTotal) return b.speedTotal - a.speedTotal;
+            if ((b.preTotal || 0) !== (a.preTotal || 0)) return (b.preTotal || 0) - (a.preTotal || 0);
+            const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+            const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return (a.id || '').localeCompare(b.id || '');
+          });
+          withSpeed.slice(0, 3).forEach((c, idx) => {
+            result.push({ ...c, speedRank: idx + 1 });
+          });
         });
-        withSpeed.sort((a, b) => {
-          if (b.speedTotal !== a.speedTotal) return b.speedTotal - a.speedTotal;
-          return (b.preTotal || 0) - (a.preTotal || 0);
-        });
-        return withSpeed.slice(0, 3);
+        return result;
       }
 
       // ==========================================
@@ -2200,11 +2259,17 @@
           } else {
             targetList = getAutoTop3Local();
           }
+          if (currentCategory && currentCategory !== 'all' && currentCategory !== 'congeniality') {
+            targetList = targetList.filter(c => c.category === currentCategory);
+          }
         } else if (isSpeed) {
           if (summaryData && summaryData.top5 && summaryData.top5.length > 0) {
             targetList = summaryData.top5;
           } else {
             targetList = getAutoTop5Local();
+          }
+          if (currentCategory && currentCategory !== 'all' && currentCategory !== 'congeniality') {
+            targetList = targetList.filter(c => c.category === currentCategory);
           }
         } else {
           // รอบคัดเลือกหลัก (ห้องดำ, Grand Opening, Popular Vote) แสดงเฉพาะ 4 หมวดหลัก (Miss, Mister, Queen, Jumbo)
@@ -2307,11 +2372,11 @@
                     </div>
                   ` : (isQa ? `
                     <div class="mt-1 px-3 py-1 bg-yellow-500/20 rounded-lg text-amber-300 text-xs border border-yellow-500/30 font-medium">
-                      👑 ผู้ผ่านเข้ารอบ TOP 3 ตัดสิน (ล้างคะแนนเดิม)
+                      👑 TOP 3 (${catTitle}) ${contestant.speedRank ? `• อันดับ ${contestant.speedRank} Speed` : ''}
                     </div>
                   ` : (isSpeed ? `
                     <div class="mt-1 px-3 py-1 bg-yellow-500/20 rounded-lg text-amber-300 text-xs border border-yellow-500/30 font-medium">
-                      ⚡ ผู้ผ่านเข้ารอบ TOP 5 (คะแนนสะสมรอบแรก: <strong>${contestant.preTotal || 0}</strong>)
+                      ⚡ TOP 5 (${catTitle}) • คะแนนรอบแรก: <strong>${contestant.preTotal || 0}</strong>
                     </div>
                   ` : ''))}
 
@@ -2852,123 +2917,175 @@
         }
       }
 
-      // วิว 1: 🏆 ผลการตัดสินชี้ขาดรอบชิง (TOP 3 & รางวัลทั้งหมด)
+      // วิว 1: 🏆 ผลการตัดสินชี้ขาดรอบชิง (TOP 3 แยกประเภท & รางวัลทั้งหมด)
       function renderAdminTop3Table() {
         const tbody = document.getElementById('top3-table-body');
         if (!tbody || !summaryData) return;
         tbody.innerHTML = '';
 
-        const list = summaryData.finalRankings || [];
-        if (list.length === 0) {
+        const selectedCat = document.getElementById('admin-top3-category-filter')?.value || 'all';
+        const byCat = summaryData.finalRankingsByCategory || {};
+        const fallbackList = summaryData.finalRankings || [];
+        const catKeysToRender = selectedCat === 'all' ? MAIN_CATEGORIES : [selectedCat];
+
+        const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
+        const rows = [];
+
+        catKeysToRender.forEach(catKey => {
+          const catList = (byCat[catKey] && byCat[catKey].length > 0)
+            ? byCat[catKey]
+            : fallbackList.filter(f => f.category === catKey);
+          if (catList.length === 0) return;
+
+          const catLabel = CATEGORIES[catKey] || catKey;
+          rows.push(`
+            <tr class="bg-gradient-to-r from-[#111FA2] via-[#1c2ec4] to-[#111FA2] border-y-2 border-[#FFDE42]/60">
+              <td colspan="11" class="px-4 py-2.5 font-extrabold text-[#FFDE42] text-sm tracking-wide">
+                <i class="fas fa-crown mr-1.5"></i> ประเภท ${escapeHtml(catLabel)} — ผลการตัดสิน TOP 3 & อันดับ 4–5 (${catList.length} คน)
+              </td>
+            </tr>
+          `);
+
+          const awardBadges = [
+            `<span class="px-2.5 py-1 rounded-lg bg-yellow-500 text-blue-950 font-extrabold text-xs shadow-md"><i class="fas fa-crown text-yellow-900 mr-1"></i> ชนะเลิศ ${escapeHtml(catLabel)}</span>`,
+            '<span class="px-2 py-0.5 rounded-lg bg-slate-300 text-slate-900 font-bold text-xs">🥈 รองชนะเลิศอันดับ 1</span>',
+            '<span class="px-2 py-0.5 rounded-lg bg-amber-700 text-amber-100 font-bold text-xs">🥉 รองชนะเลิศอันดับ 2</span>',
+            '<span class="px-2 py-0.5 rounded-lg bg-blue-900/60 text-gray-200 text-xs font-semibold">รองชนะเลิศอันดับ 3</span>',
+            '<span class="px-2 py-0.5 rounded-lg bg-blue-900/60 text-gray-200 text-xs font-semibold">รองชนะเลิศอันดับ 4</span>'
+          ];
+
+          catList.forEach((f, idx) => {
+            const isWinner = idx === 0;
+            const isTop3 = idx < 3;
+            const rankNum = f.finalRank || (idx + 1);
+            const imagePath = `/api/contestants/${encodeURIComponent(f.id)}/image`;
+
+            let qaJudgeCells = '';
+            judges.forEach(jId => {
+              if (isTop3) {
+                const qScore = f.qaJudges ? (f.qaJudges[jId] || 0) : 0;
+                qaJudgeCells += `<td class="px-2 py-3 text-center font-medium bg-blue-950/40 ${qScore > 0 ? 'text-blue-200 font-bold' : 'text-gray-600'}">${qScore}</td>`;
+              } else {
+                qaJudgeCells += `<td class="px-2 py-3 text-center font-medium bg-gray-900/40 text-gray-500 text-xs">-</td>`;
+              }
+            });
+
+            rows.push(`
+              <tr class="border-b border-[#5478FF]/20 ${isWinner ? 'bg-gradient-to-r from-yellow-500/20 via-amber-500/10 to-yellow-500/20' : 'hover:bg-[#5478FF]/10'} transition-colors">
+                <td class="px-3 py-3 text-center font-extrabold text-lg ${isWinner ? 'text-[#FFDE42]' : 'text-gray-300'}">
+                  ${rankNum === 1 ? '👑 1' : rankNum}
+                </td>
+                <td class="px-3 py-3 text-center">
+                  <img src="${imagePath}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-11 h-11 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
+                </td>
+                <td class="px-3 py-3">
+                  <div class="font-bold text-white text-sm">${escapeHtml(f.name)}</div>
+                  <div class="text-xs text-[#FFDE42]">${f.id} • ${escapeHtml(f.categoryName || catLabel)}</div>
+                  <div class="mt-1">${awardBadges[idx] || ''}</div>
+                  ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${f.id}', 'qa')" class="mt-1.5 px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[11px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบชิง</button>` : ''}
+                </td>
+                <td class="px-3 py-3 text-center text-xs font-semibold text-gray-200">${escapeHtml(f.categoryName || catLabel)}</td>
+                ${qaJudgeCells}
+                <td class="px-3 py-3 text-center font-bold text-[#FFDE42] bg-blue-950/60 border-l border-[#FFDE42]/30 text-base">
+                  ${isTop3 ? f.qaTotal : '<span class="text-xs text-gray-400 font-normal">(จบที่ Speed)</span>'}
+                </td>
+                <td class="px-3 py-3 text-center font-extrabold text-xl text-[#FFDE42] bg-[#111FA2]/80">
+                  ${isTop3 ? Number(f.avgScore || 0).toFixed(2) : '-'}
+                </td>
+              </tr>
+            `);
+          });
+        });
+
+        if (rows.length === 0) {
           tbody.innerHTML = '<tr><td colspan="11" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลการตัดสินรอบ TOP 3 (ต้องบันทึกคะแนนรอบ Speed ก่อน)</td></tr>';
           return;
         }
-
-        const awardBadges = [
-          '<span class="px-2.5 py-1 rounded-lg bg-yellow-500 text-blue-950 font-extrabold text-xs shadow-md"><i class="fas fa-crown text-yellow-900 mr-1"></i> THE WINNER FRESHY 2026</span>',
-          '<span class="px-2 py-0.5 rounded-lg bg-slate-300 text-slate-900 font-bold text-xs">🥈 รองชนะเลิศอันดับ 1</span>',
-          '<span class="px-2 py-0.5 rounded-lg bg-amber-700 text-amber-100 font-bold text-xs">🥉 รองชนะเลิศอันดับ 2</span>',
-          '<span class="px-2 py-0.5 rounded-lg bg-blue-900/60 text-gray-200 text-xs font-semibold">รองชนะเลิศอันดับ 3</span>',
-          '<span class="px-2 py-0.5 rounded-lg bg-blue-900/60 text-gray-200 text-xs font-semibold">รองชนะเลิศอันดับ 4</span>'
-        ];
-
-        const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
-
-        const rows = [];
-        list.forEach((f, idx) => {
-          const isWinner = idx === 0;
-          const isTop3 = idx < 3;
-          const imagePath = `/api/contestants/${encodeURIComponent(f.id)}/image`;
-
-          let qaJudgeCells = '';
-          judges.forEach(jId => {
-            if (isTop3) {
-              const qScore = f.qaJudges ? (f.qaJudges[jId] || 0) : 0;
-              qaJudgeCells += `<td class="px-2 py-3 text-center font-medium bg-blue-950/40 ${qScore > 0 ? 'text-blue-200 font-bold' : 'text-gray-600'}">${qScore}</td>`;
-            } else {
-              qaJudgeCells += `<td class="px-2 py-3 text-center font-medium bg-gray-900/40 text-gray-500 text-xs">-</td>`;
-            }
-          });
-
-          let row = `
-            <tr class="border-b border-[#5478FF]/20 ${isWinner ? 'bg-gradient-to-r from-yellow-500/20 via-amber-500/10 to-yellow-500/20' : 'hover:bg-[#5478FF]/10'} transition-colors">
-              <td class="px-3 py-3 text-center font-extrabold text-lg ${isWinner ? 'text-[#FFDE42]' : 'text-gray-300'}">
-                ${f.finalRank === 1 ? '👑 1' : f.finalRank}
-              </td>
-              <td class="px-3 py-3 text-center">
-                <img src="${imagePath}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-11 h-11 rounded-full object-cover border-2 ${isWinner ? 'border-[#FFDE42] shadow-[0_0_10px_rgba(255,222,66,0.6)]' : 'border-[#5478FF]'} mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
-              </td>
-              <td class="px-3 py-3">
-                <div class="font-bold text-white text-sm">${f.name}</div>
-                <div class="text-xs text-[#FFDE42]">${f.id} • ${f.categoryName}</div>
-                <div class="mt-1">${awardBadges[idx] || ''}</div>
-                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${f.id}', 'qa')" class="mt-1.5 px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[11px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนนรอบชิง</button>` : ''}
-              </td>
-              <td class="px-3 py-3 text-center text-xs font-semibold text-gray-200">${f.categoryName}</td>
-              ${qaJudgeCells}
-              <td class="px-3 py-3 text-center font-bold text-[#FFDE42] bg-blue-950/60 border-l border-[#FFDE42]/30 text-base">
-                ${isTop3 ? f.qaTotal : '<span class="text-xs text-gray-400 font-normal">(จบที่ Speed)</span>'}
-              </td>
-              <td class="px-3 py-3 text-center font-extrabold text-xl text-[#FFDE42] bg-[#111FA2]/80">
-                ${isTop3 ? f.avgScore.toFixed(2) : '-'}
-              </td>
-            </tr>
-          `;
-          rows.push(row);
-        });
         tbody.innerHTML = rows.join('');
       }
 
-      // วิว 2: ⚡ ผลคะแนนรอบ TOP 5 (Speed)
+      // วิว 2: ⚡ ผลคะแนนรอบ TOP 5 แยกประเภท (Speed)
       function renderAdminSpeedTable() {
         const tbody = document.getElementById('speed-table-body');
         if (!tbody || !summaryData) return;
         tbody.innerHTML = '';
 
-        const top5 = summaryData.top5 || [];
-        if (top5.length === 0) {
+        const selectedCat = document.getElementById('admin-speed-category-filter')?.value || 'all';
+        const byCat = summaryData.top5ByCategory || {};
+        const fallbackTop5 = summaryData.top5 || [];
+        const catKeysToRender = selectedCat === 'all' ? MAIN_CATEGORIES : [selectedCat];
+
+        const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
+        const rows = [];
+
+        catKeysToRender.forEach(catKey => {
+          const catTop5 = (byCat[catKey] && byCat[catKey].length > 0)
+            ? byCat[catKey]
+            : fallbackTop5.filter(f => f.category === catKey);
+          if (catTop5.length === 0) return;
+
+          const catLabel = CATEGORIES[catKey] || catKey;
+          rows.push(`
+            <tr class="bg-gradient-to-r from-amber-950/90 via-amber-900/70 to-amber-950/90 border-y-2 border-amber-400/60">
+              <td colspan="12" class="px-4 py-2.5 font-extrabold text-amber-300 text-sm tracking-wide">
+                <i class="fas fa-bolt text-[#FFDE42] mr-1.5"></i> ประเภท ${escapeHtml(catLabel)} — TOP 5 รอบ Speed (${catTop5.length} คน • คัด 3 อันดับแรกเข้า TOP 3)
+              </td>
+            </tr>
+          `);
+
+          catTop5.forEach((f, idx) => {
+            const isTop3 = idx < 3;
+            const rankNum = f.speedRank || (idx + 1);
+            const imagePath = `/api/contestants/${encodeURIComponent(f.id)}/image`;
+
+            let speedCells = '';
+            judges.forEach(jId => {
+              const score = f.speedJudges ? (f.speedJudges[jId] || 0) : 0;
+              speedCells += `<td class="px-2 py-3 text-center font-medium bg-amber-950/30 ${score > 0 ? 'text-amber-200 font-bold' : 'text-gray-600'}">${score}</td>`;
+            });
+
+            rows.push(`
+              <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop3 ? 'bg-amber-500/10' : ''}">
+                <td class="px-3 py-3 text-center font-extrabold text-base ${isTop3 ? 'text-amber-300' : 'text-gray-400'}">${rankNum}</td>
+                <td class="px-3 py-3 text-center">
+                  <img src="${imagePath}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
+                </td>
+                <td class="px-3 py-3">
+                  <div class="font-bold text-white text-sm">${escapeHtml(f.name)}</div>
+                  <div class="text-xs text-[#FFDE42]">${f.id} • ${escapeHtml(f.categoryName || catLabel)}</div>
+                  ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${f.id}', 'speed')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนน Speed</button>` : ''}
+                </td>
+                <td class="px-3 py-3 text-center text-xs font-semibold text-gray-200">${escapeHtml(f.categoryName || catLabel)}</td>
+                <td class="px-3 py-3 text-center font-bold text-blue-200 bg-blue-950/30">${f.preTotal || 0}</td>
+                ${speedCells}
+                <td class="px-3 py-3 text-center font-bold text-[#FFDE42] bg-amber-950/60 border-l border-[#FFDE42]/30 text-base">${f.speedTotal || 0}</td>
+                <td class="px-3 py-3 text-center">
+                  ${isTop3
+                ? `<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-1"></i> ผ่านเข้า TOP 3</span>`
+                : `<span class="px-2 py-0.5 rounded-full bg-blue-900/60 text-gray-300 text-xs font-semibold whitespace-nowrap">${idx === 3 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4'}</span>`}
+                </td>
+              </tr>
+            `);
+          });
+        });
+
+        if (rows.length === 0) {
           tbody.innerHTML = '<tr><td colspan="12" class="text-center py-8 text-gray-400">ยังไม่มีข้อมูลรอบ TOP 5 (ต้องมีคะแนน 2 รอบแรกก่อน)</td></tr>';
           return;
         }
-
-        const judges = ['judge1', 'judge2', 'judge3', 'judge4', 'judge5'];
-
-        const rows = [];
-        top5.forEach((f, idx) => {
-          const isTop3 = idx < 3;
-          const imagePath = `/api/contestants/${encodeURIComponent(f.id)}/image`;
-
-          let speedCells = '';
-          judges.forEach(jId => {
-            const score = f.speedJudges ? (f.speedJudges[jId] || 0) : 0;
-            speedCells += `<td class="px-2 py-3 text-center font-medium bg-amber-950/30 ${score > 0 ? 'text-amber-200 font-bold' : 'text-gray-600'}">${score}</td>`;
-          });
-
-          let row = `
-            <tr class="border-b border-[#5478FF]/20 hover:bg-[#5478FF]/10 transition-colors ${isTop3 ? 'bg-amber-500/10' : ''}">
-              <td class="px-3 py-3 text-center font-extrabold text-base ${isTop3 ? 'text-amber-300' : 'text-gray-400'}">${idx + 1}</td>
-              <td class="px-3 py-3 text-center">
-                <img src="${imagePath}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src=getPlaceholderSvgUri('${f.id}');" class="w-10 h-10 rounded-full object-cover border border-[#5478FF] mx-auto cursor-pointer hover:scale-110 transition-transform" onclick="openImageModal('${f.id}')" title="คลิกเพื่อดูรูปภาพขนาดใหญ่">
-              </td>
-              <td class="px-3 py-3">
-                <div class="font-bold text-white text-sm">${f.name}</div>
-                <div class="text-xs text-[#FFDE42]">${f.id} • ${f.categoryName}</div>
-                ${currentUser === 'admin2' ? `<button type="button" onclick="adminQuickEditContestant('${f.id}', 'speed')" class="mt-1 px-2.5 py-0.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold transition flex items-center gap-1 active:scale-95"><i class="fas fa-edit"></i> แก้ไขคะแนน Speed</button>` : ''}
-              </td>
-              <td class="px-3 py-3 text-center text-xs font-semibold text-gray-200">${f.categoryName}</td>
-              <td class="px-3 py-3 text-center font-bold text-blue-200 bg-blue-950/30">${f.preTotal || 0}</td>
-              ${speedCells}
-              <td class="px-3 py-3 text-center font-bold text-[#FFDE42] bg-amber-950/60 border-l border-[#FFDE42]/30 text-base">${f.speedTotal || 0}</td>
-              <td class="px-3 py-3 text-center">
-                ${isTop3
-              ? '<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold whitespace-nowrap"><i class="fas fa-crown text-yellow-300 mr-1"></i> ผ่านเข้า TOP 3</span>'
-              : `<span class="px-2 py-0.5 rounded-full bg-blue-900/60 text-gray-300 text-xs font-semibold whitespace-nowrap">${idx === 3 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4'}</span>`}
-              </td>
-            </tr>
-          `;
-          rows.push(row);
-        });
         tbody.innerHTML = rows.join('');
+      }
+
+      function printCurrentTop3ScoreSheet() {
+        const curFilter = document.getElementById('admin-top3-category-filter')?.value || 'all';
+        const category = curFilter === 'all' ? 'split_categories' : curFilter;
+        printStyledScoreSheets({ scope: 'qa', category, initialMode: 'filled' });
+      }
+
+      function printCurrentSpeedScoreSheet() {
+        const curFilter = document.getElementById('admin-speed-category-filter')?.value || 'all';
+        const category = curFilter === 'all' ? 'split_categories' : curFilter;
+        printStyledScoreSheets({ scope: 'speed', category, initialMode: 'filled' });
       }
 
       // ==================================================
@@ -3786,6 +3903,12 @@
           if (adminCurrentView === 'pre') {
             const curFilter = document.getElementById('admin-category-filter')?.value || 'all';
             catEl.value = curFilter === 'all' ? 'split_categories' : curFilter;
+          } else if (adminCurrentView === 'speed') {
+            const curFilter = document.getElementById('admin-speed-category-filter')?.value || 'all';
+            catEl.value = curFilter === 'all' ? 'split_categories' : curFilter;
+          } else if (adminCurrentView === 'top3') {
+            const curFilter = document.getElementById('admin-top3-category-filter')?.value || 'all';
+            catEl.value = curFilter === 'all' ? 'split_categories' : curFilter;
           } else {
             catEl.value = 'split_categories';
           }
@@ -3820,17 +3943,19 @@
         const hintEl = document.getElementById('print-score-summary-hint');
         const btnLabel = document.getElementById('print-score-btn-label');
 
-        const needsCat = ['blackroom', 'grand', 'popular', 'pre_summary', 'all_pack'].includes(scope);
+        const needsCat = ['blackroom', 'grand', 'popular', 'pre_summary', 'speed', 'qa', 'all_pack'].includes(scope);
         if (catWrap) catWrap.classList.toggle('hidden', !needsCat);
 
         const activeCats = Object.keys(CATEGORIES).filter(k => (allContestants || []).some(c => c.category === k));
+        const activeMainCats = MAIN_CATEGORIES.filter(k => (allContestants || []).some(c => c.category === k));
         const catPageCount = cat === 'split_categories' ? Math.max(1, activeCats.length || 5) : 1;
+        const mainCatPageCount = cat === 'split_categories' ? Math.max(1, activeMainCats.length || 4) : 1;
 
         let pages = 1;
         let desc = '';
         if (scope === 'overall') {
           pages = 1;
-          desc = 'พิมพ์ <b>ใบสรุปคะแนนรวมจากรอบทั้งหมด</b> (ตารางตัดสิน TOP 3 / TOP 5 + ตารางสรุปคะแนนรวมทุกรอบของผู้เข้าประกวดทั้งหมด) พร้อมช่องลงนามกรรมการ 5 ท่าน';
+          desc = 'พิมพ์ <b>ใบสรุปคะแนนรวมจากรอบทั้งหมด</b> (ตารางตัดสิน TOP 3 / TOP 5 แยกประเภท + ตารางสรุปคะแนนรวมทุกรอบของผู้เข้าประกวดทั้งหมด) พร้อมช่องลงนามกรรมการ 5 ท่าน';
         } else if (scope === 'pre_summary') {
           pages = catPageCount;
           desc = `พิมพ์ <b>ใบคะแนนรวม 3 รอบคัดเลือก (ห้องดำ + Grand Opening + Popular Vote = เต็ม 125)</b> จำนวน <b>${pages} ชุด</b> พร้อมตารางคะแนนรายรอบและตารางกรรมการ ก.1–ก.5`;
@@ -3842,14 +3967,14 @@
           else rName = 'รอบที่ 3: Popular Vote (เต็ม 50)';
           desc = `พิมพ์ <b>ใบคะแนน${rName}</b> จำนวน <b>${pages} ชุด</b> แยกตารางเกณฑ์ย่อย (÷5) และตารางอ้างอิงกรรมการ ก.1–ก.5`;
         } else if (scope === 'speed') {
-          pages = 1;
-          desc = 'พิมพ์ <b>ใบคะแนนรอบที่ 4: TOP 5 Speed (เต็ม 50)</b> พร้อมตารางเกณฑ์ย่อย 4 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และสถานะผ่านเข้า TOP 3';
+          pages = mainCatPageCount;
+          desc = `พิมพ์ <b>ใบคะแนนรอบที่ 4: TOP 5 Speed แยกประเภท (เต็ม 50)</b> จำนวน <b>${pages} ชุด</b> พร้อมตารางเกณฑ์ย่อย 4 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และสถานะผ่านเข้า TOP 3`;
         } else if (scope === 'qa') {
-          pages = 1;
-          desc = 'พิมพ์ <b>ใบคะแนนรอบที่ 5: TOP 3 ตอบคำถามชี้ขาด (เต็ม 100)</b> พร้อมตารางเกณฑ์ย่อย 6 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และรางวัลเกียรติยศ';
+          pages = mainCatPageCount;
+          desc = `พิมพ์ <b>ใบคะแนนรอบที่ 5: TOP 3 ตอบคำถามชี้ขาด แยกประเภท (เต็ม 100)</b> จำนวน <b>${pages} ชุด</b> พร้อมตารางเกณฑ์ย่อย 6 ข้อ (÷5) ตารางกรรมการ ก.1–ก.5 และรางวัลเกียรติยศ`;
         } else if (scope === 'all_pack') {
-          pages = (catPageCount * 4) + 3;
-          desc = `พิมพ์ <b>ครบชุดทั้งหมด (${pages} ชุด)</b> — รอบห้องดำ, Grand Opening, Popular Vote, รวม 3 รอบคัดเลือก, รอบ TOP 5 Speed, รอบ TOP 3 ตอบคำถาม และใบสรุปคะแนนรวมทุกรอบอย่างเป็นทางการ`;
+          pages = (catPageCount * 4) + (mainCatPageCount * 2) + 1;
+          desc = `พิมพ์ <b>ครบชุดทั้งหมด (${pages} ชุด)</b> — รอบห้องดำ, Grand Opening, Popular Vote, รวม 3 รอบคัดเลือก, รอบ TOP 5 Speed (แยกประเภท), รอบ TOP 3 ตอบคำถาม (แยกประเภท) และใบสรุปคะแนนรวมทุกรอบอย่างเป็นทางการ`;
         }
 
         if (hintEl) hintEl.innerHTML = desc;
@@ -3899,10 +4024,11 @@
           return (a.id || '').localeCompare(b.id || '');
         });
 
-        const getCategoryGroups = () => {
+        const getCategoryGroups = (excludeCon = false) => {
+          const catEntries = Object.entries(CATEGORIES).filter(([k]) => !excludeCon || k !== 'congeniality');
           if (category === 'split_categories') {
             const groups = [];
-            Object.entries(CATEGORIES).forEach(([catKey, catName]) => {
+            catEntries.forEach(([catKey, catName]) => {
               const list = (allContestants || []).filter(c => c.category === catKey);
               if (list.length > 0) {
                 groups.push({ catKey, badge: `ประเภท ${catName}`, contestants: list, showCatCol: false });
@@ -3910,7 +4036,10 @@
             });
             return groups;
           } else if (category === 'all') {
-            return [{ catKey: 'all', badge: 'รวมทุกประเภท (5 หมวด)', contestants: allContestants || [], showCatCol: true }];
+            const list = excludeCon
+              ? (allContestants || []).filter(c => c.category !== 'congeniality')
+              : (allContestants || []);
+            return [{ catKey: 'all', badge: excludeCon ? 'รวมทุกประเภท (4 หมวดหลัก)' : 'รวมทุกประเภท (5 หมวด)', contestants: list, showCatCol: true }];
           } else {
             const catName = CATEGORIES[category] || category;
             const list = (allContestants || []).filter(c => c.category === category);
@@ -4034,6 +4163,11 @@
           });
 
           computed.sort((a, b) => {
+            if (showCatCol && (isSpeed || isQa)) {
+              const ordA = categoryOrder[a.c.category] || 99;
+              const ordB = categoryOrder[b.c.category] || 99;
+              if (ordA !== ordB) return ordA - ordB;
+            }
             if (b.total5 !== a.total5) return b.total5 - a.total5;
             return (a.c.id || '').localeCompare(b.c.id || '');
           });
@@ -4053,18 +4187,26 @@
             `<th style="width:${critColW}%;">ข้อ ${i + 1}<div class="th-sub">${escapePrintHtml(cr.short)} (${cr.max})</div></th>`
           ).join('');
 
+          const catCounters = {};
           const t1Filled = computed.length > 0 ? computed.map((item, idx) => {
             const { c, total5, finalAvg, critSums, critAvgs } = item;
             const hasScore = total5 > 0;
-            const isHighlightRow = (isQa && idx === 0 && hasScore) || (isSpeed && idx < 3 && hasScore) || (!isQa && !isSpeed && idx === 0 && hasScore);
+            const catKey = c.category || 'other';
+            catCounters[catKey] = (catCounters[catKey] || 0) + 1;
+            const inCatIdx = catCounters[catKey] - 1;
+            const displayRank = (showCatCol && (isSpeed || isQa))
+              ? (isQa ? (c.finalRank || (inCatIdx + 1)) : (c.speedRank || (inCatIdx + 1)))
+              : (idx + 1);
+            const isTop3InGroup = isSpeed ? (c.isTop3 !== undefined ? c.isTop3 : (displayRank <= 3)) : (displayRank <= 3);
+            const isHighlightRow = (isQa && displayRank === 1 && hasScore) || (isSpeed && isTop3InGroup && hasScore) || (!isQa && !isSpeed && idx === 0 && hasScore);
             const rawName = c.name || '';
             const nick = (c.nickname && !rawName.includes(c.nickname)) ? ` (${c.nickname})` : '';
             const catLabel = c.categoryName || CATEGORIES[c.category] || c.category || '';
 
             let statusText = '-';
             if (hasScore) {
-              if (isQa) statusText = qaAwards[idx] || '-';
-              else if (isSpeed) statusText = idx < 3 ? '👑 เข้า TOP 3' : (idx === 3 ? 'รองฯ อันดับ 3' : 'รองฯ อันดับ 4');
+              if (isQa) statusText = qaAwards[displayRank - 1] || '-';
+              else if (isSpeed) statusText = isTop3InGroup ? '👑 เข้า TOP 3' : (displayRank === 4 ? 'รองฯ อันดับ 3' : 'รองฯ อันดับ 4');
               else statusText = top5IdSet.has(c.id) ? '★ TOP 5' : `อันดับ ${idx + 1}`;
             }
 
@@ -4072,7 +4214,7 @@
 
             return `
               <tr class="${isHighlightRow ? 'row-winner' : ''}">
-                <td class="bold">${idx + 1}</td>
+                <td class="bold">${displayRank}</td>
                 <td class="col-id">${escapePrintHtml(c.id)}</td>
                 <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
                 ${showCatCol ? `<td class="cat-mini">${escapePrintHtml(catLabel)}</td>` : ''}
@@ -4399,57 +4541,82 @@
           const finalRankMap = new Map();
           (finalRankingsList || []).forEach((f, idx) => { finalRankMap.set(f.id, { ...f, _idx: idx }); });
 
-          const t1Filled = finalRankingsList.length > 0 ? finalRankingsList.map((f, idx) => {
-            const isWinner = idx === 0 && (f.qaTotal || 0) > 0;
-            const isTop3 = idx < 3;
-            const rawName = f.name || '';
-            const nick = (f.nickname && !rawName.includes(f.nickname)) ? ` (${f.nickname})` : '';
-            const catLabel = f.categoryName || CATEGORIES[f.category] || f.category || '';
-            const cleanAward = (f.award || '').replace(/^[👑🥈🥉]\s*/, '');
-            return `
-              <tr class="${isWinner ? 'row-winner' : ''}">
-                <td class="bold">${isWinner ? '👑 1' : (f.finalRank || idx + 1)}</td>
-                <td class="col-id">${escapePrintHtml(f.id)}</td>
-                <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
-                <td class="cat-mini">${escapePrintHtml(catLabel)}</td>
-                <td>${f.preTotal || 0}</td>
-                <td>${f.speedTotal || 0}</td>
-                <td>${isTop3 ? (f.qaJudges?.judge1 ?? '-') : '-'}</td>
-                <td>${isTop3 ? (f.qaJudges?.judge2 ?? '-') : '-'}</td>
-                <td>${isTop3 ? (f.qaJudges?.judge3 ?? '-') : '-'}</td>
-                <td>${isTop3 ? (f.qaJudges?.judge4 ?? '-') : '-'}</td>
-                <td>${isTop3 ? (f.qaJudges?.judge5 ?? '-') : '-'}</td>
-                <td class="bold">${isTop3 ? (f.qaTotal || 0) : '-'}</td>
-                <td class="col-final">${isTop3 && (f.qaTotal || 0) > 0 ? Number(f.avgScore || 0).toFixed(2) : '-'}</td>
-                <td class="col-award">${escapePrintHtml(cleanAward || '-')}</td>
+          const groupedT1Rows = [];
+          MAIN_CATEGORIES.forEach(catKey => {
+            const catFinalists = (summaryData?.finalRankingsByCategory?.[catKey]?.length > 0)
+              ? summaryData.finalRankingsByCategory[catKey]
+              : finalRankingsList.filter(f => f.category === catKey);
+            if (catFinalists.length === 0) return;
+            const catLabel = CATEGORIES[catKey] || catKey;
+            groupedT1Rows.push(`
+              <tr style="background:#eef2ff;">
+                <td colspan="14" class="text-left bold" style="color:#111FA2;">ประเภท ${escapePrintHtml(catLabel)} (TOP 5 / TOP 3)</td>
               </tr>
-            `;
-          }).join('') : `<tr><td colspan="14" style="padding:14px; color:#666;">ยังไม่มีข้อมูลคะแนนรอบชิงชนะเลิศ (สามารถสลับไปใช้โหมด "ใบเปล่า" ด้านบนได้)</td></tr>`;
+            `);
+            catFinalists.forEach((f, cIdx) => {
+              const rankInCat = f.finalRank || (cIdx + 1);
+              const isWinner = rankInCat === 1 && (f.qaTotal || 0) > 0;
+              const isTop3 = rankInCat <= 3;
+              const rawName = f.name || '';
+              const nick = (f.nickname && !rawName.includes(f.nickname)) ? ` (${f.nickname})` : '';
+              const cleanAward = (f.award || '').replace(/^[👑🥈🥉]\s*/, '');
+              groupedT1Rows.push(`
+                <tr class="${isWinner ? 'row-winner' : ''}">
+                  <td class="bold">${isWinner ? '👑 1' : rankInCat}</td>
+                  <td class="col-id">${escapePrintHtml(f.id)}</td>
+                  <td class="text-left bold">${escapePrintHtml(rawName + nick)}</td>
+                  <td class="cat-mini">${escapePrintHtml(catLabel)}</td>
+                  <td>${f.preTotal || 0}</td>
+                  <td>${f.speedTotal || 0}</td>
+                  <td>${isTop3 ? (f.qaJudges?.judge1 ?? '-') : '-'}</td>
+                  <td>${isTop3 ? (f.qaJudges?.judge2 ?? '-') : '-'}</td>
+                  <td>${isTop3 ? (f.qaJudges?.judge3 ?? '-') : '-'}</td>
+                  <td>${isTop3 ? (f.qaJudges?.judge4 ?? '-') : '-'}</td>
+                  <td>${isTop3 ? (f.qaJudges?.judge5 ?? '-') : '-'}</td>
+                  <td class="bold">${isTop3 ? (f.qaTotal || 0) : '-'}</td>
+                  <td class="col-final">${isTop3 && (f.qaTotal || 0) > 0 ? Number(f.avgScore || 0).toFixed(2) : '-'}</td>
+                  <td class="col-award">${escapePrintHtml(cleanAward || '-')}</td>
+                </tr>
+              `);
+            });
+          });
+          const t1Filled = groupedT1Rows.length > 0
+            ? groupedT1Rows.join('')
+            : `<tr><td colspan="14" style="padding:14px; color:#666;">ยังไม่มีข้อมูลคะแนนรอบชิงชนะเลิศ (สามารถสลับไปใช้โหมด "ใบเปล่า" ด้านบนได้)</td></tr>`;
 
           const blankAwards = ['ชนะเลิศ (The Winner)', 'รองชนะเลิศอันดับ 1', 'รองชนะเลิศอันดับ 2', 'รองชนะเลิศอันดับ 3', 'รองชนะเลิศอันดับ 4'];
-          const t1BlankNames = blankAwards.map((lbl, idx) => {
-            const f = finalRankingsList[idx];
-            return `
+          const t1BlankNames = MAIN_CATEGORIES.map(catKey => {
+            const catLabel = CATEGORIES[catKey] || catKey;
+            const catFinalists = (summaryData?.finalRankingsByCategory?.[catKey]?.length > 0)
+              ? summaryData.finalRankingsByCategory[catKey]
+              : finalRankingsList.filter(f => f.category === catKey);
+            return blankAwards.map((lbl, idx) => {
+              const f = catFinalists[idx];
+              return `
+                <tr class="row-blank">
+                  <td class="bold">${idx + 1}</td>
+                  <td class="col-id">${f ? escapePrintHtml(f.id) : ''}</td>
+                  <td class="text-left bold">${f ? escapePrintHtml(f.name || '') : ''}</td>
+                  <td class="cat-mini">${escapePrintHtml(catLabel)}</td>
+                  <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                  <td class="col-final"></td>
+                  <td style="color:#64748b; font-size:9px;">${lbl}</td>
+                </tr>
+              `;
+            }).join('');
+          }).join('');
+
+          const t1BlankAll = MAIN_CATEGORIES.map(catKey => {
+            const catLabel = CATEGORIES[catKey] || catKey;
+            return blankAwards.map((lbl, idx) => `
               <tr class="row-blank">
-                <td class="bold">${idx + 1}</td>
-                <td class="col-id">${f ? escapePrintHtml(f.id) : ''}</td>
-                <td class="text-left bold">${f ? escapePrintHtml(f.name || '') : ''}</td>
-                <td class="cat-mini">${f ? escapePrintHtml(f.categoryName || CATEGORIES[f.category] || '') : ''}</td>
+                <td class="bold">${idx + 1}</td><td></td><td class="text-left"></td><td class="cat-mini">${escapePrintHtml(catLabel)}</td>
                 <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                 <td class="col-final"></td>
                 <td style="color:#64748b; font-size:9px;">${lbl}</td>
               </tr>
-            `;
+            `).join('');
           }).join('');
-
-          const t1BlankAll = blankAwards.map((lbl, idx) => `
-            <tr class="row-blank">
-              <td class="bold">${idx + 1}</td><td></td><td class="text-left"></td><td></td>
-              <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-              <td class="col-final"></td>
-              <td style="color:#64748b; font-size:9px;">${lbl}</td>
-            </tr>
-          `).join('');
 
           // ตารางที่ 2: ภาพรวมคะแนนทุกรอบของผู้เข้าประกวดทั้งหมด (29 คน)
           const allOverview = (allContestants || []).map(c => {
@@ -4486,6 +4653,9 @@
           });
 
           allOverview.sort((a, b) => {
+            const ordA = categoryOrder[a.c.category] || 99;
+            const ordB = categoryOrder[b.c.category] || 99;
+            if (ordA !== ordB) return ordA - ordB;
             if (a.finalRank !== b.finalRank) return a.finalRank - b.finalRank;
             if (b.preTotal !== a.preTotal) return b.preTotal - a.preTotal;
             return (a.c.id || '').localeCompare(b.c.id || '');
@@ -4547,13 +4717,13 @@
             subBlank: 'แบบฟอร์มใบสรุปคะแนนรวมทุกรอบ — ใบคะแนนเปล่าสำหรับกรอกด้วยมือ (กรรมการ 5 ท่าน ก.1–ก.5)',
             bodyHtml: `
               <div class="formula-box">
-                <strong>โครงสร้างคะแนน 5 รอบหลัก (กรรมการ 5 ท่าน ก.1–ก.5):</strong>
-                <strong>รอบคัดเลือก</strong> = ห้องดำ (25×5 = 125) + Grand Opening (50×5 = 250) + Popular Vote (50×5 = 250) ➔ รวม <strong>625</strong> คัด <strong>TOP 5</strong>
-                • <strong>รอบ Speed</strong> (50×5 = 250) คัด <strong>TOP 3</strong>
-                • <strong>รอบชิง TOP 3 ตอบคำถาม</strong> (ล้างคะแนนเดิม • 100×5 = 500 ➔ ÷ 5 = <strong>คะแนนสุทธิเต็ม 100</strong> ตัดสิน The Winner)
+                <strong>โครงสร้างคะแนน 5 รอบหลัก (กรรมการ 5 ท่าน ก.1–ก.5 • คัด TOP 5 / TOP 3 แยกแต่ละประเภท):</strong>
+                <strong>รอบคัดเลือก</strong> = ห้องดำ (25×5 = 125) + Grand Opening (50×5 = 250) + Popular Vote (50×5 = 250) ➔ คัด <strong>TOP 5 แยกประเภท</strong> (ประเภทละ 5 คน)
+                • <strong>รอบ Speed</strong> (50×5 = 250) คัด <strong>TOP 3 แยกประเภท</strong> (ประเภทละ 3 คน)
+                • <strong>รอบชิง TOP 3 ตอบคำถาม</strong> (ล้างคะแนนเดิม • 100×5 = 500 ➔ ÷ 5 = <strong>คะแนนสุทธิเต็ม 100</strong> ตัดสินชนะเลิศแต่ละประเภท)
               </div>
 
-              <div class="section-heading">1. ตารางผลการตัดสินชี้ขาดอย่างเป็นทางการ (TOP 5 & TOP 3 ตอบคำถามตัดสิน The Winner)</div>
+              <div class="section-heading">1. ตารางผลการตัดสินชี้ขาดอย่างเป็นทางการ (TOP 5 & TOP 3 ตอบคำถาม แยกตามประเภท)</div>
               <table class="table-compact">
                 <thead>
                   <tr>
@@ -4606,16 +4776,23 @@
 
         // รวบรวมหน้าทั้งหมดตาม scope ที่เลือก
         const sheets = [];
-        const catGroups = getCategoryGroups();
+        const catGroups = getCategoryGroups(false);
+        const mainCatGroups = getCategoryGroups(true);
 
         if (scope === 'blackroom' || scope === 'grand' || scope === 'popular') {
           catGroups.forEach(g => sheets.push(buildSingleRoundSheet(scope, g.contestants, g.badge, g.showCatCol)));
         } else if (scope === 'pre_summary') {
           catGroups.forEach(g => sheets.push(buildPreSummarySheet(g.contestants, g.badge, g.showCatCol)));
         } else if (scope === 'speed') {
-          sheets.push(buildSingleRoundSheet('speed', top5List, 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย (TOP 5)', true));
+          mainCatGroups.forEach(g => {
+            const list = g.catKey === 'all' ? top5List : top5List.filter(x => x.category === g.catKey);
+            sheets.push(buildSingleRoundSheet('speed', list, g.catKey === 'all' ? 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย แยกประเภท (ทุกหมวด)' : `ผู้ผ่านเข้ารอบ TOP 5 (${g.badge})`, g.showCatCol));
+          });
         } else if (scope === 'qa') {
-          sheets.push(buildSingleRoundSheet('qa', top3List, 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย (TOP 3)', true));
+          mainCatGroups.forEach(g => {
+            const list = g.catKey === 'all' ? top3List : top3List.filter(x => x.category === g.catKey);
+            sheets.push(buildSingleRoundSheet('qa', list, g.catKey === 'all' ? 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย แยกประเภท (ทุกหมวด)' : `ผู้ผ่านเข้ารอบ TOP 3 (${g.badge})`, g.showCatCol));
+          });
         } else if (scope === 'overall') {
           sheets.push(buildOverallSummarySheet());
         } else if (scope === 'all_pack') {
@@ -4623,8 +4800,14 @@
           catGroups.forEach(g => sheets.push(buildSingleRoundSheet('grand', g.contestants, g.badge, g.showCatCol)));
           catGroups.forEach(g => sheets.push(buildSingleRoundSheet('popular', g.contestants, g.badge, g.showCatCol)));
           catGroups.forEach(g => sheets.push(buildPreSummarySheet(g.contestants, g.badge, g.showCatCol)));
-          sheets.push(buildSingleRoundSheet('speed', top5List, 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย (TOP 5)', true));
-          sheets.push(buildSingleRoundSheet('qa', top3List, 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย (TOP 3)', true));
+          mainCatGroups.forEach(g => {
+            const list = g.catKey === 'all' ? top5List : top5List.filter(x => x.category === g.catKey);
+            sheets.push(buildSingleRoundSheet('speed', list, g.catKey === 'all' ? 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย แยกประเภท (ทุกหมวด)' : `ผู้ผ่านเข้ารอบ TOP 5 (${g.badge})`, g.showCatCol));
+          });
+          mainCatGroups.forEach(g => {
+            const list = g.catKey === 'all' ? top3List : top3List.filter(x => x.category === g.catKey);
+            sheets.push(buildSingleRoundSheet('qa', list, g.catKey === 'all' ? 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย แยกประเภท (ทุกหมวด)' : `ผู้ผ่านเข้ารอบ TOP 3 (${g.badge})`, g.showCatCol));
+          });
           sheets.push(buildOverallSummarySheet());
         }
 
@@ -5007,6 +5190,10 @@
             const nonEmptyCats = Object.keys(CATEGORIES).filter(k => (allContestants || []).some(c => c.category === k));
             const activeCats = nonEmptyCats.length > 0 ? nonEmptyCats : Object.keys(CATEGORIES);
             totalPages = activeCats.length * pagesPerNormalCat;
+          } else if (selectedCat === 'finalists_split') {
+            const nonEmptyMainCats = MAIN_CATEGORIES.filter(k => (allContestants || []).some(c => c.category === k));
+            const activeMainCats = nonEmptyMainCats.length > 0 ? nonEmptyMainCats : MAIN_CATEGORIES;
+            totalPages = activeMainCats.length * pagesPerNormalCat;
           } else {
             totalPages = pagesPerNormalCat;
           }
@@ -5029,7 +5216,11 @@
           } else if (selectedRounds.length === 0) {
             hintEl.innerHTML = 'กรุณาติ๊กเลือกอย่างน้อย <b>1 รอบการประกวด</b> เพื่อสร้างใบเกณฑ์สำหรับพิมพ์';
           } else {
-            const catText = selectedCat === 'all' ? 'ทุกประเภท (5 หมวด วันจริง)' : (selectedCat === 'finalists' ? 'ผู้ผ่านเข้ารอบ' : `ประเภท ${CATEGORIES[selectedCat] || selectedCat}`);
+            const catText = selectedCat === 'all'
+              ? 'ทุกประเภท (5 หมวด วันจริง)'
+              : (selectedCat === 'finalists_split'
+                  ? 'ผู้ผ่านเข้ารอบ (แยกหน้าทีละประเภท)'
+                  : (selectedCat === 'finalists' ? 'ผู้ผ่านเข้ารอบ (รวมทุกประเภท)' : `ประเภท ${CATEGORIES[selectedCat] || selectedCat}`));
             const layoutNote = selectedRounds.length > 1
               ? (layout === 'paired' ? ' (จัดรวม 2 รอบ/หน้า)' : (layout === 'summary_one_page' ? ' (ตารางสรุปรวมทุกรอบใน 1 หน้า)' : ' (แยกหน้าละ 1 รอบ)'))
               : '';
@@ -5063,10 +5254,12 @@
             catSelect.value = curFilter;
             setPrintRoundsChecked(adminPreRoundView === 'all' ? ['blackroom', 'grand'] : [adminPreRoundView || 'blackroom']);
           } else if (adminCurrentView === 'speed') {
-            catSelect.value = 'finalists';
+            const curFilter = document.getElementById('admin-speed-category-filter')?.value || 'all';
+            catSelect.value = curFilter === 'all' ? 'finalists_split' : curFilter;
             setPrintRoundsChecked(['speed']);
           } else if (adminCurrentView === 'top3') {
-            catSelect.value = 'finalists';
+            const curFilter = document.getElementById('admin-top3-category-filter')?.value || 'all';
+            catSelect.value = curFilter === 'all' ? 'finalists_split' : curFilter;
             setPrintRoundsChecked(['qa']);
           } else {
             catSelect.value = 'all';
@@ -5140,12 +5333,28 @@
               });
             }
           });
+        } else if (selectedCat === 'finalists_split') {
+          const isOnlyQa = selectedRounds.length === 1 && selectedRounds[0] === 'qa';
+          MAIN_CATEGORIES.forEach(catKey => {
+            const catName = CATEGORIES[catKey] || catKey;
+            const srcList = isOnlyQa ? top3List : top5List;
+            const list = srcList.filter(c => c.category === catKey);
+            if (list.length > 0) {
+              catGroups.push({
+                catKey,
+                title: isOnlyQa ? `ประเภท ${catName} (TOP 3)` : `ประเภท ${catName} (TOP 5)`,
+                badge: isOnlyQa ? `${catName} TOP 3` : `${catName} TOP 5`,
+                contestants: list,
+                showCatTag: false
+              });
+            }
+          });
         } else if (selectedCat === 'finalists') {
           const isOnlyQa = selectedRounds.length === 1 && selectedRounds[0] === 'qa';
           const list = isOnlyQa ? top3List : top5List;
           catGroups.push({
             catKey: 'finalists',
-            title: isOnlyQa ? 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย (TOP 3)' : 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย (TOP 5)',
+            title: isOnlyQa ? 'ผู้ผ่านเข้ารอบ 3 คนสุดท้าย แยกประเภท (TOP 3)' : 'ผู้ผ่านเข้ารอบ 5 คนสุดท้าย แยกประเภท (TOP 5)',
             badge: isOnlyQa ? 'TOP 3 Finalists' : 'TOP 5 Finalists',
             contestants: list,
             showCatTag: true
@@ -5216,6 +5425,14 @@
         function getContestantsForRound(group, roundId) {
           if (group.catKey === 'finalists') {
             return roundId === 'qa' ? (top3List.length > 0 ? top3List : group.contestants) : (top5List.length > 0 ? top5List : group.contestants);
+          }
+          if (roundId === 'speed' && MAIN_CATEGORIES.includes(group.catKey)) {
+            const catTop5 = top5List.filter(c => c.category === group.catKey);
+            return catTop5.length > 0 ? catTop5 : group.contestants;
+          }
+          if (roundId === 'qa' && MAIN_CATEGORIES.includes(group.catKey)) {
+            const catTop3 = top3List.filter(c => c.category === group.catKey);
+            return catTop3.length > 0 ? catTop3 : group.contestants;
           }
           return group.contestants;
         }

@@ -780,62 +780,97 @@ async function calculateSummary() {
             return (a.id || '').localeCompare(b.id || '');
         });
 
-    const allCalculatedContestants = [];
-    for (const [catKey, catList] of Object.entries(categoriesData)) {
-        if (catKey === 'congeniality') continue; // Miss Con ไม่นำมารวมในรอบคัดเลือก TOP 5 วันจริง (เป็นรางวัลพิเศษเฉพาะตำแหน่ง)
-        allCalculatedContestants.push(...catList);
+    const MAIN_CATEGORY_KEYS = ['miss', 'mister', 'queen', 'jumbo'];
+    const top5ByCategory = {};
+    const top3ByCategory = {};
+    const finalRankingsByCategory = {};
+    const top5Finalists = [];
+    const top3Finalists = [];
+    const finalRankings = [];
+
+    const awardTitles = ['👑 ชนะเลิศ', '🥈 รองชนะเลิศอันดับ 1', '🥉 รองชนะเลิศอันดับ 2'];
+
+    for (const catKey of MAIN_CATEGORY_KEYS) {
+        const catList = categoriesData[catKey] || [];
+        const catName = CATEGORIES[catKey] || catKey;
+
+        // ผู้เข้าประกวดที่สละสิทธิ์ (status === 'resigned') จะไม่ได้รับคัดเลือกเข้าสู่รอบ TOP 5 (คัดสูงสุด 5 อันดับแรกของแต่ละประเภท)
+        const eligibleForTop5 = catList.filter(c => c.status !== 'resigned');
+        const top5Selected = eligibleForTop5.slice(0, 5);
+
+        const catTop5 = top5Selected.map((finalist, preIdx) => {
+            const contestantScores = scores.filter(s => s.contestant_id === finalist.id);
+            const speedJudges = {};
+            let speedTotal = 0;
+            judges.forEach(jId => {
+                const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'speed');
+                const score = rec ? rec.total_score : 0;
+                speedJudges[jId] = score;
+                speedTotal += score;
+            });
+            return { ...finalist, preRank: preIdx + 1, speedJudges, speedTotal };
+        });
+
+        catTop5.sort((a, b) => {
+            if (b.speedTotal !== a.speedTotal) return b.speedTotal - a.speedTotal;
+            if (b.preTotal !== a.preTotal) return b.preTotal - a.preTotal;
+            const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+            const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return (a.id || '').localeCompare(b.id || '');
+        });
+        catTop5.forEach((f, idx) => { f.speedRank = idx + 1; f.isTop3 = idx < 3; });
+
+        // ผู้เข้าประกวดที่สละสิทธิ์จะไม่ได้รับคัดเลือกเข้าสู่รอบ TOP 3 (คัดสูงสุด 3 อันดับแรกของแต่ละประเภท)
+        const eligibleForTop3 = catTop5.filter(f => f.status !== 'resigned');
+        const top3Selected = eligibleForTop3.slice(0, 3);
+        const catTop3 = top3Selected.map(finalist => {
+            const contestantScores = scores.filter(s => s.contestant_id === finalist.id);
+            const qaJudges = {};
+            let qaTotal = 0;
+            judges.forEach(jId => {
+                const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'qa');
+                const score = rec ? rec.total_score : 0;
+                qaJudges[jId] = score;
+                qaTotal += score;
+            });
+            const avgScore = Number((qaTotal / 5).toFixed(2));
+            return { ...finalist, qaJudges, qaTotal, avgScore };
+        });
+
+        catTop3.sort((a, b) => {
+            if (b.avgScore !== a.avgScore) return b.avgScore - a.avgScore;
+            if (b.speedTotal !== a.speedTotal) return b.speedTotal - a.speedTotal;
+            if (b.preTotal !== a.preTotal) return b.preTotal - a.preTotal;
+            const numA = parseInt((a.id || '').replace(/\D/g, '')) || 0;
+            const numB = parseInt((b.id || '').replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return (a.id || '').localeCompare(b.id || '');
+        });
+        catTop3.forEach((f, idx) => {
+            f.finalRank = idx + 1;
+            f.award = idx === 0 ? `👑 ชนะเลิศ ${catName}` : awardTitles[idx];
+        });
+
+        const remaining = catTop5.slice(3, 5);
+        remaining.forEach((f, idx) => {
+            f.finalRank = idx + 4;
+            f.qaJudges = {};
+            f.qaTotal = 0;
+            f.avgScore = 0;
+            f.award = idx === 0 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4';
+        });
+
+        const catRankings = [...catTop3, ...remaining];
+
+        top5ByCategory[catKey] = catTop5;
+        top3ByCategory[catKey] = catTop3;
+        finalRankingsByCategory[catKey] = catRankings;
+
+        top5Finalists.push(...catTop5);
+        top3Finalists.push(...catTop3);
+        finalRankings.push(...catRankings);
     }
-    allCalculatedContestants.sort((a, b) => b.preTotal - a.preTotal);
-
-    // ผู้เข้าประกวดที่สละสิทธิ์ (status === 'resigned') จะไม่ได้รับคัดเลือกเข้าสู่รอบ TOP 5
-    const eligibleForTop5 = allCalculatedContestants.filter(c => c.status !== 'resigned');
-    const top5Selected = eligibleForTop5.slice(0, 5);
-
-    const top5Finalists = top5Selected.map(finalist => {
-        const contestantScores = scores.filter(s => s.contestant_id === finalist.id);
-        const speedJudges = {};
-        let speedTotal = 0;
-        judges.forEach(jId => {
-            const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'speed');
-            const score = rec ? rec.total_score : 0;
-            speedJudges[jId] = score;
-            speedTotal += score;
-        });
-        return { ...finalist, speedJudges, speedTotal };
-    });
-
-    top5Finalists.sort((a, b) => b.speedTotal !== a.speedTotal ? b.speedTotal - a.speedTotal : b.preTotal - a.preTotal);
-    top5Finalists.forEach((f, idx) => { f.speedRank = idx + 1; f.isTop3 = idx < 3; });
-
-    // ผู้เข้าประกวดที่สละสิทธิ์จะไม่ได้รับคัดเลือกเข้าสู่รอบ TOP 3
-    const eligibleForTop3 = top5Finalists.filter(f => f.status !== 'resigned');
-    const top3Selected = eligibleForTop3.slice(0, 3);
-    const top3Finalists = top3Selected.map(finalist => {
-        const contestantScores = scores.filter(s => s.contestant_id === finalist.id);
-        const qaJudges = {};
-        let qaTotal = 0;
-        judges.forEach(jId => {
-            const rec = contestantScores.find(s => s.judge_id === jId && s.round_id === 'qa');
-            const score = rec ? rec.total_score : 0;
-            qaJudges[jId] = score;
-            qaTotal += score;
-        });
-        const avgScore = Number((qaTotal / 5).toFixed(2));
-        return { ...finalist, qaJudges, qaTotal, avgScore };
-    });
-
-    top3Finalists.sort((a, b) => b.avgScore !== a.avgScore ? b.avgScore - a.avgScore : b.speedTotal - a.speedTotal);
-    const awardTitles = ['👑 ชนะเลิศ THE WINNER FRESHY 2026', '🥈 รองชนะเลิศอันดับ 1', '🥉 รองชนะเลิศอันดับ 2'];
-    top3Finalists.forEach((f, idx) => { f.finalRank = idx + 1; f.award = awardTitles[idx]; });
-
-    const remainingTwo = top5Finalists.slice(3, 5);
-    remainingTwo.forEach((f, idx) => {
-        f.finalRank = idx + 4;
-        f.qaJudges = {};
-        f.qaTotal = 0;
-        f.avgScore = 0;
-        f.award = idx === 0 ? 'รองชนะเลิศอันดับ 3' : 'รองชนะเลิศอันดับ 4';
-    });
 
     // สรุปผลผู้เข้าชิงอันดับ 1 ของทั้ง 5 ประเภท และคัดเลือกผู้ชนะเลิศ POPULAR VOTE เพียง 1 เดียวจากทั้ง 5 คน
     const popularCategoryLeaders = {};
@@ -917,7 +952,10 @@ async function calculateSummary() {
         categories: categoriesData,
         top5: top5Finalists,
         top3: top3Finalists,
-        finalRankings: [...top3Finalists, ...remainingTwo],
+        finalRankings,
+        top5ByCategory,
+        top3ByCategory,
+        finalRankingsByCategory,
         missConTalent,
         popularWinner, // ผู้ชนะเลิศ Popular Vote เพียงคนเดียวเท่านั้น
         popularWinners: popularCategoryLeaders, // ตัวแทนอันดับ 1 แต่ละประเภท
